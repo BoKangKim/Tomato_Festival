@@ -154,7 +154,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 351c140f5a7c2584bb82b54312a6b380, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 1425823773}
 --- !u!61 &538882374
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -248,6 +247,51 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &689670627
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 689670628}
+  - component: {fileID: 689670629}
+  m_Layer: 0
+  m_Name: BulletPool
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &689670628
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 689670627}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &689670629
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 689670627}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc7873d43833b164cb2d3ba041f9fe56, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bulletPrefab: {fileID: 8699536695228557355, guid: bdf732c674228ac4fafb7181c7e38cbe, type: 3}
 --- !u!1 &1366273492
 GameObject:
   m_ObjectHideFlags: 0
@@ -372,7 +416,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 351c140f5a7c2584bb82b54312a6b380, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 1425823773}
 --- !u!1 &1425823772
 GameObject:
   m_ObjectHideFlags: 0
@@ -405,7 +448,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a38ff4c5331a1f458c8564f4563d995, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bullet: {fileID: 8699536695228557355, guid: bdf732c674228ac4fafb7181c7e38cbe, type: 3}
   enemy: {fileID: 2035407164}
 --- !u!212 &1425823774
 SpriteRenderer:
@@ -489,12 +531,12 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 0
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 1
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!58 &1425823777
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -564,7 +606,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 10
+  orthographic size: 20
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -606,8 +648,8 @@ GameObject:
   - component: {fileID: 2035407166}
   - component: {fileID: 2035407165}
   - component: {fileID: 2035407164}
-  - component: {fileID: 2035407167}
   - component: {fileID: 2035407168}
+  - component: {fileID: 2035407169}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
@@ -627,7 +669,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a38ff4c5331a1f458c8564f4563d995, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bullet: {fileID: 8699536695228557355, guid: bdf732c674228ac4fafb7181c7e38cbe, type: 3}
   enemy: {fileID: 0}
 --- !u!212 &2035407165
 SpriteRenderer:
@@ -696,27 +737,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!50 &2035407167
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2035407163}
-  m_BodyType: 0
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 3
-  m_Material: {fileID: 0}
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 0
 --- !u!58 &2035407168
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -733,3 +753,24 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.5
+--- !u!50 &2035407169
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2035407163}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 5
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 1
+  m_Constraints: 4
