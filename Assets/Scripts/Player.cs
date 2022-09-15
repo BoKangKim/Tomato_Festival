@@ -4,20 +4,38 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    const float PI = 3.14f;
     float moveSpeed = 20f;
+    float xAxis = 0f;
+    float jumpSpeed = 2f;
     Vector3 mousePos = Vector3.zero;
     Vector3 fireDir = Vector3.zero;
     Vector3 knockBackDir = Vector3.zero;
+    public bool isJump { get; set; } = false;
+    public bool isFall { get; set; } = false;
     Camera cam;
     [SerializeField] Bullet bullet;
     [SerializeField] Player enemy;
-
+    Rigidbody2D myRigidbody;
     private void Awake()
     {
+        myRigidbody = GetComponent<Rigidbody2D>();
         cam = FindObjectOfType<Camera>();
     }
 
-    void Update()
+    private void Update()
+    {
+        if (gameObject.name == "Enemy")
+            return;
+        // 점프
+        if (Input.GetKeyDown(KeyCode.W) && isJump == false)
+        {
+            isJump = true;
+            StartCoroutine(Jump(xAxis));
+        }
+    }
+
+    void FixedUpdate()
     {
         if (gameObject.name == "Enemy")
             return;
@@ -26,9 +44,9 @@ public class Player : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             mousePos = cam.ScreenToWorldPoint(Input.mousePosition);
-            mousePos = mousePos - new Vector3(0f,0f, mousePos.z);
+            mousePos = mousePos - new Vector3(0f, 0f, mousePos.z);
             fireDir = (mousePos - transform.position).normalized;
-            Bullet bulletInst = Instantiate(bullet,transform.position + fireDir, Quaternion.identity);
+            Bullet bulletInst = Instantiate(bullet, transform.position + fireDir, Quaternion.identity);
             bulletInst.MoveDir = fireDir;
             bulletInst.Enemy = this.enemy;
         }
@@ -36,10 +54,12 @@ public class Player : MonoBehaviour
         #endregion
 
         #region 플레이어 움직임
-        float xAxis = Input.GetAxis("Horizontal");
-        float yAxis = Input.GetAxis("Vertical");
-
-        transform.Translate((xAxis * Vector3.right + yAxis * Vector3.up) * moveSpeed * Time.deltaTime);
+        // 좌 우
+        //if (isJump == true)
+        //    return;
+        xAxis = Input.GetAxis("Horizontal");
+       
+        transform.Translate(xAxis * Vector3.right * moveSpeed * Time.deltaTime);
         #endregion
     }
 
@@ -47,6 +67,28 @@ public class Player : MonoBehaviour
     {
         knockBackDir = (transform.position - bulletVec).normalized;
         StartCoroutine(KnockBack());
+    }
+
+    private void SetIsJump(bool isJump)
+    {
+        this.isJump = isJump;
+    }
+
+    private void SetIsFall(bool isFall)
+    {
+        this.isFall = isFall;
+    }
+
+    private void StartFall()
+    {
+        if (isJump == false)
+        {
+            StartCoroutine(Fall());
+        }
+        else
+        {
+            isFall = false;
+        }
     }
 
     IEnumerator KnockBack()
@@ -57,6 +99,37 @@ public class Player : MonoBehaviour
         {
             curTime += Time.deltaTime;
             transform.Translate(knockBackDir * Time.deltaTime * 2f);
+            yield return null;
+        }
+    }
+    
+    IEnumerator Jump(float xAxis)
+    {
+        float sinY = 0f;
+        float startPosX = transform.position.x;
+        float startPosY = transform.position.y;
+
+        while (isJump == true)
+        {
+            if(sinY > PI)
+            {
+                isFall = true;
+                StartCoroutine(Fall());
+                yield break;
+            }
+            transform.position = new Vector3(transform.position.x, 15 * Mathf.Sin(sinY) + startPosY, 0f);
+
+            sinY += Time.deltaTime * jumpSpeed;
+            yield return null;
+        }
+
+    }
+    
+    IEnumerator Fall()
+    {
+        while(isFall == true)
+        {
+            transform.Translate(Vector3.down * Time.deltaTime * 13f);
             yield return null;
         }
     }
