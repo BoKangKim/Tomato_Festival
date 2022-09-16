@@ -32,5 +32,5 @@ public class BulletPool : ObjectPool<Bullet>
         return bulletPrefab;
     }
 
-    
+
 }

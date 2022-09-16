@@ -14,6 +14,8 @@ public class Player : MonoBehaviour
     [SerializeField] Player enemy; // 누가 적인지 판단하기 위한 변수 -> 이거는 바꿔야 함(네트워크 붙이고 바꿀예정)
     Rigidbody2D myRigidbody;
 
+    public int bulletCount { get; set; } = 0;
+
     private void Awake()
     {
         myRigidbody = GetComponent<Rigidbody2D>();
