@@ -14,10 +14,15 @@ public class Player : MonoBehaviour
     [SerializeField] Player enemy; // 누가 적인지 판단하기 위한 변수 -> 이거는 바꿔야 함(네트워크 붙이고 바꿀예정)
     Rigidbody2D myRigidbody;
 
+    // 현재 아이템 정보
+    Items myItems = null;
+    public int MyItemIndex { get; set; } = 0;
+    public bool IsShieldTime { get; set; } = false;
     public int bulletCount { get; set; } = 0;
 
     private void Awake()
     {
+        myItems = GetComponent<Items>();
         myRigidbody = GetComponent<Rigidbody2D>();
         cam = FindObjectOfType<Camera>();
     }
@@ -32,13 +37,15 @@ public class Player : MonoBehaviour
         #region 총알 발사
         if (Input.GetMouseButtonDown(0))
         {
-            mousePos = cam.ScreenToWorldPoint(Input.mousePosition);
-            mousePos = mousePos - new Vector3(0f, 0f, mousePos.z);
-            fireDir = (mousePos - transform.position).normalized;
+            TransferMousePositionToWorold();
             Bullet bulletInst = BulletPool.Inst.Get();
             bulletInst.transform.position = transform.position;
             bulletInst.MoveDir = fireDir;
             bulletInst.Enemy = this.enemy;
+        }
+        if (Input.GetMouseButtonDown(1))
+        {
+            myItems.StartItemCoroutine();
         }
 
         #endregion
@@ -85,6 +92,9 @@ public class Player : MonoBehaviour
     // 넉백을 처리하는 코루틴 실행 
     public void StartKnockBackCoroutine(Vector3 bulletVec)
     {
+        if (IsShieldTime == true)
+            return;
+
         knockBackDir = (transform.position - bulletVec).normalized; // 적이 총알에 맞은 방향으로 넉백을 당하기 위해 구한 방향벡터
         StartCoroutine(KnockBack());
     }
@@ -102,6 +112,24 @@ public class Player : MonoBehaviour
             transform.Translate(knockBackDir * Time.deltaTime * knockBackSpeed);
             yield return null;
         }
+    }
+
+    private void TransferMousePositionToWorold()
+    {
+        mousePos = cam.ScreenToWorldPoint(Input.mousePosition);
+        mousePos = mousePos - new Vector3(0f, 0f, mousePos.z);
+        fireDir = (mousePos - transform.position).normalized;
+    }
+
+    public Vector3 GetFireDir()
+    {
+        TransferMousePositionToWorold();
+        return fireDir;
+    }
+
+    public Player GetTarget()
+    {
+        return enemy;
     }
 
     private void SetininJump(bool initJump)
