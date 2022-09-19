@@ -5,4 +5,4 @@
 https://coconut-specialist-c92.notion.site/BK-_2D-bc1c62819fc74c509a438369f568a1e8
 
 ### Asset 출처
-https://drive.google.com/drive/folders/1fqtfpYerPi5seIjJ6MP00LjZnZ-Xp2ql
+https://assetstore.unity.com/packages/2d/gui/icons/fps-icons-pack-45240
