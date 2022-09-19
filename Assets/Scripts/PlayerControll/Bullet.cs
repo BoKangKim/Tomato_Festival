@@ -45,7 +45,6 @@ public class Bullet : MonoBehaviour
 
 
         TotalDistance = Vector3.zero;
-        Debug.Log($"{moveDir} , ½ºÇÇµå {attackSpeed}");
 
         Distance = moveDir * Time.deltaTime * attackSpeed;
         transform.Translate(Distance);

@@ -2,7 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Player : MonoBehaviour
+using Photon.Pun;
+using Photon.Realtime;
+
+public class Player : MonoBehaviourPun
 {
     float playermaxHP;
     float playercurHP;
@@ -12,7 +15,6 @@ public class Player : MonoBehaviour
     public bool isJumpKeyInput { get; set; } = false; // W를 입력하였는지(점프키를 눌렀는 지)
     bool initJump = true; // 땅에 닿아서 점프를 할 수 있는 상황인지
     Camera cam; // 마우스 좌표를 월드 좌표로 변환하기 위한 카메라
-    [SerializeField] Player enemy; // 누가 적인지 판단하기 위한 변수 -> 이거는 바꿔야 함(네트워크 붙이고 바꿀예정)
     Rigidbody2D myRigidbody;
 
     // 현재 아이템 정보
@@ -35,9 +37,8 @@ public class Player : MonoBehaviour
     // FixedUpdate에서 같이 받으면 늦게 입력 처리가 되어서 입력이 늦어짐
     private void Update()
     {
-        if (gameObject.name == "Enemy")
-            return;
-        
+        // 네트워크 처리
+
         // 키입력을 받아서 점프를 해야하는데 AddForce는 FixedUpdate 에서 처리를 해야지
         // 다른 컴퓨터에서도 동일한 속도, 거리로 움직임
         // 키 입력이 되었다는 것을 알리기 위해 bool 값을 넣어서 true 이면 눌린거 false이면 안눌린 것을 판단한 후
@@ -51,8 +52,7 @@ public class Player : MonoBehaviour
     // 리지드바디 물리적인 처리를 하기위한 FixedUpdate
     void FixedUpdate()
     {
-        if (gameObject.name == "Enemy")
-            return;
+        // 네트워크 처리
         
 
         #region 플레이어 움직임
@@ -102,10 +102,10 @@ public class Player : MonoBehaviour
         }
     }
 
-    public Player GetTarget()
-    {
-        return enemy;
-    }
+    //public Player GetTarget()
+    //{
+    //    return enemy;
+    //}
 
     private void SetininJump(bool initJump)
     {
