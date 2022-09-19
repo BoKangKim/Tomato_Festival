@@ -14,12 +14,10 @@ public class CamEffect : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+
+    public void StartCamEffectCoroutine()
     {
-        if (Input.GetMouseButton(0))
-        {
-            StartCoroutine("CamEffectStart");
-        }
+        StartCoroutine(CamEffectStart());
     }
 
     IEnumerator CamEffectStart()

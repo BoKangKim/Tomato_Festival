@@ -45,9 +45,7 @@ public class Gun : MonoBehaviour
         numberOfBullet -= 1f;
         Debug.Log($"{numberOfBullet}");
 
-        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        mousePos.z = 0f;
-        fireDir = (mousePos - transform.position).normalized; //발사방향
+        TransferFireDir();
 
         Bullet bulletInst = BulletPool.Inst.Get();
         if(bulletInst != null)
@@ -70,5 +68,16 @@ public class Gun : MonoBehaviour
         canshoot = true;
     }
 
-    
+    void TransferFireDir()
+    {
+        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        mousePos.z = 0f;
+        fireDir = (mousePos - transform.position).normalized; //발사방향
+    }
+
+    public Vector3 GetFireDir()
+    {
+        TransferFireDir();
+        return fireDir;
+    }
 }

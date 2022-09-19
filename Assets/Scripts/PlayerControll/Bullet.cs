@@ -4,28 +4,29 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
+    Vector3 TotalDistance = Vector3.zero;  //사거리체크
+    Vector3 Distance = Vector3.zero;
+
     Vector3 moveDir = Vector3.zero;
     Player enemy;
-
-    public Vector3 MoveDir 
-    {
-        set
-        {
-            moveDir = value;
-        }
-    }
-
-    public Player Enemy
-    {
-        set
-        {
-            enemy = value;
-        }
-    }
+    float attackRange; //사거리
+    float attackSpeed; //속도
+    float attackDamage; //공격력
+    public Vector3 MoveDir { set { moveDir = value; } }
+    public Player Enemy { set { enemy = value; } }
+    public float AttackRange { set { attackRange = value; } }
+    public float AttackSpeed { set { attackSpeed = value; } }
+    public float AttackDamage { set { attackDamage = value; } }
+    CamEffect camEffect = null;
 
     private void Awake()
     {
-        gameObject.transform.SetParent(BulletPool.Inst.gameObject.transform,false);
+        //gameObject.transform.SetParent(BulletPool.Inst.gameObject.transform, false);
+    }
+
+    private void Start()
+    {
+        camEffect = Camera.main.GetComponent<CamEffect>();
     }
 
     void Update()
@@ -37,18 +38,35 @@ public class Bullet : MonoBehaviour
             Vector3.Distance(enemy.gameObject.transform.position, gameObject.transform.position))
         {
             enemy.SendMessage("StartKnockBackCoroutine",transform.position,SendMessageOptions.DontRequireReceiver);
+            enemy.SendMessage("TransferDamage", attackDamage, SendMessageOptions.DontRequireReceiver);
+            camEffect.StartCamEffectCoroutine();
             BulletPool.Inst.Release(this);
         }
 
+
+        TotalDistance = Vector3.zero;
+        Debug.Log($"{moveDir} , 스피드 {attackSpeed}");
+
+        Distance = moveDir * Time.deltaTime * attackSpeed;
+        transform.Translate(Distance);
+
+        TotalDistance += Distance;
+        if ((TotalDistance).magnitude >= attackRange)
+        {
+            //BulletPool.Inst.Release(this);
+        }
+
         // 나중에 총의 사거리의 따라 다르겠지만 일단 임시방편으로 일정 거리 이상 가면 릴리즈
-        if(transform.position.x >= 36f
+        if (transform.position.x >= 36f
             || transform.position.y >= 26f
             || transform.position.x <= -36f
             || transform.position.y <=-26f)
         {
             BulletPool.Inst.Release(this);
         }
-        transform.Translate(moveDir * Time.deltaTime * 30f);
+
+        
+
     }
     
 }

@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    float playermaxHP;
+    float playercurHP;
     float moveSpeed = 20f; // 플레이어 속도
     Vector3 mousePos = Vector3.zero; // 마우스 포지션
-    Vector3 fireDir = Vector3.zero; // 총알이 발사되는 방향 벡터
     Vector3 knockBackDir = Vector3.zero; // 총알에 맞고 넉백 되는 방향 벡터
     public bool isJumpKeyInput { get; set; } = false; // W를 입력하였는지(점프키를 눌렀는 지)
     bool initJump = true; // 땅에 닿아서 점프를 할 수 있는 상황인지
@@ -25,6 +26,9 @@ public class Player : MonoBehaviour
         myItems = GetComponent<Items>();
         myRigidbody = GetComponent<Rigidbody2D>();
         cam = FindObjectOfType<Camera>();
+
+        playermaxHP = 100f;
+        playercurHP = 100f;
     }
 
     // 키 입력을 위해 돌린 업데이트 함수 
@@ -33,23 +37,7 @@ public class Player : MonoBehaviour
     {
         if (gameObject.name == "Enemy")
             return;
-
-        #region 총알 발사
-        if (Input.GetMouseButtonDown(0))
-        {
-            TransferMousePositionToWorold();
-            Bullet bulletInst = BulletPool.Inst.Get();
-            bulletInst.transform.position = transform.position;
-            bulletInst.MoveDir = fireDir;
-            bulletInst.Enemy = this.enemy;
-        }
-        if (Input.GetMouseButtonDown(1))
-        {
-            myItems.StartItemCoroutine();
-        }
-
-        #endregion
-
+        
         // 키입력을 받아서 점프를 해야하는데 AddForce는 FixedUpdate 에서 처리를 해야지
         // 다른 컴퓨터에서도 동일한 속도, 거리로 움직임
         // 키 입력이 되었다는 것을 알리기 위해 bool 값을 넣어서 true 이면 눌린거 false이면 안눌린 것을 판단한 후
@@ -114,19 +102,6 @@ public class Player : MonoBehaviour
         }
     }
 
-    private void TransferMousePositionToWorold()
-    {
-        mousePos = cam.ScreenToWorldPoint(Input.mousePosition);
-        mousePos = mousePos - new Vector3(0f, 0f, mousePos.z);
-        fireDir = (mousePos - transform.position).normalized;
-    }
-
-    public Vector3 GetFireDir()
-    {
-        TransferMousePositionToWorold();
-        return fireDir;
-    }
-
     public Player GetTarget()
     {
         return enemy;
@@ -140,6 +115,12 @@ public class Player : MonoBehaviour
     private void SetisJump(bool isJump)
     {
         this.isJumpKeyInput = isJump;
+    }
+
+    void TransferDamage(float attackDamage)
+    {
+        playercurHP -= attackDamage;
+        Debug.Log($"나 맞음 체력 깍임 : {playercurHP / playermaxHP}");
     }
 
 }
