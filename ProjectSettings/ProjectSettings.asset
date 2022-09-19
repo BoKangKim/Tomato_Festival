@@ -4,7 +4,7 @@
 PlayerSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 23
-  productGUID: 492faef0bb6f85540a83d547ce605659
+  productGUID: f1b991b13d2742643a48f21ce651df33
   AndroidProfiler: 0
   AndroidFilterTouchesWhenObscured: 0
   AndroidEnableSustainedPerformanceMode: 0
@@ -13,8 +13,8 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: DefaultCompany
-  productName: Tomato_Festival
-  defaultCursor: {fileID: 0}
+  productName: Tomato
+  defaultCursor: {fileID: 2800000, guid: 590eb6f0f82ffd94ba658d58eed7b283, type: 3}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
   m_ShowUnitySplashScreen: 1
