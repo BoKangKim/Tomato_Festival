@@ -11,11 +11,12 @@ public class Player : MonoBehaviourPun
     float playercurHP;
     float moveSpeed = 20f; // 플레이어 속도
     Vector3 mousePos = Vector3.zero; // 마우스 포지션
-    Vector3 knockBackDir = Vector3.zero; // 총알에 맞고 넉백 되는 방향 벡터
+    Vector2 knockBackDir = Vector2.zero; // 총알에 맞고 넉백 되는 방향 벡터
     public bool isJumpKeyInput { get; set; } = false; // W를 입력하였는지(점프키를 눌렀는 지)
     bool initJump = true; // 땅에 닿아서 점프를 할 수 있는 상황인지
-    Camera cam; // 마우스 좌표를 월드 좌표로 변환하기 위한 카메라
     Rigidbody2D myRigidbody;
+    CamEffect camEffect = null;
+    
 
     // 현재 아이템 정보
     Items myItems = null;
@@ -26,9 +27,17 @@ public class Player : MonoBehaviourPun
     private void Awake()
     {
         myItems = GetComponent<Items>();
-        myRigidbody = GetComponent<Rigidbody2D>();
-        cam = FindObjectOfType<Camera>();
 
+        if (photonView.IsMine == false)
+        {
+            Destroy(gameObject.GetComponent<Rigidbody2D>());
+        }
+        else
+        {
+            myRigidbody = GetComponent<Rigidbody2D>();
+        }
+
+        camEffect = FindObjectOfType<CamEffect>();
         playermaxHP = 100f;
         playercurHP = 100f;
     }
@@ -38,6 +47,8 @@ public class Player : MonoBehaviourPun
     private void Update()
     {
         // 네트워크 처리
+        if (photonView.IsMine == false)
+            return;
 
         // 키입력을 받아서 점프를 해야하는데 AddForce는 FixedUpdate 에서 처리를 해야지
         // 다른 컴퓨터에서도 동일한 속도, 거리로 움직임
@@ -52,16 +63,17 @@ public class Player : MonoBehaviourPun
     // 리지드바디 물리적인 처리를 하기위한 FixedUpdate
     void FixedUpdate()
     {
+        if (myRigidbody == null)
+            return;
         // 네트워크 처리
-        
+        if (photonView.IsMine == false)
+            return;
 
         #region 플레이어 움직임
         // 점프키가 눌렸는지, 땅에 닿아서 점프를 할 수 있는 상태인지 판단한 후 점프
         if (isJumpKeyInput == true && initJump == true)
         {
-            myRigidbody.AddForce(Vector2.up * 1800f, ForceMode2D.Force);
-            isJumpKeyInput = false;
-            initJump = false;
+            Jump();
         }
 
         float xAxis = Input.GetAxis("Horizontal");
@@ -78,34 +90,15 @@ public class Player : MonoBehaviourPun
 
     // 총알이 충돌 했을 때 불림
     // 넉백을 처리하는 코루틴 실행 
-    public void StartKnockBackCoroutine(Vector3 bulletVec)
+    
+
+    private void Jump()
     {
-        if (IsShieldTime == true)
-            return;
-
-        knockBackDir = (transform.position - bulletVec).normalized; // 적이 총알에 맞은 방향으로 넉백을 당하기 위해 구한 방향벡터
-        StartCoroutine(KnockBack());
+        
+        myRigidbody.AddForce(Vector2.up * 1800f, ForceMode2D.Force);
+        isJumpKeyInput = false;
+        initJump = false;
     }
-
-    // 넉백 코루틴
-    IEnumerator KnockBack()
-    {
-        float knockBackSpeed = 64f;
-
-        // 시간이 지날수록 점점 덜 밀리게 하기 위해 속도를 계속 빼주어서
-        // 거리가 줄어들 수 있도록 함
-        while (knockBackSpeed >= 1f)
-        {
-            knockBackSpeed -= Time.deltaTime * 400f;
-            transform.Translate(knockBackDir * Time.deltaTime * knockBackSpeed);
-            yield return null;
-        }
-    }
-
-    //public Player GetTarget()
-    //{
-    //    return enemy;
-    //}
 
     private void SetininJump(bool initJump)
     {
@@ -119,8 +112,48 @@ public class Player : MonoBehaviourPun
 
     void TransferDamage(float attackDamage)
     {
+       
+        photonView.RPC("RPC_TransferDamage", RpcTarget.Others, attackDamage);
+    }
+    public void StartKnockBackCoroutine(Vector3 bulletVec)
+    {
+        photonView.RPC("RPC_StartKnockBackCoroutine", RpcTarget.Others, bulletVec);
+    }
+
+    [PunRPC]
+    void RPC_StartKnockBackCoroutine(Vector3 bulletVec)
+    {
+        if (IsShieldTime == true)
+            return;
+
+        knockBackDir = (transform.position - bulletVec).normalized; // 적이 총알에 맞은 방향으로 넉백을 당하기 위해 구한 방향벡터
+        StartCoroutine(KnockBack());
+    }
+    [PunRPC]
+    void RPC_TransferDamage(float attackDamage)
+    {
+        camEffect.StartCamEffectCoroutine();
         playercurHP -= attackDamage;
-        Debug.Log($"나 맞음 체력 깍임 : {playercurHP / playermaxHP}");
+    }
+
+    // 넉백 코루틴
+    IEnumerator KnockBack()
+    {
+        float knockBackSpeed = 64f;
+
+        // 시간이 지날수록 점점 덜 밀리게 하기 위해 속도를 계속 빼주어서
+        // 거리가 줄어들 수 있도록 함
+        if(myRigidbody != null)
+        {
+            while (knockBackSpeed >= 1f)
+            {
+                knockBackSpeed -= Time.deltaTime * 400f;
+                myRigidbody.position += (knockBackDir * Time.deltaTime * knockBackSpeed);
+
+                yield return null;
+            }
+        }
+        
     }
 
 }

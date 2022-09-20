@@ -2,7 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class ObjectPool<T> : MonoBehaviour where T : MonoBehaviour
+using Photon.Pun;
+using Photon.Realtime;
+
+public abstract class ObjectPool<T> : MonoBehaviour,IPunPrefabPool where T : MonoBehaviour
 {
     Queue<T> m_pool = null;
 
@@ -20,10 +23,11 @@ public abstract class ObjectPool<T> : MonoBehaviour where T : MonoBehaviour
 
     public T Get()
     {
-        if(tObj == null)
+        if (tObj == null)
         {
             tObj = CreatePool();
         }
+
         if (m_pool.Count == 0 && pool_count <= Pool_Max_Size)
         {
             pool_count++;
@@ -62,5 +66,15 @@ public abstract class ObjectPool<T> : MonoBehaviour where T : MonoBehaviour
         {
             Destroy(m_pool.Dequeue());
         }
+    }
+
+    public GameObject Instantiate(string prefabId, Vector3 position, Quaternion rotation)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void Destroy(GameObject gameObject)
+    {
+        throw new System.NotImplementedException();
     }
 }

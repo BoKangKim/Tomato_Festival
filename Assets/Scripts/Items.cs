@@ -25,6 +25,8 @@ public class Items : MonoBehaviour
 
     private void Update()
     {
+        return;
+
         if (items.Count == 0)
             return;
 

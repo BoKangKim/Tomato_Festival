@@ -2,7 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RectFloor : MonoBehaviour
+using Photon.Pun;
+using Photon.Realtime;
+public class RectFloor : MonoBehaviourPun
 {
 
     // 플레이어가 땅에 닿았는 지 판단하기 위한 함수
@@ -23,7 +25,18 @@ public class RectFloor : MonoBehaviour
                 // 뒤늦게 한 번더 점프를 하는 현상을 방지 하기위해 점프키가 눌리는 것을 초기화
                 collision.gameObject.SendMessage("SetisJump", false, SendMessageOptions.DontRequireReceiver);
             }
-           
+
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.tag == "Bullet")
+        {
+            Bullet bullet = collision.GetComponent<Bullet>();
+
+            if (bullet != null)
+                PhotonNetwork.Destroy(bullet.gameObject);
         }
     }
 

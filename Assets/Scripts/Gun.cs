@@ -2,14 +2,29 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Gun : MonoBehaviour
+using Photon.Pun;
+using Photon.Realtime;
+
+public class Gun : MonoBehaviourPun
 {
     ScriptableWeaponData playerWeapondata = null;
     Vector3 fireDir = Vector3.zero; // 총알이 발사되는 방향 벡터
-    
+    Player player = null;
+    Player myEnemy = null;
+    public int myNum { get; set; } = 0;
     float numberOfBullet; //기본 제공 총알 개수
     float attackInterval; //연사속도
     bool canshoot;
+
+    private void Start()
+    {
+        if(photonView.IsMine == true)
+        {
+            player = GetComponentInParent<Player>();
+            GameManger.Instance.SetPlayerNum(this);
+            GameManger.Instance.SetGunData(this, myNum);
+        }
+    }
 
     public void SetGunData(ScriptableWeaponData data) //일단 SniperRifle(저격총) 넘어올거야
     {
@@ -25,8 +40,26 @@ public class Gun : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (photonView.IsMine == false)
+            return;
+
         if (Input.GetMouseButtonDown(0) && canshoot == true) //shoot 가능 조건
         {
+            if (myEnemy == null)
+            {
+                Player[] players = FindObjectsOfType<Player>();
+                for (int i = 0; i < players.Length; i++)
+                {
+                    if (players[i].photonView.IsMine == false)
+                    {
+                        myEnemy = players[i];
+                        break;
+                    }
+                }
+
+                if (myEnemy == null)
+                    Debug.LogError("myEnemy is null Check Gun.cs");
+            }
             StartCoroutine("Shoot");
         }
     }
@@ -39,16 +72,25 @@ public class Gun : MonoBehaviour
 
         TransferFireDir();
 
-        Bullet bulletInst = BulletPool.Inst.Get();
-        
-        bulletInst.transform.position = transform.position;
-        bulletInst.MoveDir = fireDir;
-        //bulletInst.Enemy = this.enemy;
-        bulletInst.AttackRange = playerWeapondata.AttackRange;
-        bulletInst.AttackSpeed = playerWeapondata.AttackSpeed;
+        //GameObject test = PhotonNetwork.Instantiate("Granade", transform.position,Quaternion.identity);
+        //PhotonNetwork.Destroy(test.gameObject);
+        GameObject objectInst = PhotonNetwork.Instantiate("Bullet", transform.position, Quaternion.identity);
+        Bullet bulletInst = objectInst.GetComponent<Bullet>();
+        if(bulletInst != null)
+        {
+            //bulletInst.transform.SetParent(BulletPool.Inst.gameObject.transform, false);
+            bulletInst.myEnemy = this.myEnemy;
+            bulletInst.MoveDir = fireDir;
+            bulletInst.AttackRange = playerWeapondata.AttackRange;
+            bulletInst.AttackSpeed = playerWeapondata.AttackSpeed;
+            bulletInst.AttackDamage = playerWeapondata.AttackDamage;
+        }
+        else
+        {
+            Debug.LogError("Not Found Bullet Check Gun.cs");
+        }
 
-        bulletInst.AttackDamage = playerWeapondata.AttackDamage;
-        
+
 
 
         yield return new WaitForSeconds(attackInterval);
