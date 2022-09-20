@@ -8,6 +8,10 @@ using TMPro;
 using Photon.Pun; // 포톤 라이브러리를 유니티 컴포넌트로 사용할 수 있게 하는 라이브러리
 using Photon.Realtime;
 
+public static class Pnum
+{
+    public static int pnum = 0;
+}
 public class StartUIManager : MonoBehaviourPunCallbacks
 {
     [Header("Option")]
@@ -53,6 +57,7 @@ public class StartUIManager : MonoBehaviourPunCallbacks
     #region
     public void OnClickStartButton()
     {
+        Debug.Log("시작버튼");
         StartCoroutine(StartButton());
     }
     public void OnClickInfoButton()
@@ -75,12 +80,12 @@ public class StartUIManager : MonoBehaviourPunCallbacks
 
         float time = 0f;
 
-        while (time <= 0.25f)
+        while (time <= 0.2f)
         {
             time += Time.deltaTime;
 
             buttonScroll.transform.Translate(Vector3.left * 8f);
-            accessScroll.transform.Translate(Vector3.left * 8f);
+            accessScroll.transform.Translate(Vector3.left * 4f);
 
             yield return null;
         }
@@ -121,23 +126,36 @@ public class StartUIManager : MonoBehaviourPunCallbacks
     {
         matching.text = $"Connection Failed : <{returnCode}> {message}";
     }
+
     public override void OnJoinedRoom()
     {
+        Pnum.pnum++;
         if (PhotonNetwork.IsMasterClient)
+        {
             matching.text = "Searching for match";
+            StartCoroutine(GoMain());
+        }  
         else
+        {
             PhotonNetwork.LoadLevel("Main"); // 서버연결된 상태로 씬 전환
+        }
 
     }
     
-    
+    IEnumerator GoMain()
+    {
+        yield return new WaitUntil(()=> Pnum.pnum == 2);
+
+        Pnum.pnum = 0;
+        PhotonNetwork.LoadLevel("Main"); // 서버연결된 상태로 씬 전환
+    }
     /*
     public override void OnMasterClientSwitched(Player newMasterClient)
     {
         Debug.Log("마스터 변경 : " + newMasterClient.ToString());
     }
     */
-    
+
     public void OnClickBackButton()
     {
         accessScroll.transform.position = accessscrollPos;
