@@ -126,12 +126,12 @@ public class Items : MonoBehaviour
 
     private void GrenadeExplosion(GameObject grenade)
     {
-        Player target = player.GetTarget();
+        //Player target = player.GetTarget();
 
-        if(Vector3.Distance(grenade.transform.position,target.transform.position) <= 5f)
-        {
-            target.SendMessage("StartKnockBackCoroutine",grenade.transform.position,SendMessageOptions.DontRequireReceiver);
-        }
+        //if(Vector3.Distance(grenade.transform.position,target.transform.position) <= 5f)
+        //{
+        //    target.SendMessage("StartKnockBackCoroutine",grenade.transform.position,SendMessageOptions.DontRequireReceiver);
+        //}
         
     }
     
