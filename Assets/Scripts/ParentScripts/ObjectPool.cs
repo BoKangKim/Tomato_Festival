@@ -5,7 +5,7 @@ using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 
-public abstract class ObjectPool<T> : MonoBehaviour,IPunPrefabPool where T : MonoBehaviour
+public abstract class ObjectPool<T> : MonoBehaviourPun where T : MonoBehaviourPun
 {
     Queue<T> m_pool = null;
 
@@ -68,13 +68,4 @@ public abstract class ObjectPool<T> : MonoBehaviour,IPunPrefabPool where T : Mon
         }
     }
 
-    public GameObject Instantiate(string prefabId, Vector3 position, Quaternion rotation)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void Destroy(GameObject gameObject)
-    {
-        throw new System.NotImplementedException();
-    }
 }

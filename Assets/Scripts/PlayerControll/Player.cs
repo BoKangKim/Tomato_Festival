@@ -23,7 +23,6 @@ public class Player : MonoBehaviourPun
     public int MyItemIndex { get; set; } = 0;
     public bool IsShieldTime { get; set; } = false;
     public int bulletCount { get; set; } = 0;
-
     private void Awake()
     {
         myItems = GetComponent<Items>();
@@ -75,7 +74,8 @@ public class Player : MonoBehaviourPun
         {
             Jump();
         }
-
+        
+        
         float xAxis = Input.GetAxis("Horizontal");
 
         // transform.Translate로 움직이니 벽 통과 현상

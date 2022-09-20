@@ -15,6 +15,7 @@ public class Gun : MonoBehaviourPun
     float numberOfBullet; //기본 제공 총알 개수
     float attackInterval; //연사속도
     bool canshoot;
+    
 
     private void Start()
     {
@@ -72,8 +73,6 @@ public class Gun : MonoBehaviourPun
 
         TransferFireDir();
 
-        //GameObject test = PhotonNetwork.Instantiate("Granade", transform.position,Quaternion.identity);
-        //PhotonNetwork.Destroy(test.gameObject);
         GameObject objectInst = PhotonNetwork.Instantiate("Bullet", transform.position, Quaternion.identity);
         Bullet bulletInst = objectInst.GetComponent<Bullet>();
         if(bulletInst != null)
@@ -89,8 +88,6 @@ public class Gun : MonoBehaviourPun
         {
             Debug.LogError("Not Found Bullet Check Gun.cs");
         }
-
-
 
 
         yield return new WaitForSeconds(attackInterval);

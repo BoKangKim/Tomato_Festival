@@ -7,55 +7,52 @@ using Photon.Realtime;
 
 public class Pool : MonoBehaviour, IPunPrefabPool 
 {
-    //#region Singleton
-    //private static BulletPool instance = null;
-
-    //public static BulletPool Inst
-    //{
-    //    get
-    //    {
-    //        if (instance == null)
-    //        {
-    //            instance = FindObjectOfType<BulletPool>();
-    //            if (instance == null)
-    //            {
-    //                Debug.LogError("instance is null");
-    //            }
-    //        }
-
-    //        return instance;
-    //    }
-    //}
-
-    //#endregion
-
     public readonly Dictionary<string, GameObject> ResourceCache = new Dictionary<string, GameObject>();
     List<GameObject> pool_list;
+    string myPoolResourceList;
 
     void Awake()
     {
-        PhotonNetwork.PrefabPool = this;
+        myPoolResourceList = "Bullet";
         pool_list = new List<GameObject>();
+    }
+
+    void OnEnable()
+    {
+        PhotonNetwork.PrefabPool = this;
+    }
+
+    void OnDisable()
+    {
+        PhotonNetwork.PrefabPool = default;
     }
 
     public GameObject Instantiate(string prefabId, Vector3 position, Quaternion rotation)
     {
         GameObject inst = null;
-        bool cached = this.ResourceCache.TryGetValue(prefabId, out inst);
+        GameObject instance = null;
+
+        if (prefabId.Equals(myPoolResourceList) == false)
+        {
+            PhotonNetwork.PrefabPool = default;
+            instance = PhotonNetwork.Instantiate(prefabId, position, rotation);
+            PhotonNetwork.PrefabPool = this;
+            return instance;
+        }
+
+        bool cached = ResourceCache.TryGetValue(prefabId, out inst);
         if (!cached)
         {
             inst = Resources.Load<GameObject>(prefabId);
-            if(inst == null)
+            if (inst == null)
             {
                 Debug.LogError("Not Found " + prefabId + "Check BulletPool.cs");
             }
             else
             {
-                this.ResourceCache.Add(prefabId,inst);
+                this.ResourceCache.Add(prefabId, inst);
             }
         }
-
-        GameObject instance = null;
 
         if (pool_list.Count == 0)
         {
@@ -83,6 +80,16 @@ public class Pool : MonoBehaviour, IPunPrefabPool
 
     public void Destroy(GameObject gameObject)
     {
+        string compareString = myPoolResourceList[0] + "(Clone)";
+        if (gameObject.name.Equals(compareString) == false)
+        {
+            Debug.Log("No Pooling Destroy");
+            PhotonNetwork.PrefabPool = default;
+            PhotonNetwork.Destroy(gameObject);
+            PhotonNetwork.PrefabPool = this;
+            return;
+        }
+
         gameObject.SetActive(false);
         pool_list.Add(gameObject);
     }

@@ -12,8 +12,10 @@ public class CreateInstance : MonoBehaviourPunCallbacks
         if(PhotonNetwork.IsConnected == true)
         {
             PhotonNetwork.Instantiate("Player",Vector3.zero,Quaternion.identity);
-            if(PhotonNetwork.IsMasterClient)
-                PhotonNetwork.Instantiate("BulletPool", Vector3.zero, Quaternion.identity);
+            if (PhotonNetwork.IsMasterClient)
+            {
+                PhotonNetwork.Instantiate("Pool", Vector3.zero, Quaternion.identity);
+            }
         }
     }
 }
