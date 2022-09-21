@@ -30,7 +30,22 @@ public class StartUIManager : MonoBehaviourPunCallbacks
     [SerializeField] Button backButton = null;
 
     [SerializeField] TextMeshProUGUI matching = null;
-    
+
+
+    void Awake()
+    {
+        // 게임 시작시 스크린 사이즈를 맞춰줌 16 : 9 사이즈
+        Screen.SetResolution(800, 450, false);
+        // 네트워크 동기화를 더 쾌적하게 하기위한 설정
+        PhotonNetwork.SendRate = 60;
+        PhotonNetwork.SerializationRate = 30;
+        // 게임 버전 설정
+        //PhotonNetwork.GameVersion = gameVersion;
+        // 마스터(호스트)가 씬을 이동하면 클라이언트 플레이어들이 자동적으로 싱크된다
+        PhotonNetwork.AutomaticallySyncScene = true;
+        // 방에서 게임씬으로 로딩될때 방에서 보내는 메세지를 받지 않는다
+        PhotonNetwork.IsMessageQueueRunning = false;
+    }
     // Start is called before the first frame update
     void Start()
     {
@@ -43,7 +58,7 @@ public class StartUIManager : MonoBehaviourPunCallbacks
         accessScroll.SetActive(false);
         matching.text = "";
     }
-    public override void OnConnectedToMaster()  // 마스터 서버 접속 성공시에 호출(포톤에서 호출)
+    public override void OnConnectedToMaster()  // 마스터 서버에 접속 성공시에 호출(포톤에서 호출)
     {
         Debug.Log("연결");
         startButton.interactable = true;
@@ -116,6 +131,8 @@ public class StartUIManager : MonoBehaviourPunCallbacks
         }
         accessScroll.SetActive(false);
 
+        
+
         //룸에 접속 시도 /없으면 걍 CreateRoom
         matching.text = "Accessing...";
         PhotonNetwork.JoinOrCreateRoom("myroom", new RoomOptions { MaxPlayers = 2 }, null);
@@ -129,24 +146,19 @@ public class StartUIManager : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
-        Pnum.pnum++;
+        matching.text = "Searching for match";
         if (PhotonNetwork.IsMasterClient)
         {
-            matching.text = "Searching for match";
             StartCoroutine(GoMain());
         }  
-        else
-        {
-            PhotonNetwork.LoadLevel("Main"); // 서버연결된 상태로 씬 전환
-        }
+        
 
     }
     
     IEnumerator GoMain()
     {
-        yield return new WaitUntil(()=> Pnum.pnum == 2);
-
-        Pnum.pnum = 0;
+        yield return new WaitUntil(()=> PhotonNetwork.CurrentRoom.PlayerCount == 2);
+        
         PhotonNetwork.LoadLevel("Main"); // 서버연결된 상태로 씬 전환
     }
     /*
