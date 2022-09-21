@@ -2,10 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-using Photon.Pun;
-using Photon.Realtime;
-
-public abstract class ObjectPool<T> : MonoBehaviourPun where T : MonoBehaviourPun
+public abstract class ObjectPool<T> : MonoBehaviour where T : MonoBehaviour
 {
     Queue<T> m_pool = null;
 

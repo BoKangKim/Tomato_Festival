@@ -33,10 +33,7 @@ public class RectFloor : MonoBehaviourPun
     {
         if(collision.tag == "Bullet")
         {
-            Bullet bullet = collision.GetComponent<Bullet>();
-
-            if (bullet != null)
-                PhotonNetwork.Destroy(bullet.gameObject);
+            PhotonNetwork.Destroy(collision.gameObject);
         }
     }
 

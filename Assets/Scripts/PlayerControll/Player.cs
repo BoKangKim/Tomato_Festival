@@ -16,7 +16,7 @@ public class Player : MonoBehaviourPun
     bool initJump = true; // 땅에 닿아서 점프를 할 수 있는 상황인지
     Rigidbody2D myRigidbody;
     CamEffect camEffect = null;
-    
+    SpriteRenderer spriteRenderer = null;
 
     // 현재 아이템 정보
     Items myItems = null;
@@ -25,6 +25,7 @@ public class Player : MonoBehaviourPun
     public int bulletCount { get; set; } = 0;
     private void Awake()
     {
+        spriteRenderer = GetComponent<SpriteRenderer>();
         myItems = GetComponent<Items>();
 
         if (photonView.IsMine == false)
@@ -39,6 +40,12 @@ public class Player : MonoBehaviourPun
         camEffect = FindObjectOfType<CamEffect>();
         playermaxHP = 100f;
         playercurHP = 100f;
+    }
+
+    private void Start()
+    {
+        if(photonView.IsMine == true)
+            spriteRenderer.color = Color.green;
     }
 
     // 키 입력을 위해 돌린 업데이트 함수 
@@ -127,6 +134,10 @@ public class Player : MonoBehaviourPun
             return;
 
         knockBackDir = (transform.position - bulletVec).normalized; // 적이 총알에 맞은 방향으로 넉백을 당하기 위해 구한 방향벡터
+        if(knockBackDir.y < (transform.position - Vector3.right).normalized.y)
+        {
+            knockBackDir.y = transform.position.normalized.y;
+        }
         StartCoroutine(KnockBack());
     }
     [PunRPC]
@@ -139,7 +150,7 @@ public class Player : MonoBehaviourPun
     // 넉백 코루틴
     IEnumerator KnockBack()
     {
-        float knockBackSpeed = 64f;
+        float knockBackSpeed = 32f;
 
         // 시간이 지날수록 점점 덜 밀리게 하기 위해 속도를 계속 빼주어서
         // 거리가 줄어들 수 있도록 함

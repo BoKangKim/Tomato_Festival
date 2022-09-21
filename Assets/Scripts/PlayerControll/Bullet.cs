@@ -25,6 +25,8 @@ public class Bullet : MonoBehaviourPun
 
     void Update()
     {
+        if (photonView.IsMine == false)
+            return;
         // 적이랑 맞았을 때 판단
         // 맞으면 넉백 코루틴 시작 메세지 보냄
         // 총알 릴리즈

@@ -8,14 +8,7 @@ using Photon.Realtime;
 public class Pool : MonoBehaviour, IPunPrefabPool 
 {
     public readonly Dictionary<string, GameObject> ResourceCache = new Dictionary<string, GameObject>();
-    List<GameObject> pool_list;
-    string myPoolResourceList;
-
-    void Awake()
-    {
-        myPoolResourceList = "Bullet";
-        pool_list = new List<GameObject>();
-    }
+    private readonly Dictionary<string, List<GameObject>> ListCache = new Dictionary<string, List<GameObject>>();
 
     void OnEnable()
     {
@@ -29,41 +22,46 @@ public class Pool : MonoBehaviour, IPunPrefabPool
 
     public GameObject Instantiate(string prefabId, Vector3 position, Quaternion rotation)
     {
-        GameObject inst = null;
+        GameObject res = null;
         GameObject instance = null;
 
-        if (prefabId.Equals(myPoolResourceList) == false)
-        {
-            PhotonNetwork.PrefabPool = default;
-            instance = PhotonNetwork.Instantiate(prefabId, position, rotation);
-            PhotonNetwork.PrefabPool = this;
-            return instance;
-        }
-
-        bool cached = ResourceCache.TryGetValue(prefabId, out inst);
+        #region Resource Caching
+        bool cached = ResourceCache.TryGetValue(prefabId, out res);
         if (!cached)
         {
-            inst = Resources.Load<GameObject>(prefabId);
-            if (inst == null)
+            res = Resources.Load<GameObject>(prefabId);
+            if (res == null)
             {
-                Debug.LogError("Not Found " + prefabId + "Check BulletPool.cs");
+                Debug.LogError("Not Found " + prefabId + "Check Pool.cs");
+                return null;
             }
             else
             {
-                this.ResourceCache.Add(prefabId, inst);
+                this.ResourceCache.Add(prefabId, res);
             }
         }
+        #endregion
 
-        if (pool_list.Count == 0)
+        #region ListCaching
+        List<GameObject> list = null;
+        bool listCached = ListCache.TryGetValue(prefabId,out list);
+        if (!listCached)
         {
-            instance = GameObject.Instantiate(inst, position, rotation) as GameObject;
+            list = new List<GameObject>();
+            ListCache.Add(prefabId,list);
         }
-        else if(pool_list.Count > 0)
+        #endregion
+
+        if (list.Count == 0)
         {
-            instance = pool_list[0];
+            instance = GameObject.Instantiate(res, position, rotation) as GameObject;
+        }
+        else if(list.Count > 0)
+        {
+            instance = list[0];
             instance.transform.position = position;
             instance.transform.rotation = rotation;
-            pool_list.RemoveAt(0);
+            list.RemoveAt(0);
         }
 
         if(instance != null)
@@ -80,17 +78,18 @@ public class Pool : MonoBehaviour, IPunPrefabPool
 
     public void Destroy(GameObject gameObject)
     {
-        string compareString = myPoolResourceList[0] + "(Clone)";
-        if (gameObject.name.Equals(compareString) == false)
+        string prefabId = gameObject.name.Replace("(Clone)","");
+        
+        List<GameObject> list = null;
+        bool listCached = ListCache.TryGetValue(prefabId, out list);
+        if (!listCached)
         {
-            Debug.Log("No Pooling Destroy");
-            PhotonNetwork.PrefabPool = default;
-            PhotonNetwork.Destroy(gameObject);
-            PhotonNetwork.PrefabPool = this;
+            Debug.LogError("Not Found "+ gameObject.name + "in ListCache");
             return;
         }
 
         gameObject.SetActive(false);
-        pool_list.Add(gameObject);
+        list.Add(gameObject);
     }
+
 }

@@ -77,7 +77,6 @@ public class Gun : MonoBehaviourPun
         Bullet bulletInst = objectInst.GetComponent<Bullet>();
         if(bulletInst != null)
         {
-            //bulletInst.transform.SetParent(BulletPool.Inst.gameObject.transform, false);
             bulletInst.myEnemy = this.myEnemy;
             bulletInst.MoveDir = fireDir;
             bulletInst.AttackRange = playerWeapondata.AttackRange;
