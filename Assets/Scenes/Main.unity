@@ -986,6 +986,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 6834374178556334411, guid: fc5d64e908cdc3a419480299604354bf, type: 3}
+      propertyPath: itemImgs.Array.data[0]
+      value: 
+      objectReference: {fileID: 21300000, guid: 13d78a9ae4a7c5546a29aa7819f4385e, type: 3}
+    - target: {fileID: 6834374178556334411, guid: fc5d64e908cdc3a419480299604354bf, type: 3}
+      propertyPath: itemImgs.Array.data[1]
+      value: 
+      objectReference: {fileID: 21300000, guid: 5b8e284204181ae46a5b4ce8cdfe07ef, type: 3}
     - target: {fileID: 7337497627215000977, guid: fc5d64e908cdc3a419480299604354bf, type: 3}
       propertyPath: sceneViewId
       value: 2
