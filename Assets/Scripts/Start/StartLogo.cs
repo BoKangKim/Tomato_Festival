@@ -7,6 +7,7 @@ public class StartLogo : MonoBehaviour
     [Header("Logo")]
     [SerializeField] GameObject gameLogoimg = null;
     [SerializeField] GameObject uiManager = null;
+    [SerializeField] GameObject clickEffect = null;
     private SpriteRenderer logoImg = null;
 
     [SerializeField] AnimationCurve AlphaCurve = new AnimationCurve(new Keyframe[] { new Keyframe(0f, 0f), new Keyframe(3f, 150 / 255f)});
@@ -20,6 +21,7 @@ public class StartLogo : MonoBehaviour
         logoImg = gameLogoimg.GetComponent<SpriteRenderer>();
         gameLogoimg.SetActive(false);
         uiManager.SetActive(false);
+        clickEffect.SetActive(false);
 
     }
     private void Start()
@@ -72,6 +74,7 @@ public class StartLogo : MonoBehaviour
         }
         
         uiManager.gameObject.SetActive(true);
+        clickEffect.SetActive(true);
     }
 
 

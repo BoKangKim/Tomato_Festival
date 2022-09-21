@@ -8,10 +8,7 @@ using TMPro;
 using Photon.Pun; // 포톤 라이브러리를 유니티 컴포넌트로 사용할 수 있게 하는 라이브러리
 using Photon.Realtime;
 
-public static class Pnum
-{
-    public static int pnum = 0;
-}
+
 public class StartUIManager : MonoBehaviourPunCallbacks
 {
     [Header("Option")]
@@ -29,6 +26,7 @@ public class StartUIManager : MonoBehaviourPunCallbacks
     [SerializeField] Button matchButton = null;
     [SerializeField] Button backButton = null;
 
+    [Header("In Room")]
     [SerializeField] TextMeshProUGUI matching = null;
 
 
@@ -58,6 +56,7 @@ public class StartUIManager : MonoBehaviourPunCallbacks
         accessScroll.SetActive(false);
         matching.text = "";
     }
+
     public override void OnConnectedToMaster()  // 마스터 서버에 접속 성공시에 호출(포톤에서 호출)
     {
         Debug.Log("연결");
