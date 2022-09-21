@@ -90,7 +90,7 @@ public class LoadingEffect : ObjectPool<LoadingTomato>
             LoadingTomato loadingtoInst = Get();
            
             loadingtoInst.transform.parent = this.transform;
-            loadingtoInst.DownSpeed = 50f;
+            loadingtoInst.DownSpeed = 40f;
             
             numcount++;
 

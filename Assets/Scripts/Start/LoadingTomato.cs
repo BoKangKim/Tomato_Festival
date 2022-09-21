@@ -8,12 +8,13 @@ public class LoadingTomato : MonoBehaviour
 {
     
     Vector3 loadingTomatoPos = Vector3.zero;
-    public float DownSpeed { get; set; } = 20f;
+    public float DownSpeed { get; set; }
+    public bool matched { get; set; } = false;
     private void OnEnable()
     {
         loadingTomatoPos = new Vector3((int)Random.Range(-33, 33), (int)Random.Range(10, 17), 0f);
         transform.position = loadingTomatoPos;
-        
+        DownSpeed = 10f;
     }
     private void Start()
     {
@@ -22,11 +23,23 @@ public class LoadingTomato : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        DownSpeed += 0.1f;
         transform.Translate(Vector3.down * Time.deltaTime * DownSpeed);
-        if(transform.position.y <= -19f)
+        if (matched)
         {
-            LoadingEffect.Inst.Release(this);
+            if (transform.position.y <= -19f)
+            {
+                
+            }
         }
+        else
+        {
+            if (transform.position.y <= -19f)
+            {
+                LoadingEffect.Inst.Release(this);
+            }
+        }
+        
     }
 
     void CallBackDestroy()

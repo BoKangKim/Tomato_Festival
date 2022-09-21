@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1950970791401413477}
   - component: {fileID: 5190507127051568886}
   - component: {fileID: 4079769991665630404}
+  - component: {fileID: 6389957048569502562}
   m_Layer: 0
   m_Name: Loadingtomato
   m_TagString: Untagged
@@ -97,3 +98,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28389c95450b85746971ae014ff5cb41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!58 &6389957048569502562
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1506456312727058403}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0.4}
+  serializedVersion: 2
+  m_Radius: 1.7
