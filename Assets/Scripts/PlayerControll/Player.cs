@@ -45,9 +45,13 @@ public class Player : MonoBehaviourPun
     private void Start()
     {
         if(photonView.IsMine == true)
-            spriteRenderer.color = Color.green;
+        {
+            if(transform.position.x > 0f)
+            {
+                spriteRenderer.flipX = true;
+            }
+        }
     }
-
     // 키 입력을 위해 돌린 업데이트 함수 
     // FixedUpdate에서 같이 받으면 늦게 입력 처리가 되어서 입력이 늦어짐
     private void Update()
@@ -92,6 +96,14 @@ public class Player : MonoBehaviourPun
         // rigidbody가 있을 때는 rigidbody.MovePostion 또는 rigidbody.position으로 처리하는 것이 좋음
         myRigidbody.position += (xAxis * Vector2.right * moveSpeed * Time.deltaTime);
 
+        if (xAxis > 0f)
+        {
+            spriteRenderer.flipX = false;
+        }
+        else if(xAxis < 0f)
+        {
+            spriteRenderer.flipX = true;
+        }
         #endregion
     }
 
