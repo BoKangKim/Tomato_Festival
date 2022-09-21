@@ -27,7 +27,10 @@ public class StartUIManager : MonoBehaviourPunCallbacks
     [SerializeField] Button backButton = null;
 
     [Header("In Room")]
+    [SerializeField] GameObject loadingEffect = null;
     [SerializeField] TextMeshProUGUI matching = null;
+    [SerializeField] Slider loadingSlider = null;
+
 
 
     void Awake()
@@ -51,9 +54,14 @@ public class StartUIManager : MonoBehaviourPunCallbacks
 
         buttonscrollPos = buttonScroll.transform.position;
         accessscrollPos = accessScroll.transform.position;
+
         buttonScroll.SetActive(true);
         startButton.interactable = false;
+
         accessScroll.SetActive(false);
+
+        loadingEffect.SetActive(false);
+        loadingSlider.gameObject.SetActive(false);
         matching.text = "";
     }
 
@@ -130,7 +138,6 @@ public class StartUIManager : MonoBehaviourPunCallbacks
         }
         accessScroll.SetActive(false);
 
-        
 
         //룸에 접속 시도 /없으면 걍 CreateRoom
         matching.text = "Accessing...";
@@ -146,18 +153,54 @@ public class StartUIManager : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         matching.text = "Searching for match";
-        if (PhotonNetwork.IsMasterClient)
+
+        loadingEffect.SetActive(true);
+
+        loadingSlider.gameObject.SetActive(true);
+        StartCoroutine(loadingSliderValueChange());
+
+        if (PhotonNetwork.CurrentRoom.PlayerCount < 2)
         {
             StartCoroutine(GoMain());
-        }  
-        
-
+        }
+        else
+        {
+            loadingEffect.SendMessage("Pouring", SendMessageOptions.DontRequireReceiver);
+        }
     }
-    
+    IEnumerator loadingSliderValueChange()//changing loadingbar's value
+    {
+        while(PhotonNetwork.CurrentRoom.PlayerCount != 2)
+        {
+            if(loadingSlider.value > 0.7f)
+            {
+                if(loadingSlider.value > 0.8f)
+                {
+                    if (loadingSlider.value > 0.9f)
+                    {
+                        loadingSlider.value += 0.00001f;
+                    }
+                    else
+                        loadingSlider.value += 0.0001f;
+                }
+                else
+                    loadingSlider.value += 0.001f;
+            }
+            else
+                loadingSlider.value += 0.01f;
+            yield return new WaitForSeconds(0.5f);
+        }
+        if(PhotonNetwork.CurrentRoom.PlayerCount == 2)
+        {
+            loadingSlider.value = 1f;
+        }
+    }
+
     IEnumerator GoMain()
     {
         yield return new WaitUntil(()=> PhotonNetwork.CurrentRoom.PlayerCount == 2);
-        
+        loadingEffect.SendMessage("Pouring", SendMessageOptions.DontRequireReceiver);
+        yield return new WaitForSeconds(2f);
         PhotonNetwork.LoadLevel("Main"); // 서버연결된 상태로 씬 전환
     }
     /*
