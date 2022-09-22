@@ -2,42 +2,64 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Player : MonoBehaviour
+using Photon.Pun;
+using Photon.Realtime;
+
+public class Player : MonoBehaviourPun
 {
     float playermaxHP;
     float playercurHP;
     float moveSpeed = 20f; // 플레이어 속도
     Vector3 mousePos = Vector3.zero; // 마우스 포지션
-    Vector3 knockBackDir = Vector3.zero; // 총알에 맞고 넉백 되는 방향 벡터
+    Vector2 knockBackDir = Vector2.zero; // 총알에 맞고 넉백 되는 방향 벡터
     public bool isJumpKeyInput { get; set; } = false; // W를 입력하였는지(점프키를 눌렀는 지)
     bool initJump = true; // 땅에 닿아서 점프를 할 수 있는 상황인지
-    Camera cam; // 마우스 좌표를 월드 좌표로 변환하기 위한 카메라
-    [SerializeField] Player enemy; // 누가 적인지 판단하기 위한 변수 -> 이거는 바꿔야 함(네트워크 붙이고 바꿀예정)
     Rigidbody2D myRigidbody;
+    CamEffect camEffect = null;
+    SpriteRenderer spriteRenderer = null;
 
     // 현재 아이템 정보
     Items myItems = null;
     public int MyItemIndex { get; set; } = 0;
     public bool IsShieldTime { get; set; } = false;
     public int bulletCount { get; set; } = 0;
-
     private void Awake()
     {
+        spriteRenderer = GetComponent<SpriteRenderer>();
         myItems = GetComponent<Items>();
-        myRigidbody = GetComponent<Rigidbody2D>();
-        cam = FindObjectOfType<Camera>();
 
+        if (photonView.IsMine == false)
+        {
+            Destroy(gameObject.GetComponent<Rigidbody2D>());
+        }
+        else
+        {
+            myRigidbody = GetComponent<Rigidbody2D>();
+        }
+
+        camEffect = FindObjectOfType<CamEffect>();
         playermaxHP = 100f;
         playercurHP = 100f;
     }
 
+    private void Start()
+    {
+        if(photonView.IsMine == true)
+        {
+            if(transform.position.x > 0f)
+            {
+                spriteRenderer.flipX = true;
+            }
+        }
+    }
     // 키 입력을 위해 돌린 업데이트 함수 
     // FixedUpdate에서 같이 받으면 늦게 입력 처리가 되어서 입력이 늦어짐
     private void Update()
     {
-        if (gameObject.name == "Enemy")
+        // 네트워크 처리
+        if (photonView.IsMine == false)
             return;
-        
+
         // 키입력을 받아서 점프를 해야하는데 AddForce는 FixedUpdate 에서 처리를 해야지
         // 다른 컴퓨터에서도 동일한 속도, 거리로 움직임
         // 키 입력이 되었다는 것을 알리기 위해 bool 값을 넣어서 true 이면 눌린거 false이면 안눌린 것을 판단한 후
@@ -51,19 +73,20 @@ public class Player : MonoBehaviour
     // 리지드바디 물리적인 처리를 하기위한 FixedUpdate
     void FixedUpdate()
     {
-        if (gameObject.name == "Enemy")
+        if (myRigidbody == null)
             return;
-        
+        // 네트워크 처리
+        if (photonView.IsMine == false)
+            return;
 
         #region 플레이어 움직임
         // 점프키가 눌렸는지, 땅에 닿아서 점프를 할 수 있는 상태인지 판단한 후 점프
         if (isJumpKeyInput == true && initJump == true)
         {
-            myRigidbody.AddForce(Vector2.up * 1800f, ForceMode2D.Force);
-            isJumpKeyInput = false;
-            initJump = false;
+            Jump();
         }
-
+        
+        
         float xAxis = Input.GetAxis("Horizontal");
 
         // transform.Translate로 움직이니 벽 통과 현상
@@ -73,38 +96,27 @@ public class Player : MonoBehaviour
         // rigidbody가 있을 때는 rigidbody.MovePostion 또는 rigidbody.position으로 처리하는 것이 좋음
         myRigidbody.position += (xAxis * Vector2.right * moveSpeed * Time.deltaTime);
 
+        if (xAxis > 0f)
+        {
+            spriteRenderer.flipX = false;
+        }
+        else if(xAxis < 0f)
+        {
+            spriteRenderer.flipX = true;
+        }
         #endregion
     }
 
     // 총알이 충돌 했을 때 불림
     // 넉백을 처리하는 코루틴 실행 
-    public void StartKnockBackCoroutine(Vector3 bulletVec)
+    
+
+    private void Jump()
     {
-        if (IsShieldTime == true)
-            return;
-
-        knockBackDir = (transform.position - bulletVec).normalized; // 적이 총알에 맞은 방향으로 넉백을 당하기 위해 구한 방향벡터
-        StartCoroutine(KnockBack());
-    }
-
-    // 넉백 코루틴
-    IEnumerator KnockBack()
-    {
-        float knockBackSpeed = 64f;
-
-        // 시간이 지날수록 점점 덜 밀리게 하기 위해 속도를 계속 빼주어서
-        // 거리가 줄어들 수 있도록 함
-        while (knockBackSpeed >= 1f)
-        {
-            knockBackSpeed -= Time.deltaTime * 400f;
-            transform.Translate(knockBackDir * Time.deltaTime * knockBackSpeed);
-            yield return null;
-        }
-    }
-
-    public Player GetTarget()
-    {
-        return enemy;
+        
+        myRigidbody.AddForce(Vector2.up * 1800f, ForceMode2D.Force);
+        isJumpKeyInput = false;
+        initJump = false;
     }
 
     private void SetininJump(bool initJump)
@@ -119,8 +131,52 @@ public class Player : MonoBehaviour
 
     void TransferDamage(float attackDamage)
     {
+       
+        photonView.RPC("RPC_TransferDamage", RpcTarget.Others, attackDamage);
+    }
+    public void StartKnockBackCoroutine(Vector3 bulletVec)
+    {
+        photonView.RPC("RPC_StartKnockBackCoroutine", RpcTarget.Others, bulletVec);
+    }
+
+    [PunRPC]
+    void RPC_StartKnockBackCoroutine(Vector3 bulletVec)
+    {
+        if (IsShieldTime == true)
+            return;
+
+        knockBackDir = (transform.position - bulletVec).normalized; // 적이 총알에 맞은 방향으로 넉백을 당하기 위해 구한 방향벡터
+        if(knockBackDir.y < (transform.position - Vector3.right).normalized.y)
+        {
+            knockBackDir.y = transform.position.normalized.y;
+        }
+        StartCoroutine(KnockBack());
+    }
+    [PunRPC]
+    void RPC_TransferDamage(float attackDamage)
+    {
+        camEffect.StartCamEffectCoroutine();
         playercurHP -= attackDamage;
-        Debug.Log($"나 맞음 체력 깍임 : {playercurHP / playermaxHP}");
+    }
+
+    // 넉백 코루틴
+    IEnumerator KnockBack()
+    {
+        float knockBackSpeed = 32f;
+
+        // 시간이 지날수록 점점 덜 밀리게 하기 위해 속도를 계속 빼주어서
+        // 거리가 줄어들 수 있도록 함
+        if(myRigidbody != null)
+        {
+            while (knockBackSpeed >= 1f)
+            {
+                knockBackSpeed -= Time.deltaTime * 400f;
+                myRigidbody.position += (knockBackDir * Time.deltaTime * knockBackSpeed);
+
+                yield return null;
+            }
+        }
+        
     }
 
 }

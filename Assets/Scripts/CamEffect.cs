@@ -9,7 +9,7 @@ public class CamEffect : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        effectTime = 0.02f;
+        effectTime = 0.25f;
         effecting = 0f;
     }
 
@@ -17,6 +17,7 @@ public class CamEffect : MonoBehaviour
 
     public void StartCamEffectCoroutine()
     {
+        Debug.Log("StartCamEffectCoroutine");
         StartCoroutine(CamEffectStart());
     }
 
@@ -27,7 +28,6 @@ public class CamEffect : MonoBehaviour
             effecting += Time.deltaTime;
             float randomrotation_x = Random.Range(-0.7f, 0.7f);  // Random value for camera's rotation.x
             float randomrotation_y = Random.Range(-3f, 3f); // Random value for camera's rotation.y
-
             transform.rotation = Quaternion.Euler(randomrotation_x, randomrotation_y, 0); //camera's rotation.z value is fixed
             yield return null;
         }

@@ -2,7 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GunAim : MonoBehaviour
+using Photon.Pun;
+using Photon.Realtime;
+
+public class GunAim : MonoBehaviourPun
 {
     Vector3 Mouse;
     Vector2 dir;
@@ -19,6 +22,9 @@ public class GunAim : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (photonView.IsMine == false)
+            return;
+
         Mouse = Camera.main.ScreenToWorldPoint(Input.mousePosition); //Transforms a point from screen space into world space (mouse's screen position)
         Mouse.z = 0f;
         dir = (Mouse - transform.position).normalized; //direction from gun to mouse

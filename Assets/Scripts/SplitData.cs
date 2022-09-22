@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using Photon.Pun;
+using Photon.Realtime;
+
 // Bullet(총알) Grenade(수류탄) Shield(방어막)
 // Handgun(권총) - Repeater(연발총) - Shotgun - SniperRifle(저격총)
 public class SplitData : MonoBehaviour
@@ -27,12 +30,14 @@ public class SplitData : MonoBehaviour
 
     private void Start()
     {
-        GetAndSplitData(testList);
+        //GetAndSplitData(testList);
     }
 
     // 데이터 받아오고 분리 하는 함수
-    public void GetAndSplitData(List<string> data) 
+    // TEST 매개 변수로 List 받아와야 함
+    public void GetAndSplitData() 
     {
+        List<string> data = testList;
         for(int i = 0; i < data.Count; i++)
         {
             if(data[i].Equals("Bullet") 
@@ -51,11 +56,15 @@ public class SplitData : MonoBehaviour
         }
 
         Items[] myItemsData = FindObjectsOfType<Items>();
-
+        Debug.Log(myItemsData.Length);
         for(int i = 0;i < myItemsData.Length; i++)
         {
-            myItemsData[i].SetList(itemData);
-            myItemsData[i].ItemListSetting();
+            if (myItemsData[i].photonView.IsMine)
+            {
+                Debug.Log("Split Data");
+                myItemsData[i].SetList(itemData);
+                myItemsData[i].ItemListSetting();
+            }
         }
     }
 

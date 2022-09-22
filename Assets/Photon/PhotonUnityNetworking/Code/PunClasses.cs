@@ -873,7 +873,7 @@ namespace Photon.Pun
                 res = Resources.Load<GameObject>(prefabId);
                 if (res == null)
                 {
-                    Debug.LogError("DefaultPool failed to load \"" + prefabId + "\". Make sure it's in a \"Resources\" folder. Or use a custom IPunPrefabPool.");
+                    Debug.LogError("failed to load \"" + prefabId + "\". Make sure it's in a \"Resources\" folder. Or use a custom IPunPrefabPool.");
                 }
                 else
                 {

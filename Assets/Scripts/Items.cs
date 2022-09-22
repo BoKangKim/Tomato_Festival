@@ -3,28 +3,47 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+using Photon.Pun;
+using Photon.Realtime;
 
-public class Items : MonoBehaviour
+public class Items : MonoBehaviourPun
 {
     [SerializeField] Sprite[] itemImgs;
-    [SerializeField] Image myImg;
+    public Image myImg;
     List<string> items;
     Player player = null;
+    Player myEnemy = null;
     Rigidbody2D myRigidbody;
     float shieldTime = 2f;
     public GameObject GrenadePrefab = null;
     SpriteRenderer spriteRender = null;
     public int MyItemIndex { get; set; } = 0;
     Vector3 fireDir = Vector3.zero;
+    
 
     private void Awake()
     {
         player = GetComponent<Player>();
         spriteRender = player.GetComponent<SpriteRenderer>();
+        if(photonView.IsMine == true)
+        {
+            myImg = FindObjectOfType<Image>();
+        }
+    }
+
+    private void Start()
+    {
+        SplitData splitData = FindObjectOfType<SplitData>();
+
+        if (splitData != null && photonView.IsMine == true)
+            splitData.GetAndSplitData();
     }
 
     private void Update()
     {
+        if (photonView.IsMine == false)
+            return;
+
         if (items.Count == 0)
             return;
 
@@ -76,6 +95,7 @@ public class Items : MonoBehaviour
 
     public void ItemListSetting()
     {
+        Debug.Log("ItemListSetting");
         for (int i = 0; i < items.Count; i++)
         {
             if (items[i].Equals("Bullet"))
@@ -98,7 +118,7 @@ public class Items : MonoBehaviour
         spriteRender.color = Color.blue;
         player.IsShieldTime = true;
         yield return new WaitForSeconds(shieldTime);
-        spriteRender.color = Color.yellow;
+        spriteRender.color = Color.green;
         player.IsShieldTime = false;
     }
 
@@ -111,32 +131,51 @@ public class Items : MonoBehaviour
 
     IEnumerator Grenade()
     {
-        GameObject grenade = Instantiate(GrenadePrefab);
-        grenade.transform.position = player.transform.position + new Vector3(0.5f,0.5f,0f);
-
         TransferFireDir();
 
+        GameObject grenade = PhotonNetwork.Instantiate("Grenade",(transform.position),Quaternion.identity);
+        grenade.transform.position = player.transform.position + fireDir;
+
+
         myRigidbody = grenade.GetComponent<Rigidbody2D>();
-        myRigidbody.AddForce(fireDir * 1000f,ForceMode2D.Force);
+        myRigidbody.AddForce(fireDir * 500f,ForceMode2D.Force);
 
         yield return new WaitForSeconds(3f);
         GrenadeExplosion(grenade);
-        Destroy(grenade.gameObject);
+        PhotonNetwork.Destroy(grenade.gameObject);
     }
 
     private void GrenadeExplosion(GameObject grenade)
     {
-        Player target = player.GetTarget();
+        if (photonView.IsMine == false)
+            return;
 
-        if(Vector3.Distance(grenade.transform.position,target.transform.position) <= 5f)
+        if (myEnemy == null)
         {
-            target.SendMessage("StartKnockBackCoroutine",grenade.transform.position,SendMessageOptions.DontRequireReceiver);
+            Player[] players = FindObjectsOfType<Player>();
+            for (int i = 0; i < players.Length; i++)
+            {
+                if (players[i].photonView.IsMine == false)
+                {
+                    myEnemy = players[i];
+                    break;
+                }
+            }
+
+            if (myEnemy == null)
+                Debug.LogError("myEnemy is null Check Gun.cs");
         }
-        
+
+        if (Vector3.Distance(grenade.transform.position, myEnemy.transform.position) <= 5f)
+        {
+            myEnemy.SendMessage("StartKnockBackCoroutine", grenade.transform.position, SendMessageOptions.DontRequireReceiver);
+        }
+
     }
     
     public void SetList(List<string> items)
     {
+        Debug.Log("SetList");
         this.items = items;
     }
     

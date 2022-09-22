@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 
 
-using Photon.Pun; // Æ÷Åæ ¶óÀÌºê·¯¸®¸¦ À¯´ÏÆ¼ ÄÄÆ÷³ÍÆ®·Î »ç¿ëÇÒ ¼ö ÀÖ°Ô ÇÏ´Â ¶óÀÌºê·¯¸®
+using Photon.Pun; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºê·¯ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ¼ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö°ï¿½ ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½Ìºê·¯ï¿½ï¿½
 using Photon.Realtime;
 
 
@@ -35,16 +35,16 @@ public class StartUIManager : MonoBehaviourPunCallbacks
 
     void Awake()
     {
-        // °ÔÀÓ ½ÃÀÛ½Ã ½ºÅ©¸° »çÀÌÁî¸¦ ¸ÂÃçÁÜ 16 : 9 »çÀÌÁî
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Û½ï¿½ ï¿½ï¿½Å©ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½î¸¦ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 16 : 9 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         Screen.SetResolution(800, 450, false);
-        // ³×Æ®¿öÅ© µ¿±âÈ­¸¦ ´õ ÄèÀûÇÏ°Ô ÇÏ±âÀ§ÇÑ ¼³Á¤
+        // ï¿½ï¿½Æ®ï¿½ï¿½Å© ï¿½ï¿½ï¿½ï¿½È­ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½Ï±ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         PhotonNetwork.SendRate = 60;
         PhotonNetwork.SerializationRate = 30;
-        // °ÔÀÓ ¹öÀü ¼³Á¤
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         //PhotonNetwork.GameVersion = gameVersion;
-        // ¸¶½ºÅÍ(È£½ºÆ®)°¡ ¾ÀÀ» ÀÌµ¿ÇÏ¸é Å¬¶óÀÌ¾ðÆ® ÇÃ·¹ÀÌ¾îµéÀÌ ÀÚµ¿ÀûÀ¸·Î ½ÌÅ©µÈ´Ù
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(È£ï¿½ï¿½Æ®)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ìµï¿½ï¿½Ï¸ï¿½ Å¬ï¿½ï¿½ï¿½Ì¾ï¿½Æ® ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ï¿½ï¿½ï¿½ ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å©ï¿½È´ï¿½
         PhotonNetwork.AutomaticallySyncScene = true;
-        // ¹æ¿¡¼­ °ÔÀÓ¾ÀÀ¸·Î ·ÎµùµÉ¶§ ¹æ¿¡¼­ º¸³»´Â ¸Þ¼¼Áö¸¦ ¹ÞÁö ¾Ê´Â´Ù
+        // ï¿½æ¿¡ï¿½ï¿½ ï¿½ï¿½ï¿½Ó¾ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½ï¿½É¶ï¿½ ï¿½æ¿¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¼ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê´Â´ï¿½
         PhotonNetwork.IsMessageQueueRunning = false;
     }
     // Start is called before the first frame update
@@ -65,21 +65,21 @@ public class StartUIManager : MonoBehaviourPunCallbacks
         matching.text = "";
     }
 
-    public override void OnConnectedToMaster()  // ¸¶½ºÅÍ ¼­¹ö¿¡ Á¢¼Ó ¼º°ø½Ã¿¡ È£Ãâ(Æ÷Åæ¿¡¼­ È£Ãâ)
+    public override void OnConnectedToMaster()  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ã¿ï¿½ È£ï¿½ï¿½(ï¿½ï¿½ï¿½æ¿¡ï¿½ï¿½ È£ï¿½ï¿½)
     {
-        Debug.Log("¿¬°á");
+        Debug.Log("ï¿½ï¿½ï¿½ï¿½");
         startButton.interactable = true;
 
     }
     public override void OnDisconnected(DisconnectCause cause)
     {
-        Debug.Log("¿¬°á ºÒ¾ÈÁ¤");
+        Debug.Log("ï¿½ï¿½ï¿½ï¿½ ï¿½Ò¾ï¿½ï¿½ï¿½");
         startButton.interactable = false;
     }
     #region
     public void OnClickStartButton()
     {
-        Debug.Log("½ÃÀÛ¹öÆ°");
+        Debug.Log("ï¿½ï¿½ï¿½Û¹ï¿½Æ°");
         StartCoroutine(StartButton());
     }
     public void OnClickInfoButton()
@@ -122,7 +122,7 @@ public class StartUIManager : MonoBehaviourPunCallbacks
         if (name.Length < 3 || name.Length > 8)
         {
             myNickName.text = "";
-            Debug.Log("´Ù½Ã ÀÔ·Â");
+            Debug.Log("ï¿½Ù½ï¿½ ï¿½Ô·ï¿½");
             return;
         }
 
@@ -139,7 +139,7 @@ public class StartUIManager : MonoBehaviourPunCallbacks
         accessScroll.SetActive(false);
 
 
-        //·ë¿¡ Á¢¼Ó ½Ãµµ /¾øÀ¸¸é °Á CreateRoom
+        //ï¿½ë¿¡ ï¿½ï¿½ï¿½ï¿½ ï¿½Ãµï¿½ /ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ CreateRoom
         matching.text = "Accessing...";
         PhotonNetwork.JoinOrCreateRoom("myroom", new RoomOptions { MaxPlayers = 2 }, null);
     }
@@ -201,12 +201,12 @@ public class StartUIManager : MonoBehaviourPunCallbacks
         yield return new WaitUntil(()=> PhotonNetwork.CurrentRoom.PlayerCount == 2);
         loadingEffect.SendMessage("Pouring", SendMessageOptions.DontRequireReceiver);
         yield return new WaitForSeconds(2f);
-        PhotonNetwork.LoadLevel("Main"); // ¼­¹ö¿¬°áµÈ »óÅÂ·Î ¾À ÀüÈ¯
+        PhotonNetwork.LoadLevel("Main"); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â·ï¿½ ï¿½ï¿½ ï¿½ï¿½È¯
     }
     /*
     public override void OnMasterClientSwitched(Player newMasterClient)
     {
-        Debug.Log("¸¶½ºÅÍ º¯°æ : " + newMasterClient.ToString());
+        Debug.Log("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ : " + newMasterClient.ToString());
     }
     */
 
