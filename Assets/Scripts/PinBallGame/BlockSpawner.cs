@@ -7,12 +7,11 @@ using UnityEngine;
 public class BlockSpawner : MonoBehaviour
 {
     [Header("블럭 정보")]
-    [SerializeField] List<ScriptableBlock> blockDatas = new List<ScriptableBlock>();
+    [SerializeField] List<Scriptable_PinBallBlock> blockDatas = new List<Scriptable_PinBallBlock>();
     [SerializeField] Block BlockPrefab;
     [SerializeField] GameObject[] blockLine;
 
     Block[,] block;
-    
 
     [SerializeField] int BlockposYnum = 5;
     [SerializeField] int BlockposXnum = 11;
@@ -22,18 +21,13 @@ public class BlockSpawner : MonoBehaviour
 
     private void Awake()
     {
-        
         block = new Block[BlockposYnum, BlockposXnum];
         ObjectPool = new GameObject("CapyBlockLine");
-        
     }
     void Start()
     {
         CreateBlock();
     }
-
- 
-
     #region 블럭생성
     private void CreateBlock()
     {
@@ -68,8 +62,6 @@ public class BlockSpawner : MonoBehaviour
                     block[y, x] = Instantiate(BlockPrefab, Pos, Quaternion.identity);
 
                     block[y, x].blockData = blockDatas[0];
-
-
                 }
                 else if (random < 2.5f)
                 {
@@ -95,6 +87,16 @@ public class BlockSpawner : MonoBehaviour
                     block[y, x] = Instantiate(BlockPrefab, Pos, Quaternion.identity);
                     block[y, x].blockData = blockDatas[4];
                 }
+                else if(random < 4.5f)
+                {
+                    block[y, x] = Instantiate(BlockPrefab, Pos, Quaternion.identity);
+                    block[y, x].blockData = blockDatas[6];
+                }
+                //else if(random < 5f)
+                //{
+                //    block[y, x] = Instantiate(BlockPrefab, Pos, Quaternion.identity);
+                //    block[y, x].blockData = blockDatas[7];
+                //}
                 else
                 {
 
@@ -149,6 +151,14 @@ public class BlockSpawner : MonoBehaviour
             {
                 block[4, x].blockData = blockDatas[4];
             }
+            else if (random < 4.5f)
+            {
+                block[4, x].blockData = blockDatas[6];
+            }
+            //else if(random < 4.5f)
+            //{
+            //    block[4, x].blockData = blockDatas[7];
+            //}
             else
             {
                 block[4, x].blockData = blockDatas[5];
@@ -180,6 +190,7 @@ public class BlockSpawner : MonoBehaviour
             _blockLine[1] = blockLine[2];
             _blockLine[2] = blockLine[3];
             _blockLine[3] = blockLine[4];
+
 
 
             // 5개의 블럭라인이 내려옴
@@ -273,10 +284,6 @@ public class BlockSpawner : MonoBehaviour
             blockLine[2] = _blockLine[2];
             blockLine[3] = _blockLine[3];
             blockLine[4] = _blockLine[4];
-
-
-
-
 
         }
         #endregion
@@ -398,31 +405,24 @@ public class BlockSpawner : MonoBehaviour
 
     public Block BackBlock(Vector3 pos)
     {
-
         Block instblock;
 
         // 기존의 목록 중에서 비활성화 된 것을 찾는다.
         // 지금 큐에서는 맨 앞에 있는 것 하나를 전달해 주면
-            
         instblock = pool.Dequeue();
         instblock.transform.parent = null;
         instblock.transform.SetPositionAndRotation(pos, Quaternion.identity);
         instblock.gameObject.SetActive(true);
-
         return instblock;
-
-        
     }
 
     
     //블럭에 오브젝트가 들어옴
     public void Destroyblock(Block block)
     {
-
         block.transform.parent = ObjectPool.transform;
         block.gameObject.SetActive(false);
         pool.Enqueue(block); // pool 에 1개 늘어난다.
-
     }
     #endregion
 

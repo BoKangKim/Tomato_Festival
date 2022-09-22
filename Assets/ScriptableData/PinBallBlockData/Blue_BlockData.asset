@@ -14,4 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blockMaxHP: 2
   blockgetDamages: 1
-  color: {r: 0, g: 0.13646817, b: 1, a: 1}
+  color: {r: 0, g: 0.7672267, b: 1, a: 1}
+  blockItemName: Handgun
+  ItemNum: 1

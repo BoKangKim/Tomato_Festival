@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class PlayerBallShotter : MonoBehaviour
 {
@@ -12,26 +13,31 @@ public class PlayerBallShotter : MonoBehaviour
     public bool PlayerTurn { get; set; } = true;
 
     [SerializeField] SpriteRenderer arrow;
+    
+    //public int Playcount = 3;
+    //public int GetPlayercount { get { return Playcount; } }
+    bool isGameOver = false;
+
 
     void Start()
     {
         arrow.enabled = false;
     }
 
+
     void Update()
     {
 
         if (PlayerTurn)
         {
-            
             len = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
 
+            //if (Input.GetMouseButtonDown(0) && Playcount  > 0)
             if (Input.GetMouseButtonDown(0))
             {
-                Debug.Log("PlayerShotter" + PlayerTurn);
+                //Debug.Log("PlayerShotter" + PlayerTurn);
                 if (!GameObject.Find("PlayerBall"))
                 {
-                   
                     if (len.y > 1.5f)
                     {
                         PlayerBullet instPlayerBullet = Instantiate(bullet, BulletPos.transform.position, Quaternion.identity);

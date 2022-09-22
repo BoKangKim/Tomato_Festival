@@ -11,11 +11,11 @@ GameObject:
   - component: {fileID: 8526249362789536050}
   - component: {fileID: 8526249362789536051}
   - component: {fileID: 8526249362789536053}
+  - component: {fileID: 8526249362789536055}
   - component: {fileID: 8526249362789536052}
-  - component: {fileID: 9022701156598753689}
-  - component: {fileID: -3733283903594291141}
-  m_Layer: 6
-  m_Name: Player 2_Ball
+  - component: {fileID: 8496002469249245373}
+  m_Layer: 11
+  m_Name: Player_Ball_test
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -30,7 +30,7 @@ Transform:
   m_GameObject: {fileID: 8526249362789536048}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_LocalScale: {x: 0.4, y: 0.4, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -78,7 +78,7 @@ SpriteRenderer:
   m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 839233093, guid: f67d3d7e01f3a8647b369537d984cc99, type: 3}
-  m_Color: {r: 1, g: 0.995283, b: 0.9956336, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -196,6 +196,22 @@ TrailRenderer:
   m_MinVertexDistance: 0.1
   m_Autodestruct: 0
   m_Emitting: 1
+--- !u!70 &8526249362789536055
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8526249362789536048}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_Size: {x: 1, y: 1}
+  m_Direction: 0
 --- !u!50 &8526249362789536052
 Rigidbody2D:
   serializedVersion: 4
@@ -212,12 +228,12 @@ Rigidbody2D:
   m_LinearDrag: 0
   m_AngularDrag: 0
   m_GravityScale: 0
-  m_Material: {fileID: 6200000, guid: 5462901d9b8e26e41b9778a97724fb51, type: 2}
+  m_Material: {fileID: 6200000, guid: 557b66928778a104985d6a816760e7e9, type: 2}
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &9022701156598753689
+--- !u!114 &8496002469249245373
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -226,23 +242,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8526249362789536048}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 27bf76bf97868344a8fecafe7237860c, type: 3}
+  m_Script: {fileID: 11500000, guid: a43094842c5d28a45a50678246f1be69, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 15
---- !u!58 &-3733283903594291141
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8526249362789536048}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  serializedVersion: 2
-  m_Radius: 1.04

@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a3f648da0d577645b386f6112ef074f, type: 3}
   m_Name: Red_BlockData
   m_EditorClassIdentifier: 
-  blockMaxHP: 3
+  blockMaxHP: 2
   blockgetDamages: 1
   color: {r: 1, g: 0, b: 0, a: 1}
+  blockItemName: Repeater
+  ItemNum: 1

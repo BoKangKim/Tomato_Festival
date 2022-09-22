@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a3f648da0d577645b386f6112ef074f, type: 3}
   m_Name: Green_BlockData
   m_EditorClassIdentifier: 
-  blockMaxHP: 4
+  blockMaxHP: 3
   blockgetDamages: 1
   color: {r: 0.18100357, g: 1, b: 0, a: 1}
+  blockItemName: Shield
+  ItemNum: 1

@@ -2,22 +2,29 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyBullet : MonoBehaviour
+public class AnotherPlayer_Bullet : MonoBehaviour
 {
-
     public float speed;
     // 여러번 충돌을 막기위해
     bool enter;
     private Rigidbody2D rb;
     // 반사 벡터
+    private SpriteRenderer spriteRenderer;
     Vector3 reflectVector;
-    bool enemyPlay = false;
+    bool AnotherPlayerPlay = false;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
         enter = false;
     }
+
+    public void PlayerTurn(bool PlayerTurn)
+    {
+        this.AnotherPlayerPlay = PlayerTurn;
+    }
+
 
     // 슈터에서 불릿을 생성할때 방향값을 최신화 해줌
     public void SetMoveDir(Vector3 v)

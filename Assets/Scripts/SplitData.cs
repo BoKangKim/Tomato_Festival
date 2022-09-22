@@ -12,6 +12,7 @@ public class SplitData : MonoBehaviour
     List<string> gunData;
     List<string> itemData;
     List<string> testList;
+
     private void Awake()
     {
         gunData = new List<string>();
@@ -31,6 +32,8 @@ public class SplitData : MonoBehaviour
     private void Start()
     {
         //GetAndSplitData(testList);
+
+
     }
 
     // 데이터 받아오고 분리 하는 함수

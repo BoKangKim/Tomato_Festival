@@ -50,7 +50,9 @@ public class PlayerBullet : MonoBehaviour
     {
 
 
-        rb.position += speed * Time.deltaTime * (Vector2)reflectVector.normalized;
+        //rb.position += speed * Time.deltaTime * (Vector2)reflectVector.normalized;
+
+        rb.velocity = (reflectVector * speed);
 
         //rb.AddForce((Vector2)reflectVector.normalized);
 

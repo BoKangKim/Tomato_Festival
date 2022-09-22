@@ -2,20 +2,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyBallShotter : MonoBehaviour
+public class AnotherPlayer_Shotter : MonoBehaviour
 {
-    public PlayerBullet bullet = null;
+    public AnotherPlayer_Bullet bullet = null;
     public Transform BulletPos;
     public Transform Pos;
     public float cooltime = 0f;
     public Vector2 len;
-    private PlayerBallShotter playerBallShotter = null;
-    
+    private AnotherPlayer_Shotter playerBallShotter = null;
+    public bool PlayerTurn { get; set; } = true;
+
     [SerializeField] SpriteRenderer arrow;
 
     void Start()
     {
-        playerBallShotter = FindObjectOfType<PlayerBallShotter>();
+        playerBallShotter = FindObjectOfType<AnotherPlayer_Shotter>();
 
         arrow.enabled = false;
     }
@@ -35,7 +36,7 @@ public class EnemyBallShotter : MonoBehaviour
                     Debug.Log("EnemyShotter" + playerBallShotter.PlayerTurn);
                     if (len.y > 1.5f)
                     {
-                         PlayerBullet instEnemyBullet = Instantiate(bullet, BulletPos.transform.position, Quaternion.identity);
+                         AnotherPlayer_Bullet instEnemyBullet = Instantiate(bullet, BulletPos.transform.position, Quaternion.identity);
 
                         instEnemyBullet.SetMoveDir(len.normalized);
 
