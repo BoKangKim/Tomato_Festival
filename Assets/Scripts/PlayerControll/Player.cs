@@ -44,12 +44,9 @@ public class Player : MonoBehaviourPun
 
     private void Start()
     {
-        if(photonView.IsMine == true)
+        if(transform.position.x > 0f)
         {
-            if(transform.position.x > 0f)
-            {
-                spriteRenderer.flipX = true;
-            }
+            spriteRenderer.flipX = true;
         }
     }
     // 키 입력을 위해 돌린 업데이트 함수 
@@ -73,8 +70,8 @@ public class Player : MonoBehaviourPun
     // 리지드바디 물리적인 처리를 하기위한 FixedUpdate
     void FixedUpdate()
     {
-        if (myRigidbody == null)
-            return;
+        //if (myRigidbody == null)
+        //    return;
         // 네트워크 처리
         if (photonView.IsMine == false)
             return;
@@ -86,6 +83,7 @@ public class Player : MonoBehaviourPun
             Jump();
         }
         
+
         
         float xAxis = Input.GetAxis("Horizontal");
 
@@ -131,12 +129,11 @@ public class Player : MonoBehaviourPun
 
     void TransferDamage(float attackDamage)
     {
-       
-        photonView.RPC("RPC_TransferDamage", RpcTarget.Others, attackDamage);
+        photonView.RPC("RPC_TransferDamage", RpcTarget.All, attackDamage);
     }
     public void StartKnockBackCoroutine(Vector3 bulletVec)
     {
-        photonView.RPC("RPC_StartKnockBackCoroutine", RpcTarget.Others, bulletVec);
+        photonView.RPC("RPC_StartKnockBackCoroutine", RpcTarget.All, bulletVec);
     }
 
     [PunRPC]

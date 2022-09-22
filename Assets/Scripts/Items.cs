@@ -9,6 +9,7 @@ using Photon.Realtime;
 public class Items : MonoBehaviourPun
 {
     [SerializeField] Sprite[] itemImgs;
+
     public Image myImg;
     List<string> items;
     Player player = null;
@@ -16,45 +17,53 @@ public class Items : MonoBehaviourPun
     Rigidbody2D myRigidbody;
     float shieldTime = 2f;
     public GameObject GrenadePrefab = null;
-    SpriteRenderer spriteRender = null;
-    public int MyItemIndex { get; set; } = 0;
+    GameObject MyShield = null;
+    int MyItemIndex = 0;
     Vector3 fireDir = Vector3.zero;
-    
+    public bool ItemIsMine { get; set; } = false;
 
     private void Awake()
     {
+        items = new List<string>();
         player = GetComponent<Player>();
-        spriteRender = player.GetComponent<SpriteRenderer>();
-        if(photonView.IsMine == true)
-        {
-            myImg = FindObjectOfType<Image>();
-        }
+        MyShield = gameObject.transform.Find("ShiledEffect").gameObject;
+        myImg = FindObjectOfType<Image>();
+        ItemIsMine = photonView.IsMine;
     }
 
     private void Start()
     {
+        if (items != null)
+            return;
+
         SplitData splitData = FindObjectOfType<SplitData>();
 
-        if (splitData != null && photonView.IsMine == true)
+        if (splitData != null)
             splitData.GetAndSplitData();
     }
 
     private void Update()
     {
-        if (photonView.IsMine == false)
-            return;
-
         if (items.Count == 0)
             return;
 
+        if (photonView.IsMine == false)
+            return;
+        
         if (Input.GetMouseButtonDown(1))
         {
-            StartItemCoroutine();
+            if (items[MyItemIndex].Equals("Grenade"))
+                StartItemCoroutine();
+            else if (items[MyItemIndex].Equals("Shield"))
+                photonView.RPC("RPC_StartItemCorountine",RpcTarget.All);
+
             items.RemoveAt(MyItemIndex);
-            
+            photonView.RPC("RPC_RemoveItemList",RpcTarget.Others);
+
             if (MyItemIndex == items.Count)
             {
                 MyItemIndex = 0;
+                photonView.RPC("RPC_AsyncMyItemIndex", RpcTarget.Others,MyItemIndex);
             }
 
             if (items.Count == 0)
@@ -69,7 +78,7 @@ public class Items : MonoBehaviourPun
         }
         else if (Input.GetKeyDown(KeyCode.Q))
         {
-            if(MyItemIndex == 0)
+            if (MyItemIndex == 0)
             {
                 MyItemIndex = items.Count - 1;
             }
@@ -77,11 +86,13 @@ public class Items : MonoBehaviourPun
             {
                 MyItemIndex--;
             }
+
+            photonView.RPC("RPC_AsyncMyItemIndex", RpcTarget.Others, MyItemIndex);
             ChangeUIImg();
         }
         else if (Input.GetKeyDown(KeyCode.E))
         {
-            if(MyItemIndex == items.Count - 1)
+            if (MyItemIndex == items.Count - 1)
             {
                 MyItemIndex = 0;
             }
@@ -89,13 +100,14 @@ public class Items : MonoBehaviourPun
             {
                 MyItemIndex++;
             }
+
+            photonView.RPC("RPC_AsyncMyItemIndex", RpcTarget.Others, MyItemIndex);
             ChangeUIImg();
         }
     }
 
     public void ItemListSetting()
     {
-        Debug.Log("ItemListSetting");
         for (int i = 0; i < items.Count; i++)
         {
             if (items[i].Equals("Bullet"))
@@ -104,21 +116,70 @@ public class Items : MonoBehaviourPun
                 items.RemoveAt(i);
             }
         }
+        photonView.RPC("RPC_AsyncItemList",RpcTarget.Others,this.items);
 
+        Debug.Log(items.Count);
         ChangeUIImg();
     }
 
-    public void StartItemCoroutine()
+    void StartItemCoroutine()
     {
         StartCoroutine(items[MyItemIndex]);
     }
 
+    //public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    //{
+    //    Debug.Log("OnPhotonSerializeView0");
+    //    if (stream.IsWriting)
+    //    {
+    //        Debug.Log("OnPhotonSerializeView1");
+    //        stream.SendNext(MyItemIndex);
+    //        stream.SendNext(MyShield.activeSelf);
+    //        Debug.Log("OnPhotonSerializeView2");
+    //    }
+    //    else
+    //    {
+    //        Debug.Log("OnPhotonSerializeView  Receive");
+    //        MyItemIndex = (int)stream.ReceiveNext();
+    //        MyShield.SetActive((bool)stream.ReceiveNext());
+    //    }
+    //}
+
+    [PunRPC]
+    void RPC_AsyncMyItemIndex(int MyItemIndex)
+    {
+        this.MyItemIndex = MyItemIndex;
+    }
+
+    [PunRPC]
+    void RPC_AsyncItemList(List<string> items)
+    {
+        for (int i = this.items.Count; i < items.Count; i++)
+        {
+            this.items.Add(items[i]);
+        }
+    }
+
+    [PunRPC]
+    void RPC_RemoveItemList()
+    {
+        items.RemoveAt(MyItemIndex);
+    }
+
+   [PunRPC]
+    void RPC_StartItemCorountine()
+    {
+        StartCoroutine(items[MyItemIndex]);
+    }
+
+   
+
     IEnumerator Shield()
     {
-        spriteRender.color = Color.blue;
+        MyShield.SetActive(true);
         player.IsShieldTime = true;
         yield return new WaitForSeconds(shieldTime);
-        spriteRender.color = Color.green;
+        MyShield.SetActive(false);
         player.IsShieldTime = false;
     }
 
@@ -133,12 +194,12 @@ public class Items : MonoBehaviourPun
     {
         TransferFireDir();
 
-        GameObject grenade = PhotonNetwork.Instantiate("Grenade",(transform.position),Quaternion.identity);
+        GameObject grenade = PhotonNetwork.Instantiate("Grenade", (transform.position), Quaternion.identity);
         grenade.transform.position = player.transform.position + fireDir;
 
 
         myRigidbody = grenade.GetComponent<Rigidbody2D>();
-        myRigidbody.AddForce(fireDir * 500f,ForceMode2D.Force);
+        myRigidbody.AddForce(fireDir * 500f, ForceMode2D.Force);
 
         yield return new WaitForSeconds(3f);
         GrenadeExplosion(grenade);
@@ -175,8 +236,10 @@ public class Items : MonoBehaviourPun
     
     public void SetList(List<string> items)
     {
-        Debug.Log("SetList");
-        this.items = items;
+        for(int i = this.items.Count; i < items.Count; i++)
+        {
+            this.items.Add(items[i]);
+        }
     }
     
     void ChangeUIImg()
@@ -192,4 +255,5 @@ public class Items : MonoBehaviourPun
         
     }
 
+    
 }
