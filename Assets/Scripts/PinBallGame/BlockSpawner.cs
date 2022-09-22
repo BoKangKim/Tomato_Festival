@@ -45,7 +45,7 @@ public class BlockSpawner : MonoBehaviour
         // 카메라 비춰지는 위치 (기존)
         //Pos.y = 0.9f;
         // 카메라 비춰지는 위치 (테스트)
-        Pos.y = 26.9f; 
+        Pos.y = 28.4f; 
         // -------------------------------------
 
         for (int y = 0; y < BlockposYnum; y++)
@@ -120,7 +120,7 @@ public class BlockSpawner : MonoBehaviour
 
         // -------------------------------------
         //Vector2 Pos = new Vector2(-7.5f, 5.4f);  (카메라 비추진 기존 )
-        Vector2 Pos = new Vector2(-14f, 32.9f);
+        Vector2 Pos = new Vector2(-14f, 35.9f);
         // -------------------------------------
 
         for (int x = 0; x < BlockposXnum; x++)
@@ -258,7 +258,8 @@ public class BlockSpawner : MonoBehaviour
             }
             // -------------------------------------
             //Vector2 Pos = new Vector2(-7.5f, 5.4f);  (카메라 비추진 기존 )
-            Vector2 Pos = new Vector2(-14f, 26.9f);
+            //Vector2 Pos = new Vector2(-14f, 26.9f);
+            Vector2 Pos = new Vector2(-14f, 34.4f);
             // -------------------------------------
 
 
@@ -317,7 +318,8 @@ public class BlockSpawner : MonoBehaviour
 
             // -------------------------------------
             //Vector2 Pos = new Vector2(-7.5f, 5.4f);  (카메라 비추진 기존 )
-            Vector2 Pos = new Vector2(-14f, 26.9f);
+            //Vector2 Pos = new Vector2(-14f, 26.9f);
+            Vector2 Pos = new Vector2(-14f, 34.4f);
             // -------------------------------------
 
             // 비활성화 된 블럭라인은 맨위로 올린뒤 블럭을 재생성
@@ -369,7 +371,8 @@ public class BlockSpawner : MonoBehaviour
             }
             // -------------------------------------
             //Vector2 Pos = new Vector2(-7.5f, 5.4f);  (카메라 비추진 기존 )
-            Vector2 Pos = new Vector2(-14f, 26.9f);
+            //Vector2 Pos = new Vector2(-14f, 26.9f);
+            Vector2 Pos = new Vector2(-14f, 34.4f);
             // -------------------------------------
 
 
