@@ -10,7 +10,7 @@ public class Items : MonoBehaviourPun
 {
     [SerializeField] Sprite[] itemImgs;
 
-    public Image myImg;
+    Image myImg;
     List<string> items;
     Player player = null;
     Player myEnemy = null;
@@ -20,7 +20,8 @@ public class Items : MonoBehaviourPun
     GameObject MyShield = null;
     int MyItemIndex = 0;
     Vector3 fireDir = Vector3.zero;
-    public bool ItemIsMine { get; set; } = false;
+    int preListCount = 0;
+    GameObject grenade = null;
 
     private void Awake()
     {
@@ -28,18 +29,19 @@ public class Items : MonoBehaviourPun
         player = GetComponent<Player>();
         MyShield = gameObject.transform.Find("ShiledEffect").gameObject;
         myImg = FindObjectOfType<Image>();
-        ItemIsMine = photonView.IsMine;
+        
     }
 
-    private void Start()
+    private void OnEnable()
     {
-        if (items != null)
-            return;
-
         SplitData splitData = FindObjectOfType<SplitData>();
 
-        if (splitData != null)
-            splitData.GetAndSplitData();
+        if (splitData != null && photonView.IsMine)
+        {
+            preListCount = this.items.Count;
+            items.AddRange(splitData.GetAndSplitData("Item"));
+            ItemListSetting();
+        }
     }
 
     private void Update()
@@ -49,32 +51,30 @@ public class Items : MonoBehaviourPun
 
         if (photonView.IsMine == false)
             return;
-        
+
         if (Input.GetMouseButtonDown(1))
         {
             if (items[MyItemIndex].Equals("Grenade"))
                 StartItemCoroutine();
             else if (items[MyItemIndex].Equals("Shield"))
-                photonView.RPC("RPC_StartItemCorountine",RpcTarget.All);
+                photonView.RPC("RPC_StartItemCorountine", RpcTarget.All);
 
             items.RemoveAt(MyItemIndex);
-            photonView.RPC("RPC_RemoveItemList",RpcTarget.Others);
-
-            if (MyItemIndex == items.Count)
-            {
-                MyItemIndex = 0;
-                photonView.RPC("RPC_AsyncMyItemIndex", RpcTarget.Others,MyItemIndex);
-            }
+            photonView.RPC("RPC_RemoveItemList", RpcTarget.Others);
 
             if (items.Count == 0)
             {
-                myImg.sprite = null;
-                myImg.gameObject.SetActive(false);
-            }
-            else
-            {
                 ChangeUIImg();
+                return;
             }
+            
+            if (MyItemIndex == items.Count)
+            {
+                MyItemIndex = 0;
+                photonView.RPC("RPC_AsyncMyItemIndex", RpcTarget.Others, MyItemIndex);
+            }
+            ChangeUIImg();
+
         }
         else if (Input.GetKeyDown(KeyCode.Q))
         {
@@ -106,6 +106,8 @@ public class Items : MonoBehaviourPun
         }
     }
 
+    #region Async Data
+
     public void ItemListSetting()
     {
         for (int i = 0; i < items.Count; i++)
@@ -116,9 +118,12 @@ public class Items : MonoBehaviourPun
                 items.RemoveAt(i);
             }
         }
-        photonView.RPC("RPC_AsyncItemList",RpcTarget.Others,this.items);
 
-        Debug.Log(items.Count);
+        for(int i = preListCount; i < items.Count; i++)
+        {
+            photonView.RPC("RPC_AsyncItemList", RpcTarget.Others, items[i]);
+        }
+
         ChangeUIImg();
     }
 
@@ -127,37 +132,21 @@ public class Items : MonoBehaviourPun
         StartCoroutine(items[MyItemIndex]);
     }
 
-    //public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    //{
-    //    Debug.Log("OnPhotonSerializeView0");
-    //    if (stream.IsWriting)
-    //    {
-    //        Debug.Log("OnPhotonSerializeView1");
-    //        stream.SendNext(MyItemIndex);
-    //        stream.SendNext(MyShield.activeSelf);
-    //        Debug.Log("OnPhotonSerializeView2");
-    //    }
-    //    else
-    //    {
-    //        Debug.Log("OnPhotonSerializeView  Receive");
-    //        MyItemIndex = (int)stream.ReceiveNext();
-    //        MyShield.SetActive((bool)stream.ReceiveNext());
-    //    }
-    //}
-
     [PunRPC]
     void RPC_AsyncMyItemIndex(int MyItemIndex)
     {
         this.MyItemIndex = MyItemIndex;
+        for(int i = 0; i < this.items.Count; i++)
+        {
+            Debug.Log(items[i]);
+        }
+        Debug.Log(this.MyItemIndex);
     }
 
     [PunRPC]
-    void RPC_AsyncItemList(List<string> items)
+    void RPC_AsyncItemList(string item)
     {
-        for (int i = this.items.Count; i < items.Count; i++)
-        {
-            this.items.Add(items[i]);
-        }
+        items.Add(item);
     }
 
     [PunRPC]
@@ -166,14 +155,15 @@ public class Items : MonoBehaviourPun
         items.RemoveAt(MyItemIndex);
     }
 
-   [PunRPC]
+    [PunRPC]
     void RPC_StartItemCorountine()
     {
         StartCoroutine(items[MyItemIndex]);
     }
 
-   
+    #endregion
 
+    #region Item Logic
     IEnumerator Shield()
     {
         MyShield.SetActive(true);
@@ -194,14 +184,13 @@ public class Items : MonoBehaviourPun
     {
         TransferFireDir();
 
-        GameObject grenade = PhotonNetwork.Instantiate("Grenade", (transform.position), Quaternion.identity);
-        grenade.transform.position = player.transform.position + fireDir;
-
+        GameObject grenade = PhotonNetwork.Instantiate("Grenade", transform.position + (fireDir * transform.lossyScale.y), Quaternion.identity);
 
         myRigidbody = grenade.GetComponent<Rigidbody2D>();
         myRigidbody.AddForce(fireDir * 500f, ForceMode2D.Force);
 
         yield return new WaitForSeconds(3f);
+
         GrenadeExplosion(grenade);
         PhotonNetwork.Destroy(grenade.gameObject);
     }
@@ -222,7 +211,7 @@ public class Items : MonoBehaviourPun
                     break;
                 }
             }
-
+            
             if (myEnemy == null)
                 Debug.LogError("myEnemy is null Check Gun.cs");
         }
@@ -233,17 +222,23 @@ public class Items : MonoBehaviourPun
         }
 
     }
-    
-    public void SetList(List<string> items)
-    {
-        for(int i = this.items.Count; i < items.Count; i++)
-        {
-            this.items.Add(items[i]);
-        }
-    }
-    
+
     void ChangeUIImg()
     {
+        if (items.Count == 0)
+        {
+            if(myImg.gameObject.activeSelf == true)
+            {
+                myImg.sprite = null;
+                myImg.gameObject.SetActive(false);
+            }
+            return;
+        }
+        else if(items.Count != 0 && myImg.gameObject.activeSelf == false)
+        {
+            myImg.gameObject.SetActive(true);
+        }
+
         if (items[MyItemIndex].Equals("Grenade"))
         {
             myImg.sprite = itemImgs[0];
@@ -255,5 +250,5 @@ public class Items : MonoBehaviourPun
         
     }
 
-    
+    #endregion
 }

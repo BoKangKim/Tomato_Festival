@@ -66,7 +66,6 @@ public class Gun : MonoBehaviourPun
     }
     IEnumerator Shoot()
     {
-        Debug.Log("Shoot코루틴 실행됨");
 
         canshoot = false;
         numberOfBullet -= 1f;

@@ -7,8 +7,7 @@ public class GameManger : Singleton<GameManger>
     static int playerCount = 1;
     ScriptableWeaponData[] GunDatas = new ScriptableWeaponData[4];
     Gun playergun = null;
-    List<string> player1_Weapon = null;
-    List<string> player2_Weapon = null;
+    List<string> player_Weapon = null;
 
     private void Awake()
     {
@@ -18,8 +17,7 @@ public class GameManger : Singleton<GameManger>
         GunDatas[2] = Resources.Load<ScriptableWeaponData>("Shotgun");
         GunDatas[3] = Resources.Load<ScriptableWeaponData>("SniperRifle");
 
-        player1_Weapon = new List<string>();
-        player2_Weapon = new List<string>();
+        player_Weapon = new List<string>();
     }
 
     public void SetPlayerNum(Gun playergun)
@@ -32,26 +30,14 @@ public class GameManger : Singleton<GameManger>
     {
         List<string> weapon = null;
 
-        if(playerNum == 1)
-        {
-            weapon = player1_Weapon;
-        }
-        else if(playerNum == 2)
-        {
-            weapon = player2_Weapon;
-        }
-        else
-        {
-            return;
-        }
-
+        weapon = player_Weapon;
         weapon.Add("SniperRifle");
         
         for (int i = 0; i < GunDatas.Length; i++)
         {
             for (int j = 0; j < weapon.Count; j++)
             {
-                if (weapon[j] == GunDatas[i].GetGunName())
+                if (weapon[j] == GunDatas[i].GunName)
                 {
                     playergun.SetGunData(GunDatas[i]);
 

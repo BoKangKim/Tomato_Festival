@@ -12,6 +12,7 @@ public class SplitData : MonoBehaviourPun
     List<string> gunData;
     List<string> itemData;
     List<string> PinballDataList;
+
     private void Awake()
     {
         gunData = new List<string>();
@@ -26,40 +27,54 @@ public class SplitData : MonoBehaviourPun
         PinballDataList.Add("Shield");
         PinballDataList.Add("Grenade");
         PinballDataList.Add("Shield");
+        PinballDataList.Add("Repeater");
+        PinballDataList.Add("Shotgun");
+        PinballDataList.Add("SniperRifle");
     }
 
     // 데이터 받아오고 분리 하는 함수
     // TEST 매개 변수로 List 받아와야 함
-    public void GetAndSplitData() 
+    public List<string> GetAndSplitData(string name) 
     {
-        List<string> data = PinballDataList;
-        for(int i = 0; i < data.Count; i++)
+        
+        if(PinballDataList.Count != 0 && itemData.Count == 0 && gunData.Count == 0)
         {
-            if(PinballDataList[i].Equals("Bullet") 
-                || PinballDataList[i].Equals("Grenade")
-                || PinballDataList[i].Equals("Shield"))
+            for (int i = 0; i < PinballDataList.Count; i++)
             {
-                itemData.Add(data[i]);
-            }
-            else if(PinballDataList[i].Equals("Handgun")
-                || PinballDataList[i].Equals("Repeater")
-                || PinballDataList[i].Equals("Shotgun")
-                || PinballDataList[i].Equals("SniperRifle"))
-            {
-                gunData.Add(PinballDataList[i]);
+                if (PinballDataList[i].Equals("Bullet")
+                    || PinballDataList[i].Equals("Grenade")
+                    || PinballDataList[i].Equals("Shield"))
+                {
+                    itemData.Add(PinballDataList[i]);
+                }
+                else if (PinballDataList[i].Equals("Handgun")
+                    || PinballDataList[i].Equals("Repeater")
+                    || PinballDataList[i].Equals("Shotgun")
+                    || PinballDataList[i].Equals("SniperRifle"))
+                {
+                    gunData.Add(PinballDataList[i]);
+                }
             }
         }
 
-        Items[] myItemsData = FindObjectsOfType<Items>();
-        
-        for(int i = 0;i < myItemsData.Length; i++)
+        if (name.Equals("Item"))
         {
-            if(myItemsData[i].ItemIsMine == true)
-            {
-                myItemsData[i].SetList(itemData);
-                myItemsData[i].ItemListSetting();
-            }
+            return itemData;
         }
+        else if (name.Equals("Gun"))
+        {
+            return gunData;
+        }
+
+        return null;
+        
+    }
+
+    public void ResetLists()
+    {
+        PinballDataList.Clear();
+        itemData.Clear();
+        gunData.Clear();
     }
     
 }

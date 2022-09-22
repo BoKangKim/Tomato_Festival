@@ -54,10 +54,6 @@ public class LoadingEffect : ObjectPool<LoadingTomato>
             yield return new WaitForSeconds(Rtime);
             
             LoadingTomato loadingtoInst = Get();
-            if (loadingtoInst != null)
-            {
-                Debug.Log("토마토오 생성!");
-            }
             loadingtoInst.transform.parent = this.transform;
 
         }

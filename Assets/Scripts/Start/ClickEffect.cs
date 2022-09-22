@@ -50,16 +50,10 @@ public class ClickEffect : ObjectPool<PopTomato>
             yield return new WaitUntil(() => Input.GetMouseButtonDown(0) == true);
             MousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             MousePos.z = 0f;
-            Debug.Log($"{MousePos}");
 
             PopTomato poptoInst = Get();
-            if (poptoInst != null)
-            {
-                Debug.Log("토마토오 생성!");
-            }
 
             poptoInst.transform.parent = this.transform;
-            Debug.Log($"{poptoInst.transform.parent}");
             poptoInst.transform.position = MousePos;
         }
 

@@ -67,19 +67,16 @@ public class StartUIManager : MonoBehaviourPunCallbacks
 
     public override void OnConnectedToMaster()  // ������ ������ ���� �����ÿ� ȣ��(���濡�� ȣ��)
     {
-        Debug.Log("����");
         startButton.interactable = true;
 
     }
     public override void OnDisconnected(DisconnectCause cause)
     {
-        Debug.Log("���� �Ҿ���");
         startButton.interactable = false;
     }
     #region
     public void OnClickStartButton()
     {
-        Debug.Log("���۹�ư");
         StartCoroutine(StartButton());
     }
     public void OnClickInfoButton()
@@ -122,13 +119,11 @@ public class StartUIManager : MonoBehaviourPunCallbacks
         if (name.Length < 3 || name.Length > 8)
         {
             myNickName.text = "";
-            Debug.Log("�ٽ� �Է�");
             return;
         }
 
         matchButton.interactable = true;
         PhotonNetwork.NickName = name;
-        Debug.Log(name);
     }
     public void OnClickMatchButton()
     {

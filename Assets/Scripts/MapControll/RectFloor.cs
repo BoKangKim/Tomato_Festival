@@ -24,7 +24,6 @@ public class RectFloor : MonoBehaviourPun
                 // FixedUpdate가 Update보다 늦게 처리를 하여서 점프를 한 후 점프키를 다시 눌렀을 때
                 // 뒤늦게 한 번더 점프를 하는 현상을 방지 하기위해 점프키가 눌리는 것을 초기화
                 collision.gameObject.SendMessage("SetisJump", false, SendMessageOptions.DontRequireReceiver);
-                Debug.Log("Rect Confilct");
             }
             
         }

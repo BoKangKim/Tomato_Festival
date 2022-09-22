@@ -152,6 +152,9 @@ public class Player : MonoBehaviourPun
     [PunRPC]
     void RPC_TransferDamage(float attackDamage)
     {
+        if (IsShieldTime == true)
+            return;
+
         camEffect.StartCamEffectCoroutine();
         playercurHP -= attackDamage;
     }
