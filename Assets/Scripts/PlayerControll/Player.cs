@@ -129,11 +129,12 @@ public class Player : MonoBehaviourPun
 
     void TransferDamage(float attackDamage)
     {
-        photonView.RPC("RPC_TransferDamage", RpcTarget.All, attackDamage);
+        playercurHP -= attackDamage;
+        photonView.RPC("RPC_TransferDamage", RpcTarget.Others, attackDamage);
     }
     public void StartKnockBackCoroutine(Vector3 bulletVec)
     {
-        photonView.RPC("RPC_StartKnockBackCoroutine", RpcTarget.All, bulletVec);
+        photonView.RPC("RPC_StartKnockBackCoroutine", RpcTarget.Others, bulletVec);
     }
 
     [PunRPC]
