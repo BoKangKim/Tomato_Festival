@@ -9,6 +9,11 @@ public class CreateInstance : MonoBehaviourPunCallbacks
 {
     [SerializeField] GameObject pool;
 
+    private void Awake()
+    {
+        StartCoroutine(CheckPlayerCount());
+    }
+
     void Start()
     {
         if(PhotonNetwork.IsConnected == true)
@@ -19,5 +24,13 @@ public class CreateInstance : MonoBehaviourPunCallbacks
                 PhotonNetwork.Instantiate("Player",new Vector3(9f,-6f,0f), Quaternion.identity);
             pool.gameObject.SetActive(true);
         }
+    }
+
+    IEnumerator CheckPlayerCount()
+    {
+        yield return new WaitUntil(() => PhotonNetwork.CurrentRoom.PlayerCount != 2);
+
+        yield return new WaitForSeconds(0.5f);
+        PhotonNetwork.LoadLevel("Loading");
     }
 }

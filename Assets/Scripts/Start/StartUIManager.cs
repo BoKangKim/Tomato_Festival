@@ -5,12 +5,14 @@ using UnityEngine.UI;
 using TMPro;
 
 
-using Photon.Pun; // ���� ���̺귯���� ����Ƽ ������Ʈ�� ����� �� �ְ� �ϴ� ���̺귯��
+using Photon.Pun;
 using Photon.Realtime;
-
 
 public class StartUIManager : MonoBehaviourPunCallbacks
 {
+    [Header("Title")]
+    [SerializeField] GameObject titleLogo = null;
+
     [Header("Option")]
     [SerializeField] GameObject buttonScroll = null;
     Vector3 buttonscrollPos;
@@ -26,60 +28,52 @@ public class StartUIManager : MonoBehaviourPunCallbacks
     [SerializeField] Button matchButton = null;
     [SerializeField] Button backButton = null;
 
-    [Header("In Room")]
-    [SerializeField] GameObject loadingEffect = null;
     [SerializeField] TextMeshProUGUI matching = null;
-    [SerializeField] Slider loadingSlider = null;
-
-
 
     void Awake()
     {
-        // ���� ���۽� ��ũ�� ����� ������ 16 : 9 ������
+        // Set Screen Size 16 : 9
         Screen.SetResolution(800, 450, false);
-        // ��Ʈ��ũ ����ȭ�� �� �����ϰ� �ϱ����� ����
+        // Improves the performance of the Photon network.
         PhotonNetwork.SendRate = 60;
         PhotonNetwork.SerializationRate = 30;
-        // ���� ���� ����
+        
         //PhotonNetwork.GameVersion = gameVersion;
-        // ������(ȣ��Ʈ)�� ���� �̵��ϸ� Ŭ���̾�Ʈ �÷��̾���� �ڵ������� ��ũ�ȴ�
+        // Automatically synchronized scenes from other clients when switching scenes from the master server.
         PhotonNetwork.AutomaticallySyncScene = true;
-        // �濡�� ���Ӿ����� �ε��ɶ� �濡�� ������ �޼����� ���� �ʴ´�
+        // Don't get a photonmessage when access the room.
         PhotonNetwork.IsMessageQueueRunning = false;
     }
-    // Start is called before the first frame update
+    
     void Start()
     {
+        //Connect network.
         PhotonNetwork.ConnectUsingSettings();
+        titleLogo.SetActive(true);
 
+        StartCoroutine(SetUI());
+    }
+    IEnumerator SetUI()
+    {
+        yield return new WaitUntil(() => titleLogo.transform.position.x <= -18f);
         buttonscrollPos = buttonScroll.transform.position;
         accessscrollPos = accessScroll.transform.position;
 
         buttonScroll.SetActive(true);
-        startButton.interactable = false;
-
         accessScroll.SetActive(false);
-
-        loadingEffect.SetActive(false);
-        loadingSlider.gameObject.SetActive(false);
-        matching.text = "";
     }
 
-    public override void OnConnectedToMaster()  // ������ ������ ���� �����ÿ� ȣ��(���濡�� ȣ��)
+    public override void OnConnectedToMaster()  // Call when the master server is connected
     {
-        Debug.Log("����");
         startButton.interactable = true;
-
     }
     public override void OnDisconnected(DisconnectCause cause)
     {
-        Debug.Log("���� �Ҿ���");
         startButton.interactable = false;
     }
-    #region
+    #region //setting ButtonScroll
     public void OnClickStartButton()
     {
-        Debug.Log("���۹�ư");
         StartCoroutine(StartButton());
     }
     public void OnClickInfoButton()
@@ -107,7 +101,7 @@ public class StartUIManager : MonoBehaviourPunCallbacks
             time += Time.deltaTime;
 
             buttonScroll.transform.Translate(Vector3.left * 8f);
-            accessScroll.transform.Translate(Vector3.left * 4f);
+            accessScroll.transform.Translate(Vector3.left * 6f);
 
             yield return null;
         }
@@ -121,14 +115,13 @@ public class StartUIManager : MonoBehaviourPunCallbacks
     {
         if (name.Length < 3 || name.Length > 8)
         {
-            myNickName.text = "";
-            Debug.Log("�ٽ� �Է�");
+            myNickName.caretColor = Color.gray;
+            myNickName.text = "Please re-enter a nickname (3 ~ 8)";
             return;
         }
 
         matchButton.interactable = true;
         PhotonNetwork.NickName = name;
-        Debug.Log(name);
     }
     public void OnClickMatchButton()
     {
@@ -138,77 +131,23 @@ public class StartUIManager : MonoBehaviourPunCallbacks
         }
         accessScroll.SetActive(false);
 
-
-        //�뿡 ���� �õ� /������ �� CreateRoom
+        titleLogo.SendMessage("GameLogoMove", SendMessageOptions.DontRequireReceiver);
         matching.text = "Accessing...";
+
+        //CreateRoom
         PhotonNetwork.JoinOrCreateRoom("myroom", new RoomOptions { MaxPlayers = 2 }, null);
+
     }
-    
-    
+
     public override void OnJoinRoomFailed(short returnCode, string message)
     {
         matching.text = $"Connection Failed : <{returnCode}> {message}";
+        accessScroll.SetActive(true);
     }
-
     public override void OnJoinedRoom()
     {
-        matching.text = "Searching for match";
-
-        loadingEffect.SetActive(true);
-
-        loadingSlider.gameObject.SetActive(true);
-        StartCoroutine(loadingSliderValueChange());
-
-        if (PhotonNetwork.CurrentRoom.PlayerCount < 2)
-        {
-            StartCoroutine(GoMain());
-        }
-        else
-        {
-            loadingEffect.SendMessage("Pouring", SendMessageOptions.DontRequireReceiver);
-        }
+        PhotonNetwork.LoadLevel("Loading");
     }
-    IEnumerator loadingSliderValueChange()//changing loadingbar's value
-    {
-        while(PhotonNetwork.CurrentRoom.PlayerCount != 2)
-        {
-            if(loadingSlider.value > 0.7f)
-            {
-                if(loadingSlider.value > 0.8f)
-                {
-                    if (loadingSlider.value > 0.9f)
-                    {
-                        loadingSlider.value += 0.00001f;
-                    }
-                    else
-                        loadingSlider.value += 0.0001f;
-                }
-                else
-                    loadingSlider.value += 0.001f;
-            }
-            else
-                loadingSlider.value += 0.01f;
-            yield return new WaitForSeconds(0.5f);
-        }
-        if(PhotonNetwork.CurrentRoom.PlayerCount == 2)
-        {
-            loadingSlider.value = 1f;
-        }
-    }
-
-    IEnumerator GoMain()
-    {
-        yield return new WaitUntil(()=> PhotonNetwork.CurrentRoom.PlayerCount == 2);
-        loadingEffect.SendMessage("Pouring", SendMessageOptions.DontRequireReceiver);
-        yield return new WaitForSeconds(2f);
-        PhotonNetwork.LoadLevel("Main"); // ��������� ���·� �� ��ȯ
-    }
-    /*
-    public override void OnMasterClientSwitched(Player newMasterClient)
-    {
-        Debug.Log("������ ���� : " + newMasterClient.ToString());
-    }
-    */
 
     public void OnClickBackButton()
     {

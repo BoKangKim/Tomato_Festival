@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public delegate void LoadingTomatoDestroy();
 
@@ -25,6 +27,7 @@ public class LoadingEffect : ObjectPool<LoadingTomato>
     }
 
     #endregion
+
 
     public LoadingTomatoDestroy callbackDestroy = null;
     [SerializeField] LoadingTomato loadingTomatoPrefab = null;
