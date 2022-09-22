@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - Bullet
+  - StopWall
+  - Block
   layers:
   - Default
   - TransparentFX
@@ -12,7 +14,7 @@ TagManager:
   - 
   - Water
   - UI
-  - 
+  - ball
   - 
   - 
   - 
@@ -41,4 +43,13 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Background
+    uniqueID: 282163219
+    locked: 0
+  - name: Middleground
+    uniqueID: 2808472061
+    locked: 0
+  - name: Frontground
+    uniqueID: 1098894565
     locked: 0

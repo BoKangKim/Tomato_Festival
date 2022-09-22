@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: f67d3d7e01f3a8647b369537d984cc99
+guid: a5cc668e2ada73647a3471aa0aa395bd
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -128,13 +128,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: tomatoBullet_0
+      name: R_0
       rect:
         serializedVersion: 2
-        x: 432
-        y: 1648
-        width: 192
-        height: 208
+        x: 744
+        y: 472
+        width: 413
+        height: 98
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -142,20 +142,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 541dd4559a0eab04c8ff7f4db982f366
-      internalID: 1824044463
+      spriteID: 05896ebae451b0f4992be582f48c4715
+      internalID: 1350428444
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: tomatoBullet_1
+      name: R_1
       rect:
         serializedVersion: 2
-        x: 688
-        y: 1648
-        width: 192
-        height: 208
+        x: 22
+        y: 49
+        width: 342
+        height: 341
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -163,8 +163,50 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ee4e9434aacde52419ff4867cb9b327c
-      internalID: 839233093
+      spriteID: d61261eef6c9bf24f92d17f3bccb757f
+      internalID: -1434541898
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: R_2
+      rect:
+        serializedVersion: 2
+        x: 423
+        y: 46
+        width: 345
+        height: 345
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d36ff88815ed07d44a0236a87e53ef35
+      internalID: 1638382843
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: R_3
+      rect:
+        serializedVersion: 2
+        x: 830
+        y: 29
+        width: 401
+        height: 401
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 806f18149bb54b5498ffb1c47c777c8e
+      internalID: -1704813501
       vertices: []
       indices: 
       edges: []
@@ -180,8 +222,10 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      tomatoBullet_1: 839233093
-      tomatoBullet_0: 1824044463
+      R_0: 1350428444
+      R_3: -1704813501
+      R_2: 1638382843
+      R_1: -1434541898
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0
