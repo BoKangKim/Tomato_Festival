@@ -2,52 +2,64 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameManger : MonoBehaviour
+public class GameManger : Singleton<GameManger>
 {
+    static int playerCount = 1;
     ScriptableWeaponData[] GunDatas = new ScriptableWeaponData[4];
     Gun playergun = null;
-    List<string> weapon = null;
-    
+    List<string> player1_Weapon = null;
+    List<string> player2_Weapon = null;
 
     private void Awake()
     {
         // Handgun(권총) - Repeater(연발총) - Shotgun(연사총) - SniperRifle(저격총)
         GunDatas[0] = Resources.Load<ScriptableWeaponData>("Handgun");
-        Debug.Log($"{GunDatas[0].GetGunName()}");
         GunDatas[1] = Resources.Load<ScriptableWeaponData>("Repeater");
-        Debug.Log($"{GunDatas[1].GetGunName()}");
         GunDatas[2] = Resources.Load<ScriptableWeaponData>("Shotgun");
-        Debug.Log($"{GunDatas[2].GetGunName()}");
         GunDatas[3] = Resources.Load<ScriptableWeaponData>("SniperRifle");
-        Debug.Log($"{GunDatas[3].GetGunName()}");
 
-        playergun = FindObjectOfType<Gun>();
-        if(playergun != null)
-        {
-            Debug.Log("Gun 받았음");
-        }
-        weapon = new List<string>();
+        player1_Weapon = new List<string>();
+        player2_Weapon = new List<string>();
     }
 
-    void Start()
+    public void SetPlayerNum(Gun playergun)
     {
-        weapon.Add("SniperRifle");
+        playergun.myNum = playerCount;
+        playerCount++;
+    }
 
-        for(int i = 0; i < GunDatas.Length; i++)
+    public void SetGunData(Gun playergun, int playerNum)
+    {
+        List<string> weapon = null;
+
+        if(playerNum == 1)
         {
-            for(int j = 0; j < weapon.Count; j++)
+            weapon = player1_Weapon;
+        }
+        else if(playerNum == 2)
+        {
+            weapon = player2_Weapon;
+        }
+        else
+        {
+            return;
+        }
+
+        weapon.Add("SniperRifle");
+        
+        for (int i = 0; i < GunDatas.Length; i++)
+        {
+            for (int j = 0; j < weapon.Count; j++)
             {
                 if (weapon[j] == GunDatas[i].GetGunName())
                 {
                     playergun.SetGunData(GunDatas[i]);
-                    Debug.Log($"플레이어 건은 {GunDatas[i].GetGunName()} 임");
 
                     break;
                 }
             }
-            
+
         }
     }
-
     
 }

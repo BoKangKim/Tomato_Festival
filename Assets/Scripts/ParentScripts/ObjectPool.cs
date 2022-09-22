@@ -20,10 +20,11 @@ public abstract class ObjectPool<T> : MonoBehaviour where T : MonoBehaviour
 
     public T Get()
     {
-        if(tObj == null)
+        if (tObj == null)
         {
             tObj = CreatePool();
         }
+
         if (m_pool.Count == 0 && pool_count <= Pool_Max_Size)
         {
             pool_count++;
@@ -63,4 +64,5 @@ public abstract class ObjectPool<T> : MonoBehaviour where T : MonoBehaviour
             Destroy(m_pool.Dequeue());
         }
     }
+
 }
