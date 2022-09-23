@@ -21,6 +21,7 @@ public class TitleLogo : MonoBehaviour
     Vector3 gameLogoPos;
     Vector3 gameLogoScale;
 
+    
     void Awake()
     {
         DontDestroyOnLoad(gameObject);

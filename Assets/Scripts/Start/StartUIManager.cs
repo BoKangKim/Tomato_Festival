@@ -38,7 +38,6 @@ public class StartUIManager : MonoBehaviourPunCallbacks
         PhotonNetwork.SendRate = 60;
         PhotonNetwork.SerializationRate = 30;
         
-        //PhotonNetwork.GameVersion = gameVersion;
         // Automatically synchronized scenes from other clients when switching scenes from the master server.
         PhotonNetwork.AutomaticallySyncScene = true;
         // Don't get a photonmessage when access the room.
@@ -111,6 +110,7 @@ public class StartUIManager : MonoBehaviourPunCallbacks
     }
     #endregion
 
+    
     public void OnEndEdit(string name)
     {
         if (name.Length < 3 || name.Length > 8)
@@ -129,14 +129,66 @@ public class StartUIManager : MonoBehaviourPunCallbacks
         {
             return;
         }
+        
         accessScroll.SetActive(false);
 
         titleLogo.SendMessage("GameLogoMove", SendMessageOptions.DontRequireReceiver);
         matching.text = "Accessing...";
 
-        //CreateRoom
-        PhotonNetwork.JoinOrCreateRoom("myroom", new RoomOptions { MaxPlayers = 2 }, null);
 
+        if (PhotonNetwork.CountOfPlayersInRooms % 2 == 0 ) //들어갈 방이 없는 경우(방에 들어간 플레이어가 짝수)
+        {
+            switch (PhotonNetwork.CountOfRooms)
+            {
+                case 0:
+                    PhotonNetwork.JoinOrCreateRoom("room1", new RoomOptions { MaxPlayers = 2 }, TypedLobby.Default);
+                    break;
+                case 1:
+                    PhotonNetwork.JoinOrCreateRoom("room2", new RoomOptions { MaxPlayers = 2 }, TypedLobby.Default);
+                    break;
+                case 2:
+                    PhotonNetwork.JoinOrCreateRoom("room3", new RoomOptions { MaxPlayers = 2 }, TypedLobby.Default);
+                    break;
+                case 3:
+                    PhotonNetwork.JoinOrCreateRoom("room4", new RoomOptions { MaxPlayers = 2 }, TypedLobby.Default);
+                    break;
+                case 4:
+                    PhotonNetwork.JoinOrCreateRoom("room5", new RoomOptions { MaxPlayers = 2 }, TypedLobby.Default);
+                    break;
+                case 5:
+                    PhotonNetwork.JoinOrCreateRoom("room6", new RoomOptions { MaxPlayers = 2 }, TypedLobby.Default);
+                    break;
+                case 6:
+                    PhotonNetwork.JoinOrCreateRoom("room7", new RoomOptions { MaxPlayers = 2 }, TypedLobby.Default);
+                    break;
+                case 7:
+                    PhotonNetwork.JoinOrCreateRoom("room8", new RoomOptions { MaxPlayers = 2 }, TypedLobby.Default);
+                    break;
+                case 8:
+                    PhotonNetwork.JoinOrCreateRoom("room9", new RoomOptions { MaxPlayers = 2 }, TypedLobby.Default);
+                    break;
+                case 9:
+                    PhotonNetwork.JoinOrCreateRoom("room10", new RoomOptions { MaxPlayers = 2 }, TypedLobby.Default);
+                    break;
+                default:
+                    matching.text = "Sorry, The game can't be played because all rooms are currently full.";
+                    break;
+            }
+        }
+        else
+        {
+            //JoinRoom
+            PhotonNetwork.JoinRandomRoom();
+        }
+    }
+    
+    public void OnClickBackButton()
+    {
+        accessScroll.transform.position = accessscrollPos;
+        accessScroll.SetActive(false);
+
+        buttonScroll.SetActive(true);
+        buttonScroll.transform.position = buttonscrollPos;
     }
 
     public override void OnJoinRoomFailed(short returnCode, string message)
@@ -149,12 +201,5 @@ public class StartUIManager : MonoBehaviourPunCallbacks
         PhotonNetwork.LoadLevel("Loading");
     }
 
-    public void OnClickBackButton()
-    {
-        accessScroll.transform.position = accessscrollPos;
-        accessScroll.SetActive(false);
-
-        buttonScroll.SetActive(true);
-        buttonScroll.transform.position = buttonscrollPos;
-    }
+    
 }

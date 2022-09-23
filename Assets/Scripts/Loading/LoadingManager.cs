@@ -27,6 +27,11 @@ public class LoadingManager : MonoBehaviourPunCallbacks
 
         StartCoroutine(loadingSliderValueChange());
 
+        Debug.Log("총 플레이어 수" + PhotonNetwork.CountOfPlayers);
+        
+        Debug.Log("현재방 플레이어 수" + PhotonNetwork.CurrentRoom.PlayerCount);
+        Debug.Log(PhotonNetwork.CurrentRoom.Name);
+
         if (PhotonNetwork.CurrentRoom.PlayerCount < 2)
         {
             StartCoroutine(GoMain());
@@ -72,10 +77,35 @@ public class LoadingManager : MonoBehaviourPunCallbacks
         yield return new WaitForSeconds(2f);
         PhotonNetwork.LoadLevel("Main"); // ????????? ???·? ?? ???
     }
+
+    private void Update()
+    {
+        Debug.Log("방에 들어간 총 플레이어 수" + PhotonNetwork.CountOfPlayersInRooms);
+    }
     /*
     public override void OnMasterClientSwitched(Player newMasterClient)
     {
         Debug.Log("?????? ???? : " + newMasterClient.ToString());
+    }
+    
+    // 방 정보가 바뀔때 자동으로 호출되는 함수
+    // 로비에 접속 시
+    // 새로운 룸이 만들어질 경우
+    // 룸이 삭제되는 경우
+    // 룸의 IsOpen 값이 변화할 경우
+    public override void OnRoomListUpdate(List<RoomInfo> roomList)
+    {
+        
+    }
+    // 방에서 나가고 실행되는 콜백함수
+    public override void OnLeftRoom()
+    {
+        
+        // 마스터가 방을 나가고 콜백함수가 실행되면
+        if (!PhotonNetwork.IsMasterClient)
+        {
+            PhotonNetwork.LoadLevel("Main");
+        }
     }
     */
 

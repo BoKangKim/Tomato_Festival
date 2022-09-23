@@ -22,8 +22,8 @@ public class Gun : MonoBehaviourPun
         if(photonView.IsMine == true)
         {
             player = GetComponentInParent<Player>();
-            GameManger.Instance.SetPlayerNum(this);
-            GameManger.Instance.SetGunData(this, myNum);
+            //GameManger.Instance.SetPlayerNum(this);
+            //GameManger.Instance.SetGunData(this, myNum);
         }
     }
 

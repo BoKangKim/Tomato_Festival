@@ -18,7 +18,7 @@ public class LoadingTomato : MonoBehaviour
     }
     private void Start()
     {
-        LoadingEffect.Inst.callbackDestroy = CallBackDestroy;
+        LoadingEffect.Inst.callbackDestroy += CallBackDestroy;
     }
     // Update is called once per frame
     void Update()
