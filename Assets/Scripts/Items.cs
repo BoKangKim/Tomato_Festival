@@ -110,11 +110,13 @@ public class Items : MonoBehaviourPun
 
     public void ItemListSetting()
     {
+        Gun gun = GetComponentInChildren<Gun>();
+
         for (int i = 0; i < items.Count; i++)
         {
             if (items[i].Equals("Bullet"))
             {
-                player.bulletCount += 5;
+                gun.numberOfBullet += 5;
                 items.RemoveAt(i);
             }
         }

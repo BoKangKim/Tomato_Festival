@@ -28,8 +28,8 @@ public class SplitData : MonoBehaviourPun
         PinballDataList.Add("Grenade");
         PinballDataList.Add("Shield");
         PinballDataList.Add("SniperRifle");
-        PinballDataList.Add("Shotgun");
         PinballDataList.Add("Repeater");
+        PinballDataList.Add("Shotgun");
     }
 
     // 데이터 받아오고 분리 하는 함수

@@ -22,7 +22,7 @@ public class Player : MonoBehaviourPun
     Items myItems = null;
     public int MyItemIndex { get; set; } = 0;
     public bool IsShieldTime { get; set; } = false;
-    public int bulletCount { get; set; } = 0;
+
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();

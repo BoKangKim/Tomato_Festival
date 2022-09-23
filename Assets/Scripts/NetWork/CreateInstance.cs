@@ -17,6 +17,7 @@ public class CreateInstance : MonoBehaviourPunCallbacks
                 PhotonNetwork.Instantiate("Player",new Vector3(-9f,-6f,0f),Quaternion.identity);
             else
                 PhotonNetwork.Instantiate("Player",new Vector3(9f,-6f,0f), Quaternion.identity);
+
             pool.gameObject.SetActive(true);
         }
     }

@@ -29,11 +29,6 @@ public class GunData : MonoBehaviourPun
         GunDatas[3] = Resources.Load<ScriptableWeaponData>("SniperRifle");
     }
 
-    private void Start()
-    {
-        
-    }
-
     private void OnEnable()
     {
         if (photonView.IsMine == false)
@@ -55,8 +50,6 @@ public class GunData : MonoBehaviourPun
             playerWeapon = guns[guns.Count - 1];
         }
 
-        Debug.Log(guns.Count);
-        Debug.Log(playerWeapon);
         photonView.RPC("RPC_SetGunSprite", RpcTarget.AllBuffered, playerWeapon);
     }
 
@@ -67,6 +60,8 @@ public class GunData : MonoBehaviourPun
         {
             if (GunDatas[i].GunName.Equals(gun))
             {
+                Gun gunData = GetComponentInChildren<Gun>();
+                gunData.SetGunData(GunDatas[i]);
                 gunSprite.sprite = GunDatas[i].GunImg;
                 break;
             }
