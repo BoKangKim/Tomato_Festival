@@ -10,12 +10,12 @@ using Photon.Realtime;
 
 public class LoadingManager : MonoBehaviourPunCallbacks
 {
-
     [Header("In Room")]
     [SerializeField] GameObject loadingEffect = null;
     [SerializeField] GameObject clickEffect = null;
     [SerializeField] TextMeshProUGUI matching = null;
     [SerializeField] Slider loadingSlider = null;
+    [SerializeField] Button backStartSButton = null;
 
     // Start is called before the first frame update
     void Start()
@@ -77,10 +77,9 @@ public class LoadingManager : MonoBehaviourPunCallbacks
         yield return new WaitForSeconds(2f);
         PhotonNetwork.LoadLevel("Main"); // ????????? ???·? ?? ???
     }
-
-    private void Update()
+    public void OnClickBackStartSButton()
     {
-        Debug.Log("방에 들어간 총 플레이어 수" + PhotonNetwork.CountOfPlayersInRooms);
+        PhotonNetwork.LoadLevel("Start");
     }
     /*
     public override void OnMasterClientSwitched(Player newMasterClient)

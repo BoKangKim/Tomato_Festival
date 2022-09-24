@@ -42,6 +42,8 @@ public class StartUIManager : MonoBehaviourPunCallbacks
         PhotonNetwork.AutomaticallySyncScene = true;
         // Don't get a photonmessage when access the room.
         PhotonNetwork.IsMessageQueueRunning = false;
+
+        titleLogo.SetActive(false);
     }
     
     void Start()
@@ -54,6 +56,7 @@ public class StartUIManager : MonoBehaviourPunCallbacks
     }
     IEnumerator SetUI()
     {
+        yield return new WaitForSeconds(0.1f); //스타트씬이 다시 실행된 경우때문
         yield return new WaitUntil(() => titleLogo.transform.position.x <= -18f);
         buttonscrollPos = buttonScroll.transform.position;
         accessscrollPos = accessScroll.transform.position;
@@ -138,41 +141,10 @@ public class StartUIManager : MonoBehaviourPunCallbacks
 
         if (PhotonNetwork.CountOfPlayersInRooms % 2 == 0 ) //들어갈 방이 없는 경우(방에 들어간 플레이어가 짝수)
         {
-            switch (PhotonNetwork.CountOfRooms)
+            PhotonNetwork.JoinOrCreateRoom($"room{PhotonNetwork.CountOfRooms+1}", new RoomOptions { MaxPlayers = 2 }, TypedLobby.Default);
+            if (PhotonNetwork.CountOfRooms > 10)
             {
-                case 0:
-                    PhotonNetwork.JoinOrCreateRoom("room1", new RoomOptions { MaxPlayers = 2 }, TypedLobby.Default);
-                    break;
-                case 1:
-                    PhotonNetwork.JoinOrCreateRoom("room2", new RoomOptions { MaxPlayers = 2 }, TypedLobby.Default);
-                    break;
-                case 2:
-                    PhotonNetwork.JoinOrCreateRoom("room3", new RoomOptions { MaxPlayers = 2 }, TypedLobby.Default);
-                    break;
-                case 3:
-                    PhotonNetwork.JoinOrCreateRoom("room4", new RoomOptions { MaxPlayers = 2 }, TypedLobby.Default);
-                    break;
-                case 4:
-                    PhotonNetwork.JoinOrCreateRoom("room5", new RoomOptions { MaxPlayers = 2 }, TypedLobby.Default);
-                    break;
-                case 5:
-                    PhotonNetwork.JoinOrCreateRoom("room6", new RoomOptions { MaxPlayers = 2 }, TypedLobby.Default);
-                    break;
-                case 6:
-                    PhotonNetwork.JoinOrCreateRoom("room7", new RoomOptions { MaxPlayers = 2 }, TypedLobby.Default);
-                    break;
-                case 7:
-                    PhotonNetwork.JoinOrCreateRoom("room8", new RoomOptions { MaxPlayers = 2 }, TypedLobby.Default);
-                    break;
-                case 8:
-                    PhotonNetwork.JoinOrCreateRoom("room9", new RoomOptions { MaxPlayers = 2 }, TypedLobby.Default);
-                    break;
-                case 9:
-                    PhotonNetwork.JoinOrCreateRoom("room10", new RoomOptions { MaxPlayers = 2 }, TypedLobby.Default);
-                    break;
-                default:
-                    matching.text = "Sorry, The game can't be played because all rooms are currently full.";
-                    break;
+                matching.text = "Sorry, The game can't be played because all rooms are currently full.";
             }
         }
         else
