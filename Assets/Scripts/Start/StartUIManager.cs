@@ -10,8 +10,8 @@ using Photon.Realtime;
 
 public class StartUIManager : MonoBehaviourPunCallbacks
 {
-    [Header("Title")]
-    [SerializeField] GameObject titleLogo = null;
+    [Header("Logo")]
+    [SerializeField] GameObject gameLogo = null;
 
     [Header("Option")]
     [SerializeField] GameObject buttonScroll = null;
@@ -32,47 +32,45 @@ public class StartUIManager : MonoBehaviourPunCallbacks
 
     void Awake()
     {
-        // Set Screen Size 16 : 9
+        // Set Screen Size 16 : 9 fullscreen false
         Screen.SetResolution(800, 450, false);
         // Improves the performance of the Photon network.
         PhotonNetwork.SendRate = 60;
         PhotonNetwork.SerializationRate = 30;
-        
         // Automatically synchronized scenes from other clients when switching scenes from the master server.
         PhotonNetwork.AutomaticallySyncScene = true;
         // Don't get a photonmessage when access the room.
         PhotonNetwork.IsMessageQueueRunning = false;
-
-        titleLogo.SetActive(false);
     }
     
     void Start()
     {
         //Connect network.
         PhotonNetwork.ConnectUsingSettings();
-        titleLogo.SetActive(true);
+        gameLogo.SetActive(true);
+        accessScroll.SetActive(false);
+
+        buttonscrollPos = buttonScroll.transform.position;
+        accessscrollPos = accessScroll.transform.position;
 
         StartCoroutine(SetUI());
     }
     IEnumerator SetUI()
     {
-        yield return new WaitForSeconds(0.1f); //스타트씬이 다시 실행된 경우때문
-        yield return new WaitUntil(() => titleLogo.transform.position.x <= -18f);
-        buttonscrollPos = buttonScroll.transform.position;
-        accessscrollPos = accessScroll.transform.position;
-
+        yield return new WaitForSeconds(0.1f);
         buttonScroll.SetActive(true);
-        accessScroll.SetActive(false);
     }
 
     public override void OnConnectedToMaster()  // Call when the master server is connected
     {
         startButton.interactable = true;
     }
-    public override void OnDisconnected(DisconnectCause cause)
+    public override void OnDisconnected(DisconnectCause cause)  // Call when the master server is not connected
     {
         startButton.interactable = false;
+        PhotonNetwork.ConnectUsingSettings();
     }
+
     #region //setting ButtonScroll
     public void OnClickStartButton()
     {
@@ -80,15 +78,21 @@ public class StartUIManager : MonoBehaviourPunCallbacks
     }
     public void OnClickInfoButton()
     {
-
+        startButton.interactable = false;
+        settingButton.interactable = false;
+        exitButton.interactable = false;
     }
     public void OnClickSettingButton()
     {
-
+        startButton.interactable = false;
+        infoButton.interactable = false;
+        exitButton.interactable = false;
     }
     public void OnClickExitButton()
     {
-
+        //UnityEditor.EditorApplication.isPlaying = false;
+        Application.Quit();
+        //Application.OpenURL("http://google.com");
     }
 
     IEnumerator StartButton()
@@ -128,23 +132,23 @@ public class StartUIManager : MonoBehaviourPunCallbacks
     }
     public void OnClickMatchButton()
     {
-        if (string.IsNullOrEmpty(PhotonNetwork.NickName) == true)
-        {
-            return;
-        }
+        if (string.IsNullOrEmpty(PhotonNetwork.NickName) == true) return;
         
         accessScroll.SetActive(false);
 
-        titleLogo.SendMessage("GameLogoMove", SendMessageOptions.DontRequireReceiver);
+        gameLogo.SendMessage("GameLogoMove", SendMessageOptions.DontRequireReceiver);
         matching.text = "Accessing...";
 
 
-        if (PhotonNetwork.CountOfPlayersInRooms % 2 == 0 ) //들어갈 방이 없는 경우(방에 들어간 플레이어가 짝수)
+        if (PhotonNetwork.CountOfPlayersInRooms % 2 == 0) //No room to enter(CountOfPlayersInRooms is even)
         {
-            PhotonNetwork.JoinOrCreateRoom($"room{PhotonNetwork.CountOfRooms+1}", new RoomOptions { MaxPlayers = 2 }, TypedLobby.Default);
-            if (PhotonNetwork.CountOfRooms > 10)
+            if (PhotonNetwork.CountOfRooms > 10) // CountOfPlayers > 20
             {
                 matching.text = "Sorry, The game can't be played because all rooms are currently full.";
+            }
+            else
+            {
+                PhotonNetwork.JoinOrCreateRoom($"room{PhotonNetwork.CountOfRooms + 1}", new RoomOptions { MaxPlayers = 2 }, TypedLobby.Default);
             }
         }
         else
@@ -153,7 +157,16 @@ public class StartUIManager : MonoBehaviourPunCallbacks
             PhotonNetwork.JoinRandomRoom();
         }
     }
-    
+
+    public override void OnJoinedRoom()
+    {
+        PhotonNetwork.LoadLevel("Loading");
+    }
+    public override void OnJoinRoomFailed(short returnCode, string message)
+    {
+        matching.text = $"Connection Failed : <{returnCode}> {message}";
+        accessScroll.SetActive(true);
+    }
     public void OnClickBackButton()
     {
         accessScroll.transform.position = accessscrollPos;
@@ -162,16 +175,4 @@ public class StartUIManager : MonoBehaviourPunCallbacks
         buttonScroll.SetActive(true);
         buttonScroll.transform.position = buttonscrollPos;
     }
-
-    public override void OnJoinRoomFailed(short returnCode, string message)
-    {
-        matching.text = $"Connection Failed : <{returnCode}> {message}";
-        accessScroll.SetActive(true);
-    }
-    public override void OnJoinedRoom()
-    {
-        PhotonNetwork.LoadLevel("Loading");
-    }
-
-    
 }
