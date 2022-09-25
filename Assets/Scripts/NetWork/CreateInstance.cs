@@ -7,13 +7,15 @@ using Photon.Pun;
 
 public class CreateInstance : MonoBehaviourPunCallbacks
 {
-    [SerializeField] GameObject pool;
+    GameObject pool = null;
 
     void Start()
     {
         if(PhotonNetwork.IsConnected == true)
         {
-            if(PhotonNetwork.IsMasterClient)
+            pool = FindObjectOfType<Pool>().gameObject;
+            pool.SetActive(false);
+            if (PhotonNetwork.IsMasterClient)
                 PhotonNetwork.Instantiate("Player",new Vector3(-9f,-6f,0f),Quaternion.identity);
             else
                 PhotonNetwork.Instantiate("Player",new Vector3(9f,-6f,0f), Quaternion.identity);
@@ -21,4 +23,5 @@ public class CreateInstance : MonoBehaviourPunCallbacks
             pool.gameObject.SetActive(true);
         }
     }
+
 }

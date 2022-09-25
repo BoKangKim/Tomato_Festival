@@ -17,16 +17,19 @@ public class Player : MonoBehaviourPun
     Rigidbody2D myRigidbody;
     CamEffect camEffect = null;
     SpriteRenderer spriteRenderer = null;
+    GameOver over = null;
 
     // 현재 아이템 정보
     Items myItems = null;
     public int MyItemIndex { get; set; } = 0;
     public bool IsShieldTime { get; set; } = false;
 
+
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         myItems = GetComponent<Items>();
+        over = FindObjectOfType<GameOver>();
 
         if (photonView.IsMine == false)
         {
@@ -108,10 +111,8 @@ public class Player : MonoBehaviourPun
     // 총알이 충돌 했을 때 불림
     // 넉백을 처리하는 코루틴 실행 
     
-
     private void Jump()
     {
-        
         myRigidbody.AddForce(Vector2.up * 1800f, ForceMode2D.Force);
         isJumpKeyInput = false;
         initJump = false;
@@ -126,15 +127,30 @@ public class Player : MonoBehaviourPun
     {
         this.isJumpKeyInput = isJump;
     }
-
+    
+    // 일단 합치기 전이라 게임이 완전 끝났을 때 로직임
     void TransferDamage(float attackDamage)
     {
         playercurHP -= attackDamage;
+        if(playercurHP < 0)
+        {
+            over.SetWinCount();
+            photonView.RPC("BattleEnd",RpcTarget.Others);
+            return;
+        }
         photonView.RPC("RPC_TransferDamage", RpcTarget.Others, attackDamage);
     }
+
     public void StartKnockBackCoroutine(Vector3 bulletVec)
     {
         photonView.RPC("RPC_StartKnockBackCoroutine", RpcTarget.Others, bulletVec);
+    }
+
+    // 일단 합치기 전이라 게임이 완전 끝났을 때 로직임
+    [PunRPC]
+    void BattleEnd()
+    {
+        over.SetLoseCount();
     }
 
     [PunRPC]
@@ -150,6 +166,7 @@ public class Player : MonoBehaviourPun
         }
         StartCoroutine(KnockBack());
     }
+
     [PunRPC]
     void RPC_TransferDamage(float attackDamage)
     {
@@ -158,6 +175,17 @@ public class Player : MonoBehaviourPun
 
         camEffect.StartCamEffectCoroutine();
         playercurHP -= attackDamage;
+    }
+
+    void DestroyPlayer() 
+    {
+        photonView.RPC("RPC_DestroyPlayer",RpcTarget.Others);
+    }
+
+    [PunRPC]
+    void RPC_DestroyPlayer()
+    {
+        PhotonNetwork.Destroy(this.gameObject);
     }
 
     // 넉백 코루틴

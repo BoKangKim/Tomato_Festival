@@ -27,8 +27,8 @@ public class SplitData : MonoBehaviourPun
         PinballDataList.Add("Shield");
         PinballDataList.Add("Grenade");
         PinballDataList.Add("Shield");
-        PinballDataList.Add("SniperRifle");
         PinballDataList.Add("Repeater");
+        PinballDataList.Add("SniperRifle");
         PinballDataList.Add("Shotgun");
     }
 

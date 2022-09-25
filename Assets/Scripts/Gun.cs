@@ -4,19 +4,15 @@ using UnityEngine;
 
 using Photon.Pun;
 using Photon.Realtime;
-using System.Runtime.InteropServices;
 public class Gun : MonoBehaviourPun
 {
-    [DllImport("user32.dll")]
-    public static extern int SetCursorPos(int X, int Y);
-
     ScriptableWeaponData playerWeapondata = null;
     Vector3 fireDir = Vector3.zero; // 총알이 발사되는 방향 벡터
     Player player = null;
     Player myEnemy = null;
     public float numberOfBullet { get; set; } = 0;
     bool canshoot = true;
-    bool isSniperMode = false;
+
     public void SetGunData(ScriptableWeaponData data)
     {
         if (photonView.IsMine == false)
@@ -37,32 +33,28 @@ public class Gun : MonoBehaviourPun
 
         if (Input.GetMouseButtonDown(0) && canshoot == true) //shoot 가능 조건
         {
-            if (myEnemy == null)
-            {
-                Player[] players = FindObjectsOfType<Player>();
-                for (int i = 0; i < players.Length; i++)
-                {
-                    if (players[i].photonView.IsMine == false)
-                    {
-                        myEnemy = players[i];
-                        break;
-                    }
-                }
-
-                if (myEnemy == null)
-                    Debug.LogError("myEnemy is null Check Gun.cs");
-            }
-
+            FindEnemy();
             StartCoroutine("Shoot_" + playerWeapondata.GunName);
         }
-        if (Input.GetKeyDown(KeyCode.G))
+        
+    }
+    
+    void FindEnemy()
+    {
+        if (myEnemy == null)
         {
-            isSniperMode = true;
-        }
+            Player[] players = FindObjectsOfType<Player>();
+            for (int i = 0; i < players.Length; i++)
+            {
+                if (players[i].photonView.IsMine == false)
+                {
+                    myEnemy = players[i];
+                    break;
+                }
+            }
 
-        if (isSniperMode)
-        {
-            Vector3 target = Camera.main.WorldToScreenPoint(myEnemy.transform.position);
+            if (myEnemy == null)
+                Debug.LogError("myEnemy is null Check Gun.cs");
         }
     }
 
@@ -145,7 +137,6 @@ public class Gun : MonoBehaviourPun
 
     void TransferFireDir()
     {
-        
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mousePos.z = 0f;
         fireDir = (mousePos - transform.position).normalized; //발사방향
