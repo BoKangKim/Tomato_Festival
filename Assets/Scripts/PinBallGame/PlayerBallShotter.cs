@@ -35,8 +35,8 @@ public class PlayerBallShotter : MonoBehaviourPunCallbacks, IPunObservable
     void Update()
     {
 
-        if (PhotonNetwork.IsMasterClient && PlayerTurn)
-        {
+        //if (PhotonNetwork.IsMasterClient && PlayerTurn)
+        //{
 
 
             Debug.Log("마스터들어옴");
@@ -44,6 +44,7 @@ public class PlayerBallShotter : MonoBehaviourPunCallbacks, IPunObservable
 
             len = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
 
+            
 
             if (Input.GetMouseButtonDown(0))
             {
@@ -72,7 +73,7 @@ public class PlayerBallShotter : MonoBehaviourPunCallbacks, IPunObservable
             {
                 arrow.enabled = false;
             }
-        }
+        //}
 
         else if (!PhotonNetwork.IsMasterClient && !PlayerTurn)
         {
