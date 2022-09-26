@@ -44,12 +44,12 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: Background
-    uniqueID: 282163219
+  - name: BackGround
+    uniqueID: 3344361581
     locked: 0
-  - name: Middleground
-    uniqueID: 2808472061
+  - name: MiddleGround
+    uniqueID: 420440537
     locked: 0
-  - name: Frontground
-    uniqueID: 1098894565
+  - name: FrontGround
+    uniqueID: 3056382491
     locked: 0

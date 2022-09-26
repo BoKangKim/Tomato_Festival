@@ -8,6 +8,11 @@ public class ScriptableWeaponData : ScriptableObject
     
     [Header("총이름")] // Handgun(권총) - Repeater(연발총) - Shotgun - SniperRifle(저격총)
     [SerializeField] string gunName;
+    public string GunName { get { return gunName; } }
+
+    [Header("총 이미지")]
+    [SerializeField] Sprite gunImg;
+    public Sprite GunImg { get { return gunImg; } }
     
     [Header("사거리")] // 사거리 15 - 25 - 20 - 40
     [SerializeField] float attackRange;
@@ -28,11 +33,6 @@ public class ScriptableWeaponData : ScriptableObject
     [Header("연사속도")] // 연사속도 1.5 - 0.5 - 1 - 2.5
     [SerializeField] float attackInterval;
     public float AttackInterval { get { return attackInterval; } }
-
-    public string GetGunName()
-    {
-        return gunName;
-    }
 
   
 }

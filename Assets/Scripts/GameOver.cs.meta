@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Scripts/GameOver.cs.meta
+guid: 2443c93ad9539234fad9db7cfc2b9770
+========
+guid: 256b32e68034a4841a5b6be6cf3f0aa8
+>>>>>>>> origin/YoungB:Assets/Scripts/MapControll/RotationFloor.cs.meta
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -4,78 +4,97 @@ using UnityEngine;
 
 using Photon.Pun;
 using Photon.Realtime;
-
 public class Gun : MonoBehaviourPun
 {
     ScriptableWeaponData playerWeapondata = null;
-    Vector3 fireDir = Vector3.zero; // ÃÑ¾ËÀÌ ¹ß»çµÇ´Â ¹æÇâ º¤ÅÍ
+    Vector3 fireDir = Vector3.zero; // ï¿½Ñ¾ï¿½ï¿½ï¿½ ï¿½ß»ï¿½Ç´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     Player player = null;
     Player myEnemy = null;
-    public int myNum { get; set; } = 0;
-    float numberOfBullet; //±âº» Á¦°ø ÃÑ¾Ë °³¼ö
-    float attackInterval; //¿¬»ç¼Óµµ
-    bool canshoot;
-    
+    public float numberOfBullet { get; set; } = 0;
+    bool canshoot = true;
 
-    private void Start()
-    {
-        if(photonView.IsMine == true)
-        {
-            player = GetComponentInParent<Player>();
-            GameManger.Instance.SetPlayerNum(this);
-            GameManger.Instance.SetGunData(this, myNum);
-        }
-    }
-
-    public void SetGunData(ScriptableWeaponData data) //ÀÏ´Ü SniperRifle(Àú°ÝÃÑ) ³Ñ¾î¿Ã°Å¾ß
-    {
-        playerWeapondata = data;
-
-        numberOfBullet = playerWeapondata.NumberOfBullet;
-
-        attackInterval = playerWeapondata.AttackInterval;
-        
-        
-        canshoot = true;
-    }
-    // Update is called once per frame
-    void Update()
+    public void SetGunData(ScriptableWeaponData data)
     {
         if (photonView.IsMine == false)
             return;
 
-        if (Input.GetMouseButtonDown(0) && canshoot == true) //shoot °¡´É Á¶°Ç
-        {
-            if (myEnemy == null)
-            {
-                Player[] players = FindObjectsOfType<Player>();
-                for (int i = 0; i < players.Length; i++)
-                {
-                    if (players[i].photonView.IsMine == false)
-                    {
-                        myEnemy = players[i];
-                        break;
-                    }
-                }
+        playerWeapondata = data;
+        numberOfBullet += data.NumberOfBullet;
+    }
 
-                if (myEnemy == null)
-                    Debug.LogError("myEnemy is null Check Gun.cs");
+    // Update is called once per frame
+    void Update()
+>>>>>>> origin/YoungB
+    {
+        if (playerWeapondata == null)
+            return;
+
+        if (photonView.IsMine == false || numberOfBullet == 0)
+            return;
+
+        playerWeapondata = data;
+        numberOfBullet += data.NumberOfBullet;
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (playerWeapondata == null)
+            return;
+
+        if (photonView.IsMine == false || numberOfBullet == 0)
+            return;
+
+        if (Input.GetMouseButtonDown(0) && canshoot == true) //shoot ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+        {
+            FindEnemy();
+            StartCoroutine("Shoot_" + playerWeapondata.GunName);
+        }
+        
+    }
+    
+    void FindEnemy()
+    {
+        if (myEnemy == null)
+        {
+            Player[] players = FindObjectsOfType<Player>();
+            for (int i = 0; i < players.Length; i++)
+            {
+                if (players[i].photonView.IsMine == false)
+                {
+                    myEnemy = players[i];
+                    break;
+                }
             }
-            StartCoroutine("Shoot");
+
+            if (myEnemy == null)
+                Debug.LogError("myEnemy is null Check Gun.cs");
         }
     }
-    IEnumerator Shoot()
-    {
-        Debug.Log("ShootÄÚ·çÆ¾ ½ÇÇàµÊ");
 
+    void InitializingBullet(bool isShotGun,int count)
+    {
         canshoot = false;
         numberOfBullet -= 1f;
 
         TransferFireDir();
 
+        if(isShotGun == true && count == -1) 
+        {
+            float radian = Mathf.Atan2(fireDir.y,fireDir.x);
+            radian += (3.14f / 12f);
+            fireDir = new Vector3(Mathf.Cos(radian), Mathf.Sin(radian), 0f);
+        }
+        else if(isShotGun == true && count == 1)
+        {
+            float radian = Mathf.Atan2(fireDir.y, fireDir.x);
+            radian -= (3.14f / 12f);
+            fireDir = new Vector3(Mathf.Cos(radian), Mathf.Sin(radian), 0f);
+        }
+
         GameObject objectInst = PhotonNetwork.Instantiate("Bullet", transform.position, Quaternion.identity);
         Bullet bulletInst = objectInst.GetComponent<Bullet>();
-        if(bulletInst != null)
+        if (bulletInst != null)
         {
             bulletInst.myEnemy = this.myEnemy;
             bulletInst.MoveDir = fireDir;
@@ -87,9 +106,46 @@ public class Gun : MonoBehaviourPun
         {
             Debug.LogError("Not Found Bullet Check Gun.cs");
         }
+        
+    }
 
+    // Handgun
+    IEnumerator Shoot_Handgun()
+    {
+        InitializingBullet(false, 0);
+        yield return new WaitForSeconds(playerWeapondata.AttackInterval);
+        canshoot = true;
+    }
 
-        yield return new WaitForSeconds(attackInterval);
+    // Repeater
+    IEnumerator Shoot_Repeater()
+    {
+        for(int i = 0; i < 3; i++)
+        {
+            InitializingBullet(false, 0);
+            yield return new WaitForSeconds(playerWeapondata.AttackInterval);
+        }
+        
+        yield return new WaitForSeconds(1f);
+        canshoot = true;
+    }
+    
+    // Shotgun
+    IEnumerator Shoot_Shotgun()
+    {
+        InitializingBullet(true, -1);
+        InitializingBullet(true, 0);
+        InitializingBullet(true, 1);
+
+        yield return new WaitForSeconds(playerWeapondata.AttackInterval);
+        canshoot = true;
+    }
+    
+    // SniperRifle
+    IEnumerator Shoot_SniperRifle()
+    {
+        InitializingBullet(false, 0);
+        yield return new WaitForSeconds(playerWeapondata.AttackInterval);
         canshoot = true;
     }
 
@@ -97,7 +153,7 @@ public class Gun : MonoBehaviourPun
     {
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mousePos.z = 0f;
-        fireDir = (mousePos - transform.position).normalized; //¹ß»ç¹æÇâ
+        fireDir = (mousePos - transform.position).normalized; //ï¿½ß»ï¿½ï¿½ï¿½ï¿½
     }
 
     public Vector3 GetFireDir()
