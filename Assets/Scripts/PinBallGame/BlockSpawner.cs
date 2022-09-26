@@ -1,10 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
 
 
-public class BlockSpawner : MonoBehaviour
+public class BlockSpawner : MonoBehaviourPun
 {
     [Header("블럭 정보")]
     [SerializeField] List<Scriptable_PinBallBlock> blockDatas = new List<Scriptable_PinBallBlock>();
@@ -27,6 +28,10 @@ public class BlockSpawner : MonoBehaviour
     void Start()
     {
         CreateBlock();
+        if(PhotonNetwork.IsMasterClient)
+        {
+            CreateBlock();
+        }
     }
     #region 블럭생성
     private void CreateBlock()
