@@ -7,7 +7,7 @@ using Photon.Realtime;
 public class Gun : MonoBehaviourPun
 {
     ScriptableWeaponData playerWeapondata = null;
-    Vector3 fireDir = Vector3.zero; // �Ѿ��� �߻�Ǵ� ���� ����
+    Vector3 fireDir = Vector3.zero; 
     Player player = null;
     Player myEnemy = null;
     public float numberOfBullet { get; set; } = 0;
@@ -22,19 +22,6 @@ public class Gun : MonoBehaviourPun
         numberOfBullet += data.NumberOfBullet;
     }
 
-    // Update is called once per frame
-    void Update()
->>>>>>> origin/YoungB
-    {
-        if (playerWeapondata == null)
-            return;
-
-        if (photonView.IsMine == false || numberOfBullet == 0)
-            return;
-
-        playerWeapondata = data;
-        numberOfBullet += data.NumberOfBullet;
-    }
 
     // Update is called once per frame
     void Update()
@@ -50,7 +37,7 @@ public class Gun : MonoBehaviourPun
             FindEnemy();
             StartCoroutine("Shoot_" + playerWeapondata.GunName);
         }
-        
+
     }
     
     void FindEnemy()
