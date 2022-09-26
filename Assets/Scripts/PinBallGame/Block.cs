@@ -2,10 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using Photon.Pun;
 
 public delegate void AddList(string data);
 
-public class Block : MonoBehaviour
+public class Block : MonoBehaviourPun
 {
     [SerializeField] TextMeshProUGUI blockHP;
     [SerializeField] TextMeshProUGUI playCount;
