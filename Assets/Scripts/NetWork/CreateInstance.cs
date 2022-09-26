@@ -37,5 +37,5 @@ public class CreateInstance : MonoBehaviourPunCallbacks
         yield return new WaitForSeconds(0.5f);
         PhotonNetwork.LoadLevel("Loading");
     }
-    //OnPlayerEnteredRoom(Player newPlayer)
+
 }

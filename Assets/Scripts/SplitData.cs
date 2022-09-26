@@ -7,36 +7,25 @@ using Photon.Realtime;
 
 // Bullet(�Ѿ�) Grenade(����ź) Shield(��)
 // Handgun(����) - Repeater(������) - Shotgun - SniperRifle(������)
-public class SplitData : MonoBehaviourPun
+public class SplitData : MonoBehaviour
 {
-    List<string> gunData;
-    List<string> itemData;
-    List<string> PinballDataList;
+    List<string> gunData = new List<string>();
+    List<string> itemData = new List<string>();
+    List<string> PinballDataList = new List<string>();
+    [SerializeField]PinBallGame_ItemCheck _itemCheck;
 
     private void Awake()
     {
-        gunData = new List<string>();
-        itemData = new List<string>();
-        PinballDataList = new List<string>();
-        PinballDataList.Add("Bullet");
-        PinballDataList.Add("Grenade");
-        PinballDataList.Add("Shield");
-        PinballDataList.Add("Grenade");
-        PinballDataList.Add("Shield");
-        PinballDataList.Add("Grenade");
-        PinballDataList.Add("Shield");
-        PinballDataList.Add("Grenade");
-        PinballDataList.Add("Shield");
-        PinballDataList.Add("Repeater");
-        PinballDataList.Add("SniperRifle");
-        PinballDataList.Add("Shotgun");
+        Debug.Log("Splitdata Awake");
     }
 
-    // ������ �޾ƿ��� �и� �ϴ� �Լ�
-    // TEST �Ű� ������ List �޾ƿ;� ��
+    private void OnEnable()
+    {
+        PinballDataList = _itemCheck.GetMyItemDataList();
+    }
+
     public List<string> GetAndSplitData(string name) 
     {
-        
         if(PinballDataList.Count != 0 && itemData.Count == 0 && gunData.Count == 0)
         {
             for (int i = 0; i < PinballDataList.Count; i++)

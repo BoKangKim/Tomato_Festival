@@ -49,7 +49,7 @@ public class Block : MonoBehaviourPun
         BlockBC = GetComponent<BoxCollider2D>();
         blockSpawner = FindObjectOfType<BlockSpawner>();
         PinBallGame_ItemCheck pinBallGame_ItemCheck = FindObjectOfType<PinBallGame_ItemCheck>();
-        add = pinBallGame_ItemCheck.AddItemCheckList;
+        //add = pinBallGame_ItemCheck.AddItemCheckList;
         //ItemInfo = new List<string>();
     }
     private void Start()
