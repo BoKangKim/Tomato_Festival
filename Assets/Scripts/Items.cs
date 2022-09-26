@@ -9,67 +9,76 @@ using Photon.Realtime;
 public class Items : MonoBehaviourPun
 {
     [SerializeField] Sprite[] itemImgs;
-    public Image myImg;
+
+    Image myImg;
     List<string> items;
     Player player = null;
     Player myEnemy = null;
     Rigidbody2D myRigidbody;
     float shieldTime = 2f;
     public GameObject GrenadePrefab = null;
-    SpriteRenderer spriteRender = null;
-    public int MyItemIndex { get; set; } = 0;
+    GameObject MyShield = null;
+    int MyItemIndex = 0;
     Vector3 fireDir = Vector3.zero;
-    
+    int preListCount = 0;
+    GameObject grenade = null;
 
     private void Awake()
     {
+        items = new List<string>();
         player = GetComponent<Player>();
-        spriteRender = player.GetComponent<SpriteRenderer>();
-        if(photonView.IsMine == true)
-        {
-            myImg = FindObjectOfType<Image>();
-        }
+        MyShield = gameObject.transform.Find("ShiledEffect").gameObject;
+        myImg = FindObjectOfType<Image>();
+        
     }
 
-    private void Start()
+    private void OnEnable()
     {
         SplitData splitData = FindObjectOfType<SplitData>();
 
-        if (splitData != null && photonView.IsMine == true)
-            splitData.GetAndSplitData();
+        if (splitData != null && photonView.IsMine)
+        {
+            preListCount = this.items.Count;
+            items.AddRange(splitData.GetAndSplitData("Item"));
+            ItemListSetting();
+        }
     }
 
     private void Update()
     {
-        if (photonView.IsMine == false)
+        if (items.Count == 0)
             return;
 
-        if (items.Count == 0)
+        if (photonView.IsMine == false)
             return;
 
         if (Input.GetMouseButtonDown(1))
         {
-            StartItemCoroutine();
+            if (items[MyItemIndex].Equals("Grenade"))
+                StartItemCoroutine();
+            else if (items[MyItemIndex].Equals("Shield"))
+                photonView.RPC("RPC_StartItemCorountine", RpcTarget.All);
+
             items.RemoveAt(MyItemIndex);
+            photonView.RPC("RPC_RemoveItemList", RpcTarget.Others);
+
+            if (items.Count == 0)
+            {
+                ChangeUIImg();
+                return;
+            }
             
             if (MyItemIndex == items.Count)
             {
                 MyItemIndex = 0;
+                photonView.RPC("RPC_AsyncMyItemIndex", RpcTarget.Others, MyItemIndex);
             }
+            ChangeUIImg();
 
-            if (items.Count == 0)
-            {
-                myImg.sprite = null;
-                myImg.gameObject.SetActive(false);
-            }
-            else
-            {
-                ChangeUIImg();
-            }
         }
         else if (Input.GetKeyDown(KeyCode.Q))
         {
-            if(MyItemIndex == 0)
+            if (MyItemIndex == 0)
             {
                 MyItemIndex = items.Count - 1;
             }
@@ -77,11 +86,13 @@ public class Items : MonoBehaviourPun
             {
                 MyItemIndex--;
             }
+
+            photonView.RPC("RPC_AsyncMyItemIndex", RpcTarget.Others, MyItemIndex);
             ChangeUIImg();
         }
         else if (Input.GetKeyDown(KeyCode.E))
         {
-            if(MyItemIndex == items.Count - 1)
+            if (MyItemIndex == items.Count - 1)
             {
                 MyItemIndex = 0;
             }
@@ -89,36 +100,78 @@ public class Items : MonoBehaviourPun
             {
                 MyItemIndex++;
             }
+
+            photonView.RPC("RPC_AsyncMyItemIndex", RpcTarget.Others, MyItemIndex);
             ChangeUIImg();
         }
     }
 
+    #region Async Data
+
     public void ItemListSetting()
     {
-        Debug.Log("ItemListSetting");
+        Gun gun = GetComponentInChildren<Gun>();
+
         for (int i = 0; i < items.Count; i++)
         {
             if (items[i].Equals("Bullet"))
             {
-                player.bulletCount += 5;
+                gun.numberOfBullet += 5;
                 items.RemoveAt(i);
             }
+        }
+
+        for(int i = preListCount; i < items.Count; i++)
+        {
+            photonView.RPC("RPC_AsyncItemList", RpcTarget.Others, items[i]);
         }
 
         ChangeUIImg();
     }
 
-    public void StartItemCoroutine()
+    void StartItemCoroutine()
     {
         StartCoroutine(items[MyItemIndex]);
     }
 
+    [PunRPC]
+    void RPC_AsyncMyItemIndex(int MyItemIndex)
+    {
+        this.MyItemIndex = MyItemIndex;
+        for(int i = 0; i < this.items.Count; i++)
+        {
+            Debug.Log(items[i]);
+        }
+        Debug.Log(this.MyItemIndex);
+    }
+
+    [PunRPC]
+    void RPC_AsyncItemList(string item)
+    {
+        items.Add(item);
+    }
+
+    [PunRPC]
+    void RPC_RemoveItemList()
+    {
+        items.RemoveAt(MyItemIndex);
+    }
+
+    [PunRPC]
+    void RPC_StartItemCorountine()
+    {
+        StartCoroutine(items[MyItemIndex]);
+    }
+
+    #endregion
+
+    #region Item Logic
     IEnumerator Shield()
     {
-        spriteRender.color = Color.blue;
+        MyShield.SetActive(true);
         player.IsShieldTime = true;
         yield return new WaitForSeconds(shieldTime);
-        spriteRender.color = Color.green;
+        MyShield.SetActive(false);
         player.IsShieldTime = false;
     }
 
@@ -133,14 +186,13 @@ public class Items : MonoBehaviourPun
     {
         TransferFireDir();
 
-        GameObject grenade = PhotonNetwork.Instantiate("Grenade",(transform.position),Quaternion.identity);
-        grenade.transform.position = player.transform.position + fireDir;
-
+        GameObject grenade = PhotonNetwork.Instantiate("Grenade", transform.position + (fireDir * transform.lossyScale.y), Quaternion.identity);
 
         myRigidbody = grenade.GetComponent<Rigidbody2D>();
-        myRigidbody.AddForce(fireDir * 500f,ForceMode2D.Force);
+        myRigidbody.AddForce(fireDir * 500f, ForceMode2D.Force);
 
         yield return new WaitForSeconds(3f);
+
         GrenadeExplosion(grenade);
         PhotonNetwork.Destroy(grenade.gameObject);
     }
@@ -161,7 +213,7 @@ public class Items : MonoBehaviourPun
                     break;
                 }
             }
-
+            
             if (myEnemy == null)
                 Debug.LogError("myEnemy is null Check Gun.cs");
         }
@@ -172,15 +224,23 @@ public class Items : MonoBehaviourPun
         }
 
     }
-    
-    public void SetList(List<string> items)
-    {
-        Debug.Log("SetList");
-        this.items = items;
-    }
-    
+
     void ChangeUIImg()
     {
+        if (items.Count == 0)
+        {
+            if(myImg.gameObject.activeSelf == true)
+            {
+                myImg.sprite = null;
+                myImg.gameObject.SetActive(false);
+            }
+            return;
+        }
+        else if(items.Count != 0 && myImg.gameObject.activeSelf == false)
+        {
+            myImg.gameObject.SetActive(true);
+        }
+
         if (items[MyItemIndex].Equals("Grenade"))
         {
             myImg.sprite = itemImgs[0];
@@ -192,4 +252,5 @@ public class Items : MonoBehaviourPun
         
     }
 
+    #endregion
 }

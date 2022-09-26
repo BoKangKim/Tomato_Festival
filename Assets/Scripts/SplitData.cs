@@ -5,68 +5,76 @@ using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 
-// Bullet(ÃÑ¾Ë) Grenade(¼ö·ùÅº) Shield(¹æ¾î¸·)
-// Handgun(±ÇÃÑ) - Repeater(¿¬¹ßÃÑ) - Shotgun - SniperRifle(Àú°ÝÃÑ)
-public class SplitData : MonoBehaviour
+// Bullet(ï¿½Ñ¾ï¿½) Grenade(ï¿½ï¿½ï¿½ï¿½Åº) Shield(ï¿½ï¿½î¸·)
+// Handgun(ï¿½ï¿½ï¿½ï¿½) - Repeater(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½) - Shotgun - SniperRifle(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
+public class SplitData : MonoBehaviourPun
 {
     List<string> gunData;
     List<string> itemData;
-    List<string> testList;
+    List<string> PinballDataList;
+
     private void Awake()
     {
         gunData = new List<string>();
         itemData = new List<string>();
-        testList = new List<string>();
-        testList.Add("Bullet");
-        testList.Add("Grenade");
-        testList.Add("Shield");
-        testList.Add("Grenade");
-        testList.Add("Shield");
-        testList.Add("Grenade");
-        testList.Add("Shield");
-        testList.Add("Grenade");
-        testList.Add("Shield");
+        PinballDataList = new List<string>();
+        PinballDataList.Add("Bullet");
+        PinballDataList.Add("Grenade");
+        PinballDataList.Add("Shield");
+        PinballDataList.Add("Grenade");
+        PinballDataList.Add("Shield");
+        PinballDataList.Add("Grenade");
+        PinballDataList.Add("Shield");
+        PinballDataList.Add("Grenade");
+        PinballDataList.Add("Shield");
+        PinballDataList.Add("Repeater");
+        PinballDataList.Add("SniperRifle");
+        PinballDataList.Add("Shotgun");
     }
 
-    private void Start()
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½ ï¿½Ð¸ï¿½ ï¿½Ï´ï¿½ ï¿½Ô¼ï¿½
+    // TEST ï¿½Å°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ List ï¿½Þ¾Æ¿Í¾ï¿½ ï¿½ï¿½
+    public List<string> GetAndSplitData(string name) 
     {
-        //GetAndSplitData(testList);
-    }
-
-    // µ¥ÀÌÅÍ ¹Þ¾Æ¿À°í ºÐ¸® ÇÏ´Â ÇÔ¼ö
-    // TEST ¸Å°³ º¯¼ö·Î List ¹Þ¾Æ¿Í¾ß ÇÔ
-    public void GetAndSplitData() 
-    {
-        List<string> data = testList;
-        for(int i = 0; i < data.Count; i++)
+        
+        if(PinballDataList.Count != 0 && itemData.Count == 0 && gunData.Count == 0)
         {
-            if(data[i].Equals("Bullet") 
-                || data[i].Equals("Grenade")
-                || data[i].Equals("Shield"))
+            for (int i = 0; i < PinballDataList.Count; i++)
             {
-                itemData.Add(data[i]);
-            }
-            else if(data[i].Equals("Handgun")
-                || data[i].Equals("Repeater")
-                || data[i].Equals("Shotgun")
-                || data[i].Equals("SniperRifle"))
-            {
-                gunData.Add(data[i]);
+                if (PinballDataList[i].Equals("Bullet")
+                    || PinballDataList[i].Equals("Grenade")
+                    || PinballDataList[i].Equals("Shield"))
+                {
+                    itemData.Add(PinballDataList[i]);
+                }
+                else if (PinballDataList[i].Equals("Handgun")
+                    || PinballDataList[i].Equals("Repeater")
+                    || PinballDataList[i].Equals("Shotgun")
+                    || PinballDataList[i].Equals("SniperRifle"))
+                {
+                    gunData.Add(PinballDataList[i]);
+                }
             }
         }
 
-        Items[] myItemsData = FindObjectsOfType<Items>();
-        Debug.Log(myItemsData.Length);
-        for(int i = 0;i < myItemsData.Length; i++)
+        if (name.Equals("Item"))
         {
-            if (myItemsData[i].photonView.IsMine)
-            {
-                Debug.Log("Split Data");
-                myItemsData[i].SetList(itemData);
-                myItemsData[i].ItemListSetting();
-            }
+            return itemData;
         }
+        else if (name.Equals("Gun"))
+        {
+            return gunData;
+        }
+
+        return null;
+        
     }
 
+    public void ResetLists()
+    {
+        PinballDataList.Clear();
+        itemData.Clear();
+        gunData.Clear();
+    }
     
 }

@@ -17,16 +17,22 @@ public class Player : MonoBehaviourPun
     Rigidbody2D myRigidbody;
     CamEffect camEffect = null;
     SpriteRenderer spriteRenderer = null;
+    GameOver over = null;
 
     // 현재 아이템 정보
     Items myItems = null;
     public int MyItemIndex { get; set; } = 0;
     public bool IsShieldTime { get; set; } = false;
-    public int bulletCount { get; set; } = 0;
+
+
     private void Awake()
     {
+        Debug.Log(photonView.ViewID + " Awake");
+        Debug.Log(PhotonNetwork.IsMasterClient + " Is Master");
+        Debug.Log(photonView.Owner + " Owner");
         spriteRenderer = GetComponent<SpriteRenderer>();
         myItems = GetComponent<Items>();
+        over = FindObjectOfType<GameOver>();
 
         if (photonView.IsMine == false)
         {
@@ -42,14 +48,17 @@ public class Player : MonoBehaviourPun
         playercurHP = 100f;
     }
 
+    private void OnDestroy()
+    {
+        Debug.Log(photonView.ViewID + " Destroy");
+        Debug.Log(PhotonNetwork.IsMasterClient + " Is Master Destroy");
+    }
+
     private void Start()
     {
-        if(photonView.IsMine == true)
+        if(transform.position.x > 0f)
         {
-            if(transform.position.x > 0f)
-            {
-                spriteRenderer.flipX = true;
-            }
+            spriteRenderer.flipX = true;
         }
     }
     // 키 입력을 위해 돌린 업데이트 함수 
@@ -73,8 +82,8 @@ public class Player : MonoBehaviourPun
     // 리지드바디 물리적인 처리를 하기위한 FixedUpdate
     void FixedUpdate()
     {
-        if (myRigidbody == null)
-            return;
+        //if (myRigidbody == null)
+        //    return;
         // 네트워크 처리
         if (photonView.IsMine == false)
             return;
@@ -86,6 +95,7 @@ public class Player : MonoBehaviourPun
             Jump();
         }
         
+
         
         float xAxis = Input.GetAxis("Horizontal");
 
@@ -110,10 +120,8 @@ public class Player : MonoBehaviourPun
     // 총알이 충돌 했을 때 불림
     // 넉백을 처리하는 코루틴 실행 
     
-
     private void Jump()
     {
-        
         myRigidbody.AddForce(Vector2.up * 1800f, ForceMode2D.Force);
         isJumpKeyInput = false;
         initJump = false;
@@ -128,15 +136,30 @@ public class Player : MonoBehaviourPun
     {
         this.isJumpKeyInput = isJump;
     }
-
+    
+    // 일단 합치기 전이라 게임이 완전 끝났을 때 로직임
     void TransferDamage(float attackDamage)
     {
-       
+        playercurHP -= attackDamage;
+        if(playercurHP < 0)
+        {
+            over.SetWinCount();
+            photonView.RPC("BattleEnd",RpcTarget.Others);
+            return;
+        }
         photonView.RPC("RPC_TransferDamage", RpcTarget.Others, attackDamage);
     }
+
     public void StartKnockBackCoroutine(Vector3 bulletVec)
     {
         photonView.RPC("RPC_StartKnockBackCoroutine", RpcTarget.Others, bulletVec);
+    }
+
+    // 일단 합치기 전이라 게임이 완전 끝났을 때 로직임
+    [PunRPC]
+    void BattleEnd()
+    {
+        over.SetLoseCount();
     }
 
     [PunRPC]
@@ -152,11 +175,26 @@ public class Player : MonoBehaviourPun
         }
         StartCoroutine(KnockBack());
     }
+
     [PunRPC]
     void RPC_TransferDamage(float attackDamage)
     {
+        if (IsShieldTime == true)
+            return;
+
         camEffect.StartCamEffectCoroutine();
         playercurHP -= attackDamage;
+    }
+
+    void DestroyPlayer() 
+    {
+        photonView.RPC("RPC_DestroyPlayer",RpcTarget.Others);
+    }
+
+    [PunRPC]
+    void RPC_DestroyPlayer()
+    {
+        PhotonNetwork.Destroy(this.gameObject);
     }
 
     // 넉백 코루틴

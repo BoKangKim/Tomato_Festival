@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: Repeater
   m_EditorClassIdentifier: 
   gunName: Repeater
+  gunImg: {fileID: 21300000, guid: 59d01594ee3c4ee438033f99b9ccaaed, type: 3}
   attackRange: 25
   attackSpeed: 40
   attackDamage: 15
   numberOfBullet: 20
-  attackInterval: 0.5
+  attackInterval: 0.1

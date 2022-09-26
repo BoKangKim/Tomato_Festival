@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: SniperRifle
   m_EditorClassIdentifier: 
   gunName: SniperRifle
+  gunImg: {fileID: 21300000, guid: 0d7cf685bdb004444ae604f8f65d63cb, type: 3}
   attackRange: 40
   attackSpeed: 70
   attackDamage: 30
