@@ -7,7 +7,7 @@ using Photon.Realtime;
 public class Gun : MonoBehaviourPun
 {
     ScriptableWeaponData playerWeapondata = null;
-    Vector3 fireDir = Vector3.zero; // ÃÑ¾ËÀÌ ¹ß»çµÇ´Â ¹æÇâ º¤ÅÍ
+    Vector3 fireDir = Vector3.zero; // ï¿½Ñ¾ï¿½ï¿½ï¿½ ï¿½ß»ï¿½Ç´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     Player player = null;
     Player myEnemy = null;
     public float numberOfBullet { get; set; } = 0;
@@ -24,6 +24,7 @@ public class Gun : MonoBehaviourPun
 
     // Update is called once per frame
     void Update()
+>>>>>>> origin/YoungB
     {
         if (playerWeapondata == null)
             return;
@@ -31,7 +32,20 @@ public class Gun : MonoBehaviourPun
         if (photonView.IsMine == false || numberOfBullet == 0)
             return;
 
-        if (Input.GetMouseButtonDown(0) && canshoot == true) //shoot °¡´É Á¶°Ç
+        playerWeapondata = data;
+        numberOfBullet += data.NumberOfBullet;
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (playerWeapondata == null)
+            return;
+
+        if (photonView.IsMine == false || numberOfBullet == 0)
+            return;
+
+        if (Input.GetMouseButtonDown(0) && canshoot == true) //shoot ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         {
             FindEnemy();
             StartCoroutine("Shoot_" + playerWeapondata.GunName);
@@ -139,7 +153,7 @@ public class Gun : MonoBehaviourPun
     {
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mousePos.z = 0f;
-        fireDir = (mousePos - transform.position).normalized; //¹ß»ç¹æÇâ
+        fireDir = (mousePos - transform.position).normalized; //ï¿½ß»ï¿½ï¿½ï¿½ï¿½
     }
 
     public Vector3 GetFireDir()

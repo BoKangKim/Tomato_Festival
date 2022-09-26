@@ -9,6 +9,12 @@ public class CreateInstance : MonoBehaviourPunCallbacks
 {
     GameObject pool = null;
 
+    
+    private void Awake()
+    {
+        StartCoroutine(CheckPlayerCount());
+    }
+
     void Start()
     {
         if(PhotonNetwork.IsConnected == true)
@@ -24,4 +30,12 @@ public class CreateInstance : MonoBehaviourPunCallbacks
         }
     }
 
+     IEnumerator CheckPlayerCount()
+    {
+        yield return new WaitUntil(() => PhotonNetwork.CurrentRoom.PlayerCount != 2);
+
+        yield return new WaitForSeconds(0.5f);
+        PhotonNetwork.LoadLevel("Loading");
+    }
+    //OnPlayerEnteredRoom(Player newPlayer)
 }

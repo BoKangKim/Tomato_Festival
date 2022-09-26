@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public delegate void LoadingTomatoDestroy();
 
@@ -25,6 +27,7 @@ public class LoadingEffect : ObjectPool<LoadingTomato>
     }
 
     #endregion
+
 
     public LoadingTomatoDestroy callbackDestroy = null;
     [SerializeField] LoadingTomato loadingTomatoPrefab = null;
@@ -54,6 +57,7 @@ public class LoadingEffect : ObjectPool<LoadingTomato>
             yield return new WaitForSeconds(Rtime);
             
             LoadingTomato loadingtoInst = Get();
+            
             loadingtoInst.transform.parent = this.transform;
 
         }
@@ -90,7 +94,7 @@ public class LoadingEffect : ObjectPool<LoadingTomato>
             
             numcount++;
 
-            if (this.Pool_Max_Size -2 <= numcount)
+            if (base.Pool_Max_Size -2 <= numcount)
             {
                 yield break;
             }

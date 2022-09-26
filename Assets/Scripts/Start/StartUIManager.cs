@@ -5,12 +5,14 @@ using UnityEngine.UI;
 using TMPro;
 
 
-using Photon.Pun; // ���� ���̺귯���� ����Ƽ ������Ʈ�� ����� �� �ְ� �ϴ� ���̺귯��
+using Photon.Pun;
 using Photon.Realtime;
-
 
 public class StartUIManager : MonoBehaviourPunCallbacks
 {
+    [Header("Logo")]
+    [SerializeField] GameObject gameLogo = null;
+
     [Header("Option")]
     [SerializeField] GameObject buttonScroll = null;
     Vector3 buttonscrollPos;
@@ -26,70 +28,71 @@ public class StartUIManager : MonoBehaviourPunCallbacks
     [SerializeField] Button matchButton = null;
     [SerializeField] Button backButton = null;
 
-    [Header("In Room")]
-    [SerializeField] GameObject loadingEffect = null;
     [SerializeField] TextMeshProUGUI matching = null;
-    [SerializeField] Slider loadingSlider = null;
-
-
 
     void Awake()
     {
-        // ���� ���۽� ��ũ�� ����� ������ 16 : 9 ������
+        // Set Screen Size 16 : 9 fullscreen false
         Screen.SetResolution(800, 450, false);
-        // ��Ʈ��ũ ����ȭ�� �� �����ϰ� �ϱ����� ����
+        // Improves the performance of the Photon network.
         PhotonNetwork.SendRate = 60;
         PhotonNetwork.SerializationRate = 30;
-        // ���� ���� ����
-        //PhotonNetwork.GameVersion = gameVersion;
-        // ������(ȣ��Ʈ)�� ���� �̵��ϸ� Ŭ���̾�Ʈ �÷��̾���� �ڵ������� ��ũ�ȴ�
+        // Automatically synchronized scenes from other clients when switching scenes from the master server.
         PhotonNetwork.AutomaticallySyncScene = true;
-        // �濡�� ���Ӿ����� �ε��ɶ� �濡�� ������ �޼����� ���� �ʴ´�
+        // Don't get a photonmessage when access the room.
         PhotonNetwork.IsMessageQueueRunning = false;
     }
-    // Start is called before the first frame update
+    
     void Start()
     {
+        //Connect network.
         PhotonNetwork.ConnectUsingSettings();
+        gameLogo.SetActive(true);
+        accessScroll.SetActive(false);
 
         buttonscrollPos = buttonScroll.transform.position;
         accessscrollPos = accessScroll.transform.position;
 
+        StartCoroutine(SetUI());
+    }
+    IEnumerator SetUI()
+    {
+        yield return new WaitForSeconds(0.1f);
         buttonScroll.SetActive(true);
-        startButton.interactable = false;
-
-        accessScroll.SetActive(false);
-
-        loadingEffect.SetActive(false);
-        loadingSlider.gameObject.SetActive(false);
-        matching.text = "";
     }
 
-    public override void OnConnectedToMaster()  // ������ ������ ���� �����ÿ� ȣ��(���濡�� ȣ��)
+    public override void OnConnectedToMaster()  // Call when the master server is connected
     {
         startButton.interactable = true;
-
     }
-    public override void OnDisconnected(DisconnectCause cause)
+    public override void OnDisconnected(DisconnectCause cause)  // Call when the master server is not connected
     {
         startButton.interactable = false;
+        PhotonNetwork.ConnectUsingSettings();
     }
-    #region
+
+    #region //setting ButtonScroll
     public void OnClickStartButton()
     {
         StartCoroutine(StartButton());
     }
     public void OnClickInfoButton()
     {
-
+        startButton.interactable = false;
+        settingButton.interactable = false;
+        exitButton.interactable = false;
     }
     public void OnClickSettingButton()
     {
-
+        startButton.interactable = false;
+        infoButton.interactable = false;
+        exitButton.interactable = false;
     }
     public void OnClickExitButton()
     {
-
+        //UnityEditor.EditorApplication.isPlaying = false;
+        Application.Quit();
+        //Application.OpenURL("http://google.com");
     }
 
     IEnumerator StartButton()
@@ -104,7 +107,7 @@ public class StartUIManager : MonoBehaviourPunCallbacks
             time += Time.deltaTime;
 
             buttonScroll.transform.Translate(Vector3.left * 8f);
-            accessScroll.transform.Translate(Vector3.left * 4f);
+            accessScroll.transform.Translate(Vector3.left * 6f);
 
             yield return null;
         }
@@ -114,11 +117,13 @@ public class StartUIManager : MonoBehaviourPunCallbacks
     }
     #endregion
 
+    
     public void OnEndEdit(string name)
     {
         if (name.Length < 3 || name.Length > 8)
         {
-            myNickName.text = "";
+            myNickName.caretColor = Color.gray;
+            myNickName.text = "Please re-enter a nickname (3 ~ 8)";
             return;
         }
 
@@ -127,84 +132,41 @@ public class StartUIManager : MonoBehaviourPunCallbacks
     }
     public void OnClickMatchButton()
     {
-        if (string.IsNullOrEmpty(PhotonNetwork.NickName) == true)
-        {
-            return;
-        }
+        if (string.IsNullOrEmpty(PhotonNetwork.NickName) == true) return;
+        
         accessScroll.SetActive(false);
 
-
-        //�뿡 ���� �õ� /������ �� CreateRoom
+        gameLogo.SendMessage("GameLogoMove", SendMessageOptions.DontRequireReceiver);
         matching.text = "Accessing...";
-        PhotonNetwork.JoinOrCreateRoom("myroom", new RoomOptions { MaxPlayers = 2 }, null);
-    }
-    
-    
-    public override void OnJoinRoomFailed(short returnCode, string message)
-    {
-        matching.text = $"Connection Failed : <{returnCode}> {message}";
+
+
+        if (PhotonNetwork.CountOfPlayersInRooms % 2 == 0) //No room to enter(CountOfPlayersInRooms is even)
+        {
+            if (PhotonNetwork.CountOfRooms > 10) // CountOfPlayers > 20
+            {
+                matching.text = "Sorry, The game can't be played because all rooms are currently full.";
+            }
+            else
+            {
+                PhotonNetwork.JoinOrCreateRoom($"room{PhotonNetwork.CountOfRooms + 1}", new RoomOptions { MaxPlayers = 2 }, TypedLobby.Default);
+            }
+        }
+        else
+        {
+            //JoinRoom
+            PhotonNetwork.JoinRandomRoom();
+        }
     }
 
     public override void OnJoinedRoom()
     {
-        matching.text = "Searching for match";
-
-        loadingEffect.SetActive(true);
-
-        loadingSlider.gameObject.SetActive(true);
-        StartCoroutine(loadingSliderValueChange());
-
-        if (PhotonNetwork.CurrentRoom.PlayerCount < 2)
-        {
-            StartCoroutine(GoMain());
-        }
-        else
-        {
-            loadingEffect.SendMessage("Pouring", SendMessageOptions.DontRequireReceiver);
-        }
+        PhotonNetwork.LoadLevel("Loading");
     }
-    IEnumerator loadingSliderValueChange()//changing loadingbar's value
+    public override void OnJoinRoomFailed(short returnCode, string message)
     {
-        while(PhotonNetwork.CurrentRoom.PlayerCount != 2)
-        {
-            if(loadingSlider.value > 0.7f)
-            {
-                if(loadingSlider.value > 0.8f)
-                {
-                    if (loadingSlider.value > 0.9f)
-                    {
-                        loadingSlider.value += 0.00001f;
-                    }
-                    else
-                        loadingSlider.value += 0.0001f;
-                }
-                else
-                    loadingSlider.value += 0.001f;
-            }
-            else
-                loadingSlider.value += 0.01f;
-            yield return new WaitForSeconds(0.5f);
-        }
-        if(PhotonNetwork.CurrentRoom.PlayerCount == 2)
-        {
-            loadingSlider.value = 1f;
-        }
+        matching.text = $"Connection Failed : <{returnCode}> {message}";
+        accessScroll.SetActive(true);
     }
-
-    IEnumerator GoMain()
-    {
-        yield return new WaitUntil(()=> PhotonNetwork.CurrentRoom.PlayerCount == 2);
-        loadingEffect.SendMessage("Pouring", SendMessageOptions.DontRequireReceiver);
-        yield return new WaitForSeconds(2f);
-        PhotonNetwork.LoadLevel("Main"); // ��������� ���·� �� ��ȯ
-    }
-    /*
-    public override void OnMasterClientSwitched(Player newMasterClient)
-    {
-        Debug.Log("������ ���� : " + newMasterClient.ToString());
-    }
-    */
-
     public void OnClickBackButton()
     {
         accessScroll.transform.position = accessscrollPos;

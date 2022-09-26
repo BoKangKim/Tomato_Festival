@@ -27,6 +27,9 @@ public class Player : MonoBehaviourPun
 
     private void Awake()
     {
+        Debug.Log(photonView.ViewID + " Awake");
+        Debug.Log(PhotonNetwork.IsMasterClient + " Is Master");
+        Debug.Log(photonView.Owner + " Owner");
         spriteRenderer = GetComponent<SpriteRenderer>();
         myItems = GetComponent<Items>();
         over = FindObjectOfType<GameOver>();
@@ -43,6 +46,12 @@ public class Player : MonoBehaviourPun
         camEffect = FindObjectOfType<CamEffect>();
         playermaxHP = 100f;
         playercurHP = 100f;
+    }
+
+    private void OnDestroy()
+    {
+        Debug.Log(photonView.ViewID + " Destroy");
+        Debug.Log(PhotonNetwork.IsMasterClient + " Is Master Destroy");
     }
 
     private void Start()
