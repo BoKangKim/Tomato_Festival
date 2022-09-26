@@ -200,6 +200,7 @@ MonoBehaviour:
   vertical: 1
   controlID: 61
 --- !u!114 &9
+>>>>>>> origin/main
 MonoBehaviour:
   m_ObjectHideFlags: 52
   m_CorrespondingSourceObject: {fileID: 0}
@@ -331,6 +332,7 @@ MonoBehaviour:
   - {fileID: 15}
   m_Selected: 0
   m_LastSelected: 0
+>>>>>>> origin/main
 --- !u!114 &14
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -924,7 +926,7 @@ MonoBehaviour:
     m_FarClip: 10000
     m_DynamicClip: 1
     m_OcclusionCulling: 0
-  m_LastSceneViewRotation: {x: -0.08717229, y: 0.89959055, z: -0.21045254, w: -0.3726226}
+  m_LastSceneViewRotation: {x: -0.0161856, y: -0.022499828, z: -0.0003643825, w: 0.99961543}
   m_LastSceneViewOrtho: 0
   m_ReplacementShader: {fileID: 0}
   m_ReplacementString: 
@@ -967,20 +969,20 @@ MonoBehaviour:
       m_ExpandedIDs: 02a3ffffe4a3ffff6aa4ffff50a5ffff12a6ffff5ea6ffffdca7ffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
-        m_Name: 
-        m_OriginalName: 
+        m_Name: Player1_Shotter(Clone)
+        m_OriginalName: Player1_Shotter(Clone)
         m_EditFieldRect:
           serializedVersion: 2
           x: 0
           y: 0
           width: 0
           height: 0
-        m_UserData: 0
+        m_UserData: -62514
         m_IsWaitingForDelay: 0
         m_IsRenaming: 0
-        m_OriginalEventType: 11
+        m_OriginalEventType: 0
         m_IsRenamingFilename: 0
-        m_ClientGUIView: {fileID: 12}
+        m_ClientGUIView: {fileID: 6}
       m_SearchString: 
     m_ExpandedScenes: []
     m_CurrenRootInstanceID: 0

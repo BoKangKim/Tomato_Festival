@@ -54,6 +54,7 @@ MonoBehaviour:
   - RPC_SetGunSprite
   - BattleEnd
   - RPC_DestroyPlayer
+  - GameTurn
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
