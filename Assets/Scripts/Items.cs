@@ -220,6 +220,7 @@ public class Items : MonoBehaviourPun
 
         if (Vector3.Distance(grenade.transform.position, myEnemy.transform.position) <= 5f)
         {
+            myEnemy.SendMessage("TransferDamage", 40f, SendMessageOptions.DontRequireReceiver);
             myEnemy.SendMessage("StartKnockBackCoroutine", grenade.transform.position, SendMessageOptions.DontRequireReceiver);
         }
 

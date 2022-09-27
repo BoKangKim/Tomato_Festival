@@ -26,12 +26,6 @@ public class LoadingManager : MonoBehaviourPunCallbacks
         matching.text = "Searching for match";
 
         StartCoroutine(loadingSliderValueChange());
-
-        Debug.Log("총 플레이어 수" + PhotonNetwork.CountOfPlayers);
-        
-        Debug.Log("현재방 플레이어 수" + PhotonNetwork.CurrentRoom.PlayerCount);
-        Debug.Log(PhotonNetwork.CurrentRoom.Name);
-
         if (PhotonNetwork.CurrentRoom.PlayerCount < 2) //MasterClient
         {
             StartCoroutine(GoMain());
@@ -76,7 +70,7 @@ public class LoadingManager : MonoBehaviourPunCallbacks
 
         loadingEffect.SendMessage("Pouring", SendMessageOptions.DontRequireReceiver);
         yield return new WaitForSeconds(2f);
-        PhotonNetwork.LoadLevel("Main"); // load main scene
+        PhotonNetwork.LoadLevel("BKMAIN"); // load main scene
     }
     public void OnClickBackStartSButton()
     {

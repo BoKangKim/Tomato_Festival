@@ -837,7 +837,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 402600441}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 560174892}
+        m_TargetAssemblyTypeName: UIEvent, Assembly-CSharp
+        m_MethodName: BtnHome
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &402600441
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1048,7 +1060,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.15686275, g: 0.3529412, b: 0.11764706, a: 0}
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -1118,6 +1130,7 @@ GameObject:
   m_Component:
   - component: {fileID: 560174891}
   - component: {fileID: 560174890}
+  - component: {fileID: 560174892}
   m_Layer: 0
   m_Name: GameOver
   m_TagString: Untagged
@@ -1155,6 +1168,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &560174892
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 560174889}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c2a768f7ce7a4b41a6f695724fe98df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &864197736
 GameObject:
   m_ObjectHideFlags: 0
@@ -1471,7 +1496,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1072014694}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 560174892}
+        m_TargetAssemblyTypeName: UIEvent, Assembly-CSharp
+        m_MethodName: BtnRestart
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1072014694
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1728,7 +1765,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1250231828}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 560174892}
+        m_TargetAssemblyTypeName: UIEvent, Assembly-CSharp
+        m_MethodName: BtnQuit
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1250231828
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2436,7 +2485,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1612489079}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 560174892}
+        m_TargetAssemblyTypeName: UIEvent, Assembly-CSharp
+        m_MethodName: BtnQuit
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1612489079
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2558,7 +2619,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1616979417}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 560174892}
+        m_TargetAssemblyTypeName: UIEvent, Assembly-CSharp
+        m_MethodName: BtnRestart
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1616979417
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2680,7 +2753,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1744962054}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 560174892}
+        m_TargetAssemblyTypeName: UIEvent, Assembly-CSharp
+        m_MethodName: BtnHome
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1744962054
 MonoBehaviour:
   m_ObjectHideFlags: 0
