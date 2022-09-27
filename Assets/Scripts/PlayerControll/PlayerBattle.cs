@@ -5,7 +5,7 @@ using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 
-public class Player : MonoBehaviourPun
+public class PlayerBattle : MonoBehaviourPun
 {
     float playermaxHP;
     float playercurHP;
@@ -27,13 +27,9 @@ public class Player : MonoBehaviourPun
 
     private void Awake()
     {
-        Debug.Log(photonView.ViewID + " Awake");
-        Debug.Log(PhotonNetwork.IsMasterClient + " Is Master");
-        Debug.Log(photonView.Owner + " Owner");
         spriteRenderer = GetComponent<SpriteRenderer>();
         myItems = GetComponent<Items>();
         over = FindObjectOfType<GameOver>();
-
         if (photonView.IsMine == false)
         {
             Destroy(gameObject.GetComponent<Rigidbody2D>());

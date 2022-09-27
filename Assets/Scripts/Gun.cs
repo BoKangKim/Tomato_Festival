@@ -8,8 +8,8 @@ public class Gun : MonoBehaviourPun
 {
     ScriptableWeaponData playerWeapondata = null;
     Vector3 fireDir = Vector3.zero; 
-    Player player = null;
-    Player myEnemy = null;
+    PlayerBattle player = null;
+    PlayerBattle myEnemy = null;
     public float numberOfBullet { get; set; } = 0;
     bool canshoot = true;
 
@@ -44,7 +44,7 @@ public class Gun : MonoBehaviourPun
     {
         if (myEnemy == null)
         {
-            Player[] players = FindObjectsOfType<Player>();
+            PlayerBattle[] players = FindObjectsOfType<PlayerBattle>();
             for (int i = 0; i < players.Length; i++)
             {
                 if (players[i].photonView.IsMine == false)

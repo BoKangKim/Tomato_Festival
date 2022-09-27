@@ -10,7 +10,7 @@ public class RectFloor : MonoBehaviourPun
     // 플레이어가 땅에 닿았는 지 판단하기 위한 함수
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.tag == "Player")
+        if (collision.gameObject.tag == "PlayerBattle")
         {
             // 벽 옆면에 닿았을 때 점프가 되는 것을 막기 위해 판단하는 if문
             // 플레이어는 점프를 해서 장애물 위에 올라감

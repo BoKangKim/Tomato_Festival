@@ -8,8 +8,9 @@ using Photon.Pun;
 public class CreateInstance : MonoBehaviourPunCallbacks
 {
     GameObject pool = null;
+    GameObject Player1 = null;
+    GameObject Player2 = null;
 
-    
     private void Awake()
     {
         StartCoroutine(CheckPlayerCount());
@@ -22,9 +23,15 @@ public class CreateInstance : MonoBehaviourPunCallbacks
             pool = FindObjectOfType<Pool>().gameObject;
             pool.SetActive(false);
             if (PhotonNetwork.IsMasterClient)
-                PhotonNetwork.Instantiate("Player",new Vector3(-9f,-6f,0f),Quaternion.identity);
+            {
+                Debug.Log("CreateInstance");
+                Player1 = PhotonNetwork.Instantiate("PlayerBattle", new Vector3(-9f, -6f, 0f), Quaternion.identity);
+            }
             else
-                PhotonNetwork.Instantiate("Player",new Vector3(9f,-6f,0f), Quaternion.identity);
+            {
+                Debug.Log("CreateInstance");
+                Player2 = PhotonNetwork.Instantiate("PlayerBattle", new Vector3(9f, -6f, 0f), Quaternion.identity);
+            }
 
             pool.gameObject.SetActive(true);
         }
@@ -33,6 +40,11 @@ public class CreateInstance : MonoBehaviourPunCallbacks
      IEnumerator CheckPlayerCount()
     {
         yield return new WaitUntil(() => PhotonNetwork.CurrentRoom.PlayerCount != 2);
+        pool.gameObject.SetActive(false);
+        if (Player1 != null)
+            PhotonNetwork.Destroy(Player1.gameObject);
+        if (Player2 != null)
+            PhotonNetwork.Destroy(Player2.gameObject);
 
         yield return new WaitForSeconds(0.5f);
         PhotonNetwork.LoadLevel("Loading");

@@ -80,7 +80,7 @@ GameObject:
   - component: {fileID: 5445723506997087733}
   - component: {fileID: 3876015735883384700}
   m_Layer: 0
-  m_Name: Player
+  m_Name: PlayerBattle
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -217,7 +217,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5182199664510759891}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8a38ff4c5331a1f458c8564f4563d995, type: 3}
+  m_Script: {fileID: 11500000, guid: 6ab945ee6aae3804b9bb05e3254ce54f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &7337497627215000977

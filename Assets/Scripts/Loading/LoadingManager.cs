@@ -78,7 +78,7 @@ public class LoadingManager : MonoBehaviourPunCallbacks
     }
 
     /*
-    public override void OnMasterClientSwitched(Player newMasterClient)
+    public override void OnMasterClientSwitched(PlayerBattle newMasterClient)
     {
         Debug.Log("?????? ???? : " + newMasterClient.ToString());
     }

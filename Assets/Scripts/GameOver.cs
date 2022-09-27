@@ -8,8 +8,14 @@ public class GameOver : MonoBehaviourPun
     [SerializeField] GameObject WinPanel;
     [SerializeField] GameObject LosePanel;
     [SerializeField] Pool pool;
+    GameController gameControll = null;
     int winCount = 0;
     int loseCount = 0;
+
+    private void Awake()
+    {
+        gameControll = FindObjectOfType<GameController>();
+    }
 
 
     private void OnDisable()
@@ -20,31 +26,38 @@ public class GameOver : MonoBehaviourPun
 
     public void SetWinCount()
     {
-        winCount = winCount + 3;
-        if(winCount >= 3)
+        winCount = winCount + 1;
+        if (winCount >= 3)
         {
             WinPanel.SetActive(true);
             pool.gameObject.SetActive(false);
+        }
+        else
+        {
+            gameControll.BattleOver();
         }
     }
 
     public void SetLoseCount()
     {
-        loseCount = loseCount + 3;
+        PlayerBattle[] players = FindObjectsOfType<PlayerBattle>();
+        for (int i = 0; i < players.Length; i++)
+        {
+            if (players[i].photonView.IsMine)
+                PhotonNetwork.Destroy(players[i].gameObject);
+            else
+                players[i].SendMessage("DestroyPlayer", SendMessageOptions.DontRequireReceiver);
+        }
+
+        loseCount = loseCount + 1;
         if (loseCount >= 3)
         {
             LosePanel.SetActive(true);
             pool.gameObject.SetActive(false);
-            Player[] players = FindObjectsOfType<Player>();
-            Debug.Log(players.Length);
-            for (int i = 0; i < players.Length; i++)
-            {
-                if (players[i].photonView.IsMine)
-                    PhotonNetwork.Destroy(players[i].gameObject);
-                else
-                    players[i].SendMessage("DestroyPlayer",SendMessageOptions.DontRequireReceiver);
-            }
-            
+        }
+        else
+        {
+            gameControll.BattleOver();
         }
     }
 
