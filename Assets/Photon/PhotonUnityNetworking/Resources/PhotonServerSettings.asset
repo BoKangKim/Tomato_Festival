@@ -55,6 +55,7 @@ MonoBehaviour:
   - BattleEnd
   - RPC_DestroyPlayer
   - GameTurn
+  - RPC_PlayerSetActiveFalse
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

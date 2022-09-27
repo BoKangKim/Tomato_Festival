@@ -41,24 +41,31 @@ public class GameOver : MonoBehaviourPun
     public void SetLoseCount()
     {
         PlayerBattle[] players = FindObjectsOfType<PlayerBattle>();
-        for (int i = 0; i < players.Length; i++)
-        {
-            if (players[i].photonView.IsMine)
-                PhotonNetwork.Destroy(players[i].gameObject);
-            else
-                players[i].SendMessage("DestroyPlayer", SendMessageOptions.DontRequireReceiver);
-        }
 
         loseCount = loseCount + 1;
         if (loseCount >= 3)
         {
             LosePanel.SetActive(true);
             pool.gameObject.SetActive(false);
+
+            for(int i = 0; i < players.Length; i++)
+            {
+                players[i].SendMessage("PlayerSetActiveFalse",SendMessageOptions.DontRequireReceiver);
+            }
         }
         else
         {
+            
+            for (int i = 0; i < players.Length; i++)
+            {
+                if (players[i].photonView.IsMine)
+                    PhotonNetwork.Destroy(players[i].gameObject);
+                else
+                    players[i].SendMessage("DestroyPlayer", SendMessageOptions.DontRequireReceiver);
+            }
             gameControll.BattleOver();
         }
     }
 
+    
 }
