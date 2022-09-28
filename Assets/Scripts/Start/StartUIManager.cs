@@ -21,15 +21,15 @@ public class StartUIManager : MonoBehaviourPunCallbacks
     [SerializeField] Button settingButton = null;
     [SerializeField] Button exitButton = null;
 
-    [Header("Access")]
-    [SerializeField] GameObject accessScroll = null;
-    Vector3 accessscrollPos;
-    [SerializeField] TMP_InputField myNickName = null;
-    [SerializeField] Button matchButton = null;
-    [SerializeField] Button backButton = null;
+    [Header("UserProfile")]
+    [SerializeField] GameObject StartPanel;
+    [SerializeField] TextMeshProUGUI UserName;
+    [SerializeField] TextMeshProUGUI Email_ID;
+    [SerializeField] TextMeshProUGUI ErrorMsg;
+    [SerializeField] GameObject ErrorPanel;
+    [SerializeField] TextMeshProUGUI matching;
 
-    [SerializeField] TextMeshProUGUI matching = null;
-
+    #region Network
     void Awake()
     {
         // Set Screen Size 16 : 9 fullscreen false
@@ -48,10 +48,8 @@ public class StartUIManager : MonoBehaviourPunCallbacks
         //Connect network.
         PhotonNetwork.ConnectUsingSettings();
         gameLogo.SetActive(true);
-        accessScroll.SetActive(false);
 
         buttonscrollPos = buttonScroll.transform.position;
-        accessscrollPos = accessScroll.transform.position;
 
         StartCoroutine(SetUI());
     }
@@ -70,75 +68,26 @@ public class StartUIManager : MonoBehaviourPunCallbacks
         startButton.interactable = false;
         PhotonNetwork.ConnectUsingSettings();
     }
-
-    #region //setting ButtonScroll
-    public void OnClickStartButton()
-    {
-        StartCoroutine(StartButton());
-    }
-    public void OnClickInfoButton()
-    {
-        startButton.interactable = false;
-        settingButton.interactable = false;
-        exitButton.interactable = false;
-    }
-    public void OnClickSettingButton()
-    {
-        startButton.interactable = false;
-        infoButton.interactable = false;
-        exitButton.interactable = false;
-    }
-    public void OnClickExitButton()
-    {
-        //UnityEditor.EditorApplication.isPlaying = false;
-        Application.Quit();
-        //Application.OpenURL("http://google.com");
-    }
-
-    IEnumerator StartButton()
-    {
-        accessScroll.SetActive(true);
-        matchButton.interactable = false;
-
-        float time = 0f;
-
-        while (time <= 0.2f)
-        {
-            time += Time.deltaTime;
-
-            buttonScroll.transform.Translate(Vector3.left * 8f);
-            accessScroll.transform.Translate(Vector3.left * 6f);
-
-            yield return null;
-        }
-        buttonScroll.SetActive(false);
-
-        yield return null;
-    }
     #endregion
 
-    
-    public void OnEndEdit(string name)
+    // StartPanel Setting
+    public void SetStartPanel(string UserName, string Email_ID, bool StartPanel) 
     {
-        if (name.Length < 3 || name.Length > 8)
-        {
-            myNickName.caretColor = Color.gray;
-            myNickName.text = "Please re-enter a nickname (3 ~ 8)";
-            return;
-        }
+        this.UserName.text = UserName;
+        this.Email_ID.text = Email_ID;
+        this.StartPanel.SetActive(StartPanel);
+    }
 
-        matchButton.interactable = true;
-        PhotonNetwork.NickName = name;
+    public void SetErrorPanel(string msg)
+    {
+        this.ErrorMsg.text = msg;
+        this.ErrorPanel.SetActive(true);
     }
     public void OnClickMatchButton()
     {
-        if (string.IsNullOrEmpty(PhotonNetwork.NickName) == true) return;
-        
-        accessScroll.SetActive(false);
 
         gameLogo.SendMessage("GameLogoMove", SendMessageOptions.DontRequireReceiver);
         matching.text = "Accessing...";
-
 
         if (PhotonNetwork.CountOfPlayersInRooms % 2 == 0) //No room to enter(CountOfPlayersInRooms is even)
         {
@@ -158,6 +107,39 @@ public class StartUIManager : MonoBehaviourPunCallbacks
         }
     }
 
+    public void OnClickCloseBtn()
+    {
+        if(StartPanel.activeSelf == true)
+            StartPanel.SetActive(false);
+        if (ErrorPanel.activeSelf == true)
+            ErrorPanel.SetActive(false);
+    }
+
+    #region //setting ButtonScroll
+    public void OnClickStartButton()
+    {
+        APIHandler.Inst.GetUserProfile();
+    }
+    public void OnClickInfoButton()
+    {
+        //startButton.interactable = false;
+        //settingButton.interactable = false;
+        //exitButton.interactable = false;
+    }
+    public void OnClickSettingButton()
+    {
+        //startButton.interactable = false;
+        //infoButton.interactable = false;
+        //exitButton.interactable = false;
+    }
+    public void OnClickExitButton()
+    {
+        Application.Quit();
+    }
+    #endregion
+
+    
+
     public override void OnJoinedRoom()
     {
         PhotonNetwork.LoadLevel("Loading");
@@ -165,13 +147,9 @@ public class StartUIManager : MonoBehaviourPunCallbacks
     public override void OnJoinRoomFailed(short returnCode, string message)
     {
         matching.text = $"Connection Failed : <{returnCode}> {message}";
-        accessScroll.SetActive(true);
     }
     public void OnClickBackButton()
     {
-        accessScroll.transform.position = accessscrollPos;
-        accessScroll.SetActive(false);
-
         buttonScroll.SetActive(true);
         buttonScroll.transform.position = buttonscrollPos;
     }
