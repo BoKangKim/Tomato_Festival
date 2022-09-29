@@ -16,11 +16,11 @@ public class APIHandler : MonoBehaviour
     #region SingleTon
     private static APIHandler Instance = null;
 
-    public static APIHandler Inst 
+    public static APIHandler Inst
     {
         get
         {
-            if(Instance == null)
+            if (Instance == null)
             {
                 Instance = FindObjectOfType<APIHandler>();
                 if (Instance == null)
@@ -45,6 +45,12 @@ public class APIHandler : MonoBehaviour
     Res_GetUserProfile playerProfile = null;
     Res_GetSessionID sessionId = null;
 
+    // UI 표시를 위한 클래스
+    StartUIManager uiManager = null;
+
+    //Betting 정보
+    int leastBetZera = 10;
+
     string getBaseURL()
     {
         return FullAppsURL;
@@ -53,17 +59,18 @@ public class APIHandler : MonoBehaviour
     private void Awake()
     {
         DontDestroyOnLoad(this);
+        uiManager = FindObjectOfType<StartUIManager>();
         SetURL();
     }
 
     void SetURL()
     {
-        if(mode == MODE.TEST)
+        if (mode == MODE.TEST)
         {
             FullAppsURL = "https://odin-api-sat.browseosiris.com";
             SetupURL = "https://osiris-v2-test.s3.ap-southeast-1.amazonaws.com/osirisR2/sat/Osiris+Setup-Staging+v2.2.2.53.exe";
         }
-        else if(mode == MODE.PRODUCTION)
+        else if (mode == MODE.PRODUCTION)
         {
             FullAppsURL = "https://odin-api.browseosiris.com";
             SetupURL = "https://www.browseosiris.com/";
@@ -73,6 +80,11 @@ public class APIHandler : MonoBehaviour
     public void GetUserProfile()
     {
         StartCoroutine(ResGetUserProfile());
+    }
+
+    public void GetZeraBalane()
+    {
+        StartCoroutine(ResGetZeraBalance());
     }
 
     IEnumerator ResGetUserProfile()
@@ -103,20 +115,41 @@ public class APIHandler : MonoBehaviour
     {
         yield return RequestSessionID((response) =>
         {
-            if(response != null)
+            if (response != null)
             {
                 sessionId = response;
-                FindObjectOfType<StartUIManager>().SetStartPanel(playerProfile.userProfile.username, playerProfile.userProfile.email_id, true);
+                uiManager.SetStartPanel(playerProfile.userProfile.username, playerProfile.userProfile.email_id, true);
                 Debug.Log(sessionId.ToString());
             }
             else
             {
                 string Error = "Can't Response SessionID, Please Check Your DappX Wallet And Retry Start";
-                FindObjectOfType<StartUIManager>().SetErrorPanel(Error);
+                uiManager.SetErrorPanel(Error);
             }
         });
     }
 
+    IEnumerator ResGetZeraBalance()
+    {
+        yield return RequestZeraBalance(sessionId.sessionId, (response) => { 
+            if(response != null)
+            {
+                bool isPosibleStart = false;
+                if(leastBetZera > response.data.balance)
+                {
+                    isPosibleStart = false;
+                }
+                else if(leastBetZera <= response.data.balance)
+                {
+                    isPosibleStart = true;
+                }
+
+                uiManager.SetBalancePanel(response.ToString(),leastBetZera.ToString(),isPosibleStart);
+            }
+        });
+    }
+
+    // 유저 프로필 가져오기
     delegate void CallBackUserProfile(Res_GetUserProfile response);
     IEnumerator RequestUserProfile(CallBackUserProfile callback)
     {
@@ -126,6 +159,7 @@ public class APIHandler : MonoBehaviour
         callback(resPlayerProfile);
     }
 
+    // 세션아이디 가져오기
     delegate void CallBackSessionID(Res_GetSessionID response);
     IEnumerator RequestSessionID(CallBackSessionID callback)
     {
@@ -133,6 +167,20 @@ public class APIHandler : MonoBehaviour
         yield return www.SendWebRequest();
         Res_GetSessionID resSessionID = JsonUtility.FromJson<Res_GetSessionID>(www.downloadHandler.text);
         callback(resSessionID);
+    }
+
+
+    // 요청한 플레어이의 남은 ZERA
+    delegate void CallBackZeraBalance(Res_BalanceInfo response);
+    IEnumerator RequestZeraBalance(string sessionID, CallBackZeraBalance callback)
+    {
+        string url = getBaseURL() + ("/v1/betting/zera/balance/" + sessionID);
+
+        UnityWebRequest www = UnityWebRequest.Get(url);
+        www.SetRequestHeader("api-key",API_KEY);
+        yield return www.SendWebRequest();
+        Res_BalanceInfo res = JsonUtility.FromJson<Res_BalanceInfo>(www.downloadHandler.text);
+        callback(res);
     }
 
 }

@@ -29,6 +29,14 @@ public class StartUIManager : MonoBehaviourPunCallbacks
     [SerializeField] GameObject ErrorPanel;
     [SerializeField] TextMeshProUGUI matching;
 
+    [Header("BetInfo")]
+    [SerializeField] GameObject BalancePanel;
+    [SerializeField] TextMeshProUGUI ZerBalanceText;
+    [SerializeField] TextMeshProUGUI BetText;
+    [SerializeField] GameObject CannotStartPanel;
+
+    bool isPosibleStart = false;
+
     #region Network
     void Awake()
     {
@@ -83,27 +91,49 @@ public class StartUIManager : MonoBehaviourPunCallbacks
         this.ErrorMsg.text = msg;
         this.ErrorPanel.SetActive(true);
     }
+
+    public void SetBalancePanel(string zeraBalance,string bet, bool isPosibleStart)
+    {
+        this.ZerBalanceText.text = zeraBalance;
+        this.BetText.text = "BET : " + bet;
+        this.BalancePanel.SetActive(true);
+        this.StartPanel.SetActive(false);
+        this.isPosibleStart = isPosibleStart;
+    }
+
+    public void OnClickAcceptButton()
+    {
+        APIHandler.Inst.GetZeraBalane();
+    }
+
     public void OnClickMatchButton()
     {
-
-        gameLogo.SendMessage("GameLogoMove", SendMessageOptions.DontRequireReceiver);
-        matching.text = "Accessing...";
-
-        if (PhotonNetwork.CountOfPlayersInRooms % 2 == 0) //No room to enter(CountOfPlayersInRooms is even)
+        if(isPosibleStart == false)
         {
-            if (PhotonNetwork.CountOfRooms > 10) // CountOfPlayers > 20
+            BalancePanel.SetActive(false);
+            CannotStartPanel.SetActive(true);
+        }
+        else if(isPosibleStart == true)
+        {
+            gameLogo.SendMessage("GameLogoMove", SendMessageOptions.DontRequireReceiver);
+            matching.text = "Accessing...";
+
+            if (PhotonNetwork.CountOfPlayersInRooms % 2 == 0) //No room to enter(CountOfPlayersInRooms is even)
             {
-                matching.text = "Sorry, The game can't be played because all rooms are currently full.";
+                if (PhotonNetwork.CountOfRooms > 10) // CountOfPlayers > 20
+                {
+                    matching.text = "Sorry, The game can't be played because all rooms are currently full.";
+                }
+                else
+                {
+                    PhotonNetwork.JoinOrCreateRoom($"room{PhotonNetwork.CountOfRooms + 1}", new RoomOptions { MaxPlayers = 2 }, TypedLobby.Default);
+                }
             }
             else
             {
-                PhotonNetwork.JoinOrCreateRoom($"room{PhotonNetwork.CountOfRooms + 1}", new RoomOptions { MaxPlayers = 2 }, TypedLobby.Default);
+                //JoinRoom
+                PhotonNetwork.JoinRandomRoom();
             }
-        }
-        else
-        {
-            //JoinRoom
-            PhotonNetwork.JoinRandomRoom();
         }
     }
 
@@ -111,8 +141,12 @@ public class StartUIManager : MonoBehaviourPunCallbacks
     {
         if(StartPanel.activeSelf == true)
             StartPanel.SetActive(false);
-        if (ErrorPanel.activeSelf == true)
+        else if (ErrorPanel.activeSelf == true)
             ErrorPanel.SetActive(false);
+        else if (BalancePanel.activeSelf == true)
+            BalancePanel.SetActive(false);
+        else if (CannotStartPanel.activeSelf == true)
+            CannotStartPanel.SetActive(false);
     }
 
     #region //setting ButtonScroll

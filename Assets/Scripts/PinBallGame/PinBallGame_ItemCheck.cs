@@ -18,17 +18,6 @@ public class PinBallGame_ItemCheck : MonoBehaviour
     [SerializeField] TextMeshProUGUI Item_Coin = null;
 
     List<string> ItemCheck = new List<string>();
-    void Start()
-    {
-        Item_Bullet.text = "X " + 0;
-        Item_Grenade.text = "X " + 0;
-        Item_Shield.text = "X " + 0;
-        Item_Handgun.text = "X " + 0;
-        Item_Repeater.text = "X " + 0;
-        Item_Shotgun.text = "X " + 0;
-        Item_SniperRifle.text = "X " + 0;
-        Item_Coin.text = "X " + 0;
-    }
 
     public void AddItemCheckList(string destroyBlockData)
     {

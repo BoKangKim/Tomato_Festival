@@ -72,7 +72,7 @@ public class Res_BalanceInfo
 
 	public override string ToString()
 	{
-		return $"message:{message} Balance : {data.balance}";
+		return "ZERA : " + data.balance;
 	}
 }
 
