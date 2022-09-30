@@ -11,10 +11,11 @@ public class CreateInstance : MonoBehaviourPunCallbacks
     GameObject Player1 = null;
     GameObject Player2 = null;
     GameOver gameOver = null;
-    void Awake()
+
+    private void Awake()
     {
         gameOver = FindObjectOfType<GameOver>();
-        StartCoroutine(CheckPlayerCount());
+        StartCoroutine("CheckPlayerCount");
     }
     void Start()
     {
@@ -32,14 +33,12 @@ public class CreateInstance : MonoBehaviourPunCallbacks
                 Debug.Log("CreateInstance");
                 Player2 = PhotonNetwork.Instantiate("PlayerBattle", new Vector3(10f, -6.7f, 0f), Quaternion.identity);
             }
-
             pool.gameObject.SetActive(true);
         }
     }
 
     IEnumerator CheckPlayerCount()
     {
-
         yield return new WaitUntil(() => PhotonNetwork.CurrentRoom.PlayerCount != 2);
         if (gameOver.GameOvercheck)
         {

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 using TMPro;
 using Photon.Pun;
 
@@ -10,6 +11,7 @@ public class Block : MonoBehaviourPun
 {
     [SerializeField] TextMeshProUGUI blockHP;
     [SerializeField] TextMeshProUGUI playCount;
+    ImgUIManager imgUIManager;
     GameObject PinballObject;
     public Scriptable_PinBallBlock blockData;
     BlockSpawner blockSpawner;
@@ -17,7 +19,7 @@ public class Block : MonoBehaviourPun
 
     public SpriteRenderer BlockRender;
     BoxCollider2D BlockBC = null;
-
+    
     //List<string> ItemInfo;
     public AddList add;
     public int currentHP = 0;
@@ -32,10 +34,11 @@ public class Block : MonoBehaviourPun
         BlockRender = GetComponent<SpriteRenderer>();
         BlockBC = GetComponent<BoxCollider2D>();
         blockSpawner = FindObjectOfType<BlockSpawner>();
+        imgUIManager = FindObjectOfType<ImgUIManager>();
         PinBallGame_ItemCheck pinBallGame_ItemCheck = FindObjectOfType<PinBallGame_ItemCheck>();
         add = pinBallGame_ItemCheck.AddItemCheckList;
-
         
+
         //ItemInfo = new List<string>();
     }
 
@@ -56,10 +59,10 @@ public class Block : MonoBehaviourPun
             PinballObject = GameObject.FindWithTag("PinballGame");
             gameObject.transform.SetParent(PinballObject.transform);
         }
-
+        
         //playCount.text = "Play Count : " + Playcount;
     }
-
+    
     public void RPC_BlockDatas(int scriptableIdx)
     {
         currentHP = blockData.GetblockMaxHp;
@@ -101,6 +104,7 @@ public class Block : MonoBehaviourPun
             //Debug.Log("currentHP <= 0 : ");
             //Debug.Log("currentHP2 : " + currentHP);
             add(blockData.GetblockItemName);
+            imgUIManager.RenderItem(blockData.GetblockItemName, this.transform.position);
             this.transform.SetParent(GameObject.Find("BlockRemove").transform);
 
             if (photonView.IsMine)

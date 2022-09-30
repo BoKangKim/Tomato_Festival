@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 using Photon.Pun;
 using Photon.Realtime;
@@ -15,6 +16,7 @@ public class PlayerBattle : MonoBehaviourPun
     public bool isJumpKeyInput { get; set; } = false; // W를 입력하였는지(점프키를 눌렀는 지)
     bool initJump = true; // 땅에 닿아서 점프를 할 수 있는 상황인지
     Rigidbody2D myRigidbody;
+    Slider playerHP;
     CamEffect camEffect = null;
     SpriteRenderer spriteRenderer = null;
     GameOver over = null;
@@ -39,7 +41,7 @@ public class PlayerBattle : MonoBehaviourPun
         {
             myRigidbody = GetComponent<Rigidbody2D>();
         }
-
+        playerHP = GetComponentInChildren<Slider>();
         camEffect = FindObjectOfType<CamEffect>();
         playermaxHP = 100f;
         playercurHP = 100f;
@@ -169,6 +171,7 @@ public class PlayerBattle : MonoBehaviourPun
             return;
 
         playercurHP -= attackDamage;
+        playerHP.value = playercurHP / playermaxHP;
         if (playercurHP < 0)
         {
             over.SetWinCount();
@@ -217,6 +220,7 @@ public class PlayerBattle : MonoBehaviourPun
 
         camEffect.StartCamEffectCoroutine();
         playercurHP -= attackDamage;
+        playerHP.value = playercurHP / playermaxHP;
     }
 
     void PlayerSetActiveFalse()
@@ -252,6 +256,7 @@ public class PlayerBattle : MonoBehaviourPun
     {
         PhotonNetwork.Destroy(this.gameObject);
     }
+
     [PunRPC]
     void RPC_ReStart()
     {

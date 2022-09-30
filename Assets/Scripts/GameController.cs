@@ -13,7 +13,7 @@ public class GameController : MonoBehaviourPun
     public bool isFindPlayers { get; set; } = false;
     float trueY = 0f;
     float falseY = 0f;
-    float ScrollSpeed = 30f;
+    float ScrollSpeed = 5f;
 
     Vector3 activeTruePos = Vector3.zero;
     Vector3 activeFalsePos = new Vector3(0f, 25f, 0f);
@@ -29,12 +29,7 @@ public class GameController : MonoBehaviourPun
         battleGame.transform.position = activeTruePos;
         pinballGame.transform.position = activeFalsePos;
     }
-
-    //public void SetPlayers(PlayerBattle[] players)
-    //{
-    //    this.players = players;
-    //}
-
+    
     public void BattleOver()
     {
         StartCoroutine(BattleOverTransform());
@@ -49,17 +44,17 @@ public class GameController : MonoBehaviourPun
         while(battleGame.transform.position.y  <= 25f 
             || pinballGame.transform.position.y >= 0f)
         {
-            //ScrollSpeed += 1f;
+            ScrollSpeed += 1f;
             battleGame.transform.Translate(Vector3.up * ScrollSpeed * Time.deltaTime);
             pinballGame.transform.Translate(Vector3.down * ScrollSpeed * Time.deltaTime);
             yield return null;
         }
-        
-        pinballGame.transform.position = activeTruePos;
-        pinballGame.SetActive(true);
+
         battleGame.transform.position = activeFalsePos;
         battleGame.SetActive(false);
-        //ScrollSpeed = 5f;
+        pinballGame.transform.position = activeTruePos;
+        pinballGame.SetActive(true);
+        ScrollSpeed = 5f;
     }
 
     public void PinballOver()
@@ -72,7 +67,7 @@ public class GameController : MonoBehaviourPun
         while (pinballGame.transform.position.y <= 25f
             || battleGame.transform.position.y >= 0f)
         {
-            //ScrollSpeed += 1f;
+            ScrollSpeed += 1f;
             pinballGame.transform.Translate(Vector3.up * ScrollSpeed * Time.deltaTime);
             battleGame.transform.Translate(Vector3.down * ScrollSpeed * Time.deltaTime);
 
@@ -88,9 +83,8 @@ public class GameController : MonoBehaviourPun
         {
             players[i].gameObject.SetActive(true);
             players[i].photonView.RPC("RPC_ReStart", RpcTarget.Others);
-            
         }
-        //ScrollSpeed = 5f;
+        ScrollSpeed = 5f;
     }
 
     
