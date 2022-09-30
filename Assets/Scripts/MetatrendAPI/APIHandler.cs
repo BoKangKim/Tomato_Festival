@@ -39,17 +39,16 @@ public class APIHandler : MonoBehaviour
     string SetupURL = "";
     string FullAppsURL = "";
     // TomatoFestival Project API_KEY
-    string API_KEY = "440hXzu38SsiUIBkYiSTlD";
+    string API_KEY = "qSGCSgX53RhbhBBit2u97";
 
     // Respone 받을 클래스 변수들
     Res_GetUserProfile playerProfile = null;
     Res_GetSessionID sessionId = null;
-
+    Res_Settings betSettings = null;
     // UI 표시를 위한 클래스
     StartUIManager uiManager = null;
 
     //Betting 정보
-    int leastBetZera = 10;
 
     string getBaseURL()
     {
@@ -82,9 +81,9 @@ public class APIHandler : MonoBehaviour
         StartCoroutine(ResGetUserProfile());
     }
 
-    public void GetZeraBalane()
+    public void GetZeraBalaneAndBetSettings()
     {
-        StartCoroutine(ResGetZeraBalance());
+        StartCoroutine(ResGetBettingSettings());
     }
 
     IEnumerator ResGetUserProfile()
@@ -135,16 +134,37 @@ public class APIHandler : MonoBehaviour
             if(response != null)
             {
                 bool isPosibleStart = false;
-                if(leastBetZera > response.data.balance)
+                if(betSettings.data.bets[0].amount > response.data.balance)
                 {
                     isPosibleStart = false;
                 }
-                else if(leastBetZera <= response.data.balance)
+                else if(betSettings.data.bets[0].amount <= response.data.balance)
                 {
                     isPosibleStart = true;
                 }
+                Debug.Log(response.data.balance + " Zera Balance");
+                uiManager.SetBalancePanel(response.ToString(), betSettings.data.bets[0].amount.ToString(),isPosibleStart);
+            }
+            else
+            {
+                Debug.LogError("Can't Response Zera Balance");
+            }
+        });
+    }
 
-                uiManager.SetBalancePanel(response.ToString(),leastBetZera.ToString(),isPosibleStart);
+    IEnumerator ResGetBettingSettings()
+    {
+        yield return RequestBettingSettings((response) =>
+        {
+            if (response != null)
+            {
+                Debug.Log(response.ToString());
+                betSettings = response;
+                StartCoroutine(ResGetZeraBalance());
+            }
+            else
+            {
+                Debug.LogError("Can't Response Zera Balance");
             }
         });
     }
@@ -174,13 +194,34 @@ public class APIHandler : MonoBehaviour
     delegate void CallBackZeraBalance(Res_BalanceInfo response);
     IEnumerator RequestZeraBalance(string sessionID, CallBackZeraBalance callback)
     {
-        string url = getBaseURL() + ("/v1/betting/zera/balance/" + sessionID);
-
+        string url = getBaseURL() + ("/v1/betting/" + "zera" + "/balance/" + sessionID);
         UnityWebRequest www = UnityWebRequest.Get(url);
         www.SetRequestHeader("api-key",API_KEY);
         yield return www.SendWebRequest();
         Res_BalanceInfo res = JsonUtility.FromJson<Res_BalanceInfo>(www.downloadHandler.text);
+        Debug.Log(www.downloadHandler.text);
         callback(res);
+    }
+
+    delegate void CallBackBettingSettings(Res_Settings response);
+    IEnumerator RequestBettingSettings(CallBackBettingSettings callback)
+    {
+        string url = getBaseURL() + "/v1/betting/settings";
+        UnityWebRequest www = UnityWebRequest.Get(url);
+        www.SetRequestHeader("api-key", API_KEY);
+        yield return www.SendWebRequest();
+        Res_Settings res = JsonUtility.FromJson<Res_Settings>(www.downloadHandler.text);
+        callback(res);
+    }
+
+    delegate void CallBackPlaceBet(ResBettingPlaceBet response);
+    IEnumerator RequestCoinPlaceBet(ReqBettingPlaceBet req, CallBackPlaceBet callback)
+    {
+        string url = getBaseURL() +"/v1/betting/" + "zera" + "/place-bet";
+
+        string reqJsonData = JsonUtility.ToJson(req);
+
+        yield return null;
     }
 
 }

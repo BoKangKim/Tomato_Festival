@@ -103,7 +103,7 @@ public class StartUIManager : MonoBehaviourPunCallbacks
 
     public void OnClickAcceptButton()
     {
-        APIHandler.Inst.GetZeraBalane();
+        APIHandler.Inst.GetZeraBalaneAndBetSettings();
     }
 
     public void OnClickMatchButton()
