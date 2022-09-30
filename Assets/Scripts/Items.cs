@@ -23,6 +23,10 @@ public class Items : MonoBehaviourPun
     int preListCount = 0;
     GameObject grenade = null;
 
+
+
+    GameObject GrenadEffect = null;
+
     private void Awake()
     {
         items = new List<string>();
@@ -107,6 +111,8 @@ public class Items : MonoBehaviourPun
         }
     }
 
+
+
     #region Async Data
 
     public void ItemListSetting()
@@ -189,6 +195,10 @@ public class Items : MonoBehaviourPun
         TransferFireDir();
 
         GameObject grenade = PhotonNetwork.Instantiate("Grenade", transform.position + (fireDir * transform.lossyScale.y), Quaternion.identity);
+
+        GameObject instObj = Instantiate(effObject, grenade.transform.position, Quaternion.identity);
+        Destroy(instObj, 1f);
+
 
         myRigidbody = grenade.GetComponent<Rigidbody2D>();
         myRigidbody.AddForce(fireDir * 500f, ForceMode2D.Force);
