@@ -8,9 +8,9 @@ public class Gun : MonoBehaviourPun
 {
     ScriptableWeaponData playerWeapondata = null;
     Vector3 fireDir = Vector3.zero; 
-    Player player = null;
-    Player myEnemy = null;
-    public float numberOfBullet { get; set; } = 0;
+    PlayerBattle player = null;
+    PlayerBattle myEnemy = null;
+    public float numberOfBullet { get; set; } = 100;
     bool canshoot = true;
 
     public void SetGunData(ScriptableWeaponData data)
@@ -22,12 +22,14 @@ public class Gun : MonoBehaviourPun
         numberOfBullet += data.NumberOfBullet;
     }
 
-
+    private void OnEnable()
+    {
+        canshoot = true;
+    }
     // Update is called once per frame
     void Update()
     {
-        if (playerWeapondata == null)
-            return;
+        
 
         if (photonView.IsMine == false || numberOfBullet == 0)
             return;
@@ -35,6 +37,7 @@ public class Gun : MonoBehaviourPun
         if (Input.GetMouseButtonDown(0) && canshoot == true) //shoot ���� ����
         {
             FindEnemy();
+            Debug.Log(playerWeapondata.GunName);
             StartCoroutine("Shoot_" + playerWeapondata.GunName);
         }
 
@@ -44,7 +47,7 @@ public class Gun : MonoBehaviourPun
     {
         if (myEnemy == null)
         {
-            Player[] players = FindObjectsOfType<Player>();
+            PlayerBattle[] players = FindObjectsOfType<PlayerBattle>();
             for (int i = 0; i < players.Length; i++)
             {
                 if (players[i].photonView.IsMine == false)

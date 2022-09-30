@@ -1,36 +1,47 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
+using Photon.Pun;
+using Photon.Realtime;
 
 public class PinBallGame_ItemCheck : MonoBehaviour
 {
+    [SerializeField] TextMeshProUGUI Item_Bullet = null;
+    [SerializeField] TextMeshProUGUI Item_Grenade = null;
+    [SerializeField] TextMeshProUGUI Item_Shield = null;
+    [SerializeField] TextMeshProUGUI Item_Handgun = null;
+    [SerializeField] TextMeshProUGUI Item_Repeater = null;
+    [SerializeField] TextMeshProUGUI Item_Shotgun = null;
+    [SerializeField] TextMeshProUGUI Item_SniperRifle = null;
+    [SerializeField] TextMeshProUGUI Item_Coin = null;
 
-    //Scriptable_PinBallBlock scriptable_PinBallBlock;
-    //List<PinBallGame_ItemCheck> _items;
-
-    //Block block;
-    //BlockSpawner spawner;
-
-    List<string> ItemCheck;
-
-    private void Awake()
+    List<string> ItemCheck = new List<string>();
+    void Start()
     {
-        ItemCheck = new List<string>();
     }
 
     public void AddItemCheckList(string destroyBlockData)
     {
         ItemCheck.Add(destroyBlockData);
-        for(int i = 0; i < ItemCheck.Count; i++)
-        {
-            Debug.Log(ItemCheck[i]);
-        }
     }
-    
+
 
     public List<string> GetMyItemDataList()
     {
+        ItemCheck.Add("Bullet");
+        ItemCheck.Add("Grenade");
+        ItemCheck.Add("Shield");
+        ItemCheck.Add("Grenade");
+        ItemCheck.Add("Shield");
+        ItemCheck.Add("Grenade");
+        ItemCheck.Add("Shield");
+        ItemCheck.Add("Grenade");
+        ItemCheck.Add("Shield");
+        ItemCheck.Add("Repeater");
+        ItemCheck.Add("Shotgun");
+        ItemCheck.Add("SniperRifle");
         return ItemCheck;
     }
 

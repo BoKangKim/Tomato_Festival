@@ -16,7 +16,7 @@ public class Bullet : MonoBehaviourPun
     public float AttackRange { set { attackRange = value; } }
     public float AttackSpeed { set { attackSpeed = value; } }
     public float AttackDamage { set { attackDamage = value; } }
-    public Player myEnemy { get; set; } = null;
+    public PlayerBattle myEnemy { get; set; } = null;
 
     private void Start()
     {
@@ -42,8 +42,8 @@ public class Bullet : MonoBehaviourPun
         if (myEnemy.gameObject.transform.lossyScale.x / 2 + gameObject.transform.lossyScale.x / 2 >=
             Vector3.Distance(myEnemy.gameObject.transform.position, gameObject.transform.position))
         {
-            myEnemy.SendMessage("TransferDamage", attackDamage, SendMessageOptions.DontRequireReceiver);
             myEnemy.SendMessage("StartKnockBackCoroutine", transform.position, SendMessageOptions.DontRequireReceiver);
+            myEnemy.SendMessage("TransferDamage", attackDamage, SendMessageOptions.DontRequireReceiver);
             PhotonNetwork.Destroy(this.gameObject);
         }
         

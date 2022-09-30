@@ -25,16 +25,11 @@ public class LoadingManager : MonoBehaviourPunCallbacks
         loadingSlider.gameObject.SetActive(true);
         matching.text = "Searching for match";
 
-        StartCoroutine(loadingSliderValueChange());
-
-        Debug.Log("총 플레이어 수" + PhotonNetwork.CountOfPlayers);
-        
-        Debug.Log("현재방 플레이어 수" + PhotonNetwork.CurrentRoom.PlayerCount);
-        Debug.Log(PhotonNetwork.CurrentRoom.Name);
-
+        loadingSlider.value = 0f;
+        StartCoroutine("loadingSliderValueChange");
         if (PhotonNetwork.CurrentRoom.PlayerCount < 2) //MasterClient
         {
-            StartCoroutine(GoMain());
+            StartCoroutine("GoMain");
         }
         else
         {
@@ -76,17 +71,19 @@ public class LoadingManager : MonoBehaviourPunCallbacks
 
         loadingEffect.SendMessage("Pouring", SendMessageOptions.DontRequireReceiver);
         yield return new WaitForSeconds(2f);
-        PhotonNetwork.LoadLevel("Main"); // load main scene
+        PhotonNetwork.LoadLevel("Main_Scroll"); // load main scene
     }
     public void OnClickBackStartSButton()
     {
+        StopCoroutine("loadingSliderValueChange");
+        StopCoroutine("GoMain");
+        PhotonNetwork.LeaveRoom();
+    }
+    public override void OnConnectedToMaster()
+    {
+        Debug.Log("방 나갔다가 마스터 연결했다");
         PhotonNetwork.LoadLevel("Start");
     }
 
-    /*
-    public override void OnMasterClientSwitched(Player newMasterClient)
-    {
-        Debug.Log("?????? ???? : " + newMasterClient.ToString());
-    }
-    */
+
 }

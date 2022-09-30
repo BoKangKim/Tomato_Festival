@@ -12,8 +12,8 @@ GameObject:
   - component: {fileID: 4057928004827790579}
   - component: {fileID: 6383029721430405464}
   - component: {fileID: 6663153532798802008}
-  - component: {fileID: -5064876558813586923}
-  - component: {fileID: -8451361679195510148}
+  - component: {fileID: 3089435595624559611}
+  - component: {fileID: 664064320873322258}
   m_Layer: 10
   m_Name: Block
   m_TagString: Block
@@ -75,8 +75,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 420440537
-  m_SortingLayer: 2
+  m_SortingLayerID: -1238584805
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -130,9 +130,9 @@ MonoBehaviour:
   blockHP: {fileID: 4548067448241861887}
   playCount: {fileID: 0}
   blockData: {fileID: 0}
+  BlockRender: {fileID: 0}
   currentHP: 0
-  Playcount: 3
---- !u!114 &-5064876558813586923
+--- !u!114 &3089435595624559611
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -151,11 +151,11 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents:
-  - {fileID: -8451361679195510148}
+  - {fileID: 664064320873322258}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
---- !u!114 &-8451361679195510148
+--- !u!114 &664064320873322258
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

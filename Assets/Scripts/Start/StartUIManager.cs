@@ -47,20 +47,19 @@ public class StartUIManager : MonoBehaviourPunCallbacks
     {
         //Connect network.
         PhotonNetwork.ConnectUsingSettings();
+        
         gameLogo.SetActive(true);
+        buttonScroll.SetActive(false);
         accessScroll.SetActive(false);
-
         buttonscrollPos = buttonScroll.transform.position;
         accessscrollPos = accessScroll.transform.position;
-
         StartCoroutine(SetUI());
     }
     IEnumerator SetUI()
     {
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSeconds(0.15f);
         buttonScroll.SetActive(true);
     }
-
     public override void OnConnectedToMaster()  // Call when the master server is connected
     {
         startButton.interactable = true;
@@ -68,6 +67,7 @@ public class StartUIManager : MonoBehaviourPunCallbacks
     public override void OnDisconnected(DisconnectCause cause)  // Call when the master server is not connected
     {
         startButton.interactable = false;
+        matching.text = "Sorry, The game can't be played because all rooms are currently full.";
         PhotonNetwork.ConnectUsingSettings();
     }
 
@@ -122,11 +122,10 @@ public class StartUIManager : MonoBehaviourPunCallbacks
     {
         if (name.Length < 3 || name.Length > 8)
         {
-            myNickName.caretColor = Color.gray;
+            myNickName.selectionColor = Color.gray;
             myNickName.text = "Please re-enter a nickname (3 ~ 8)";
             return;
         }
-
         matchButton.interactable = true;
         PhotonNetwork.NickName = name;
     }
@@ -138,34 +137,53 @@ public class StartUIManager : MonoBehaviourPunCallbacks
 
         gameLogo.SendMessage("GameLogoMove", SendMessageOptions.DontRequireReceiver);
         matching.text = "Accessing...";
-
-
-        if (PhotonNetwork.CountOfPlayersInRooms % 2 == 0) //No room to enter(CountOfPlayersInRooms is even)
+        StartCoroutine("GoRoom");
+    }
+    IEnumerator GoRoom()
+    {
+        if (PhotonNetwork.IsConnectedAndReady == false)
         {
-            if (PhotonNetwork.CountOfRooms > 10) // CountOfPlayers > 20
-            {
-                matching.text = "Sorry, The game can't be played because all rooms are currently full.";
-            }
-            else
-            {
-                PhotonNetwork.JoinOrCreateRoom($"room{PhotonNetwork.CountOfRooms + 1}", new RoomOptions { MaxPlayers = 2 }, TypedLobby.Default);
-            }
+            Debug.Log("연결이 안되어 있었네");
+            PhotonNetwork.Reconnect();
+        }
+        
+        yield return new WaitUntil(()=> PhotonNetwork.IsConnectedAndReady == true);
+        Debug.Log("연결되어 있음");
+        if (PhotonNetwork.CountOfPlayersInRooms % 2 == 0 && (PhotonNetwork.CountOfRooms == PhotonNetwork.CountOfPlayersInRooms / 2)) //No room to enter(CountOfPlayersInRooms is even)
+        {
+            Debug.Log("방 만들어");
+            PhotonNetwork.JoinOrCreateRoom($"room{PhotonNetwork.CountOfRooms + 1}", new RoomOptions { MaxPlayers = 2 }, TypedLobby.Default);
         }
         else
         {
+            Debug.Log("방 들어가");
             //JoinRoom
             PhotonNetwork.JoinRandomRoom();
+            Debug.Log("못들어가");
+            matching.text = "Disconnected";
         }
     }
 
+
     public override void OnJoinedRoom()
     {
+        Debug.Log("방 들어간다~!~!");
         PhotonNetwork.LoadLevel("Loading");
     }
     public override void OnJoinRoomFailed(short returnCode, string message)
     {
-        matching.text = $"Connection Failed : <{returnCode}> {message}";
-        accessScroll.SetActive(true);
+        Debug.Log("방 못 들어간다~!~! 꽉찼다");
+        if (returnCode == 32765)
+        {
+            //Debug.Log("방 못 들어간다~!~! 꽉찼다");
+            PhotonNetwork.JoinOrCreateRoom($"room{PhotonNetwork.CountOfRooms + 20}", new RoomOptions { MaxPlayers = 2 }, TypedLobby.Default);
+        }
+        else
+        {
+            Debug.Log("방 못 들어간다~!~! 모른다");
+            matching.text = $"Connection Failed : <{returnCode}> {message}";
+            accessScroll.SetActive(true);
+        }
     }
     public void OnClickBackButton()
     {
