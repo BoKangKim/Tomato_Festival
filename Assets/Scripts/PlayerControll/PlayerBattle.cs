@@ -25,6 +25,11 @@ public class PlayerBattle : MonoBehaviourPun
     public int MyItemIndex { get; set; } = 0;
     public bool IsShieldTime { get; set; } = false;
 
+    [Header("[¿Ã∆Â∆Æ]")]
+    [SerializeField] GameObject effObject = null;
+    [SerializeField] Transform effPos = null;
+
+
 
     private void Awake()
     {
@@ -168,6 +173,9 @@ public class PlayerBattle : MonoBehaviourPun
         if (IsShieldTime == true)
             return;
 
+        PlayerDamageEffect();
+        //Debug.Log("PlayerDamageEffect : " + effObject);
+
         playercurHP -= attackDamage;
         if (playercurHP < 0)
         {
@@ -215,8 +223,19 @@ public class PlayerBattle : MonoBehaviourPun
         if (IsShieldTime == true)
             return;
 
+        //GameObject instObj = Instantiate(effObject, effPos.position, Quaternion.identity);
+        //Destroy(instObj, 3f);
+
+        //Debug.Log("effect : " + instObj);
+
         camEffect.StartCamEffectCoroutine();
         playercurHP -= attackDamage;
+    }
+
+    void PlayerDamageEffect()
+    {
+        GameObject instObj = Instantiate(effObject, effPos.position, Quaternion.identity);
+        Destroy(instObj, 3f);
     }
 
     void PlayerSetActiveFalse()

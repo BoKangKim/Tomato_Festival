@@ -13,6 +13,10 @@ public class Gun : MonoBehaviourPun
     public float numberOfBullet { get; set; } = 100;
     bool canshoot = true;
 
+    [Header("[이펙트]")]
+    [SerializeField] GameObject effObject = null;
+    [SerializeField] Transform effPos = null;
+
     public void SetGunData(ScriptableWeaponData data)
     {
         if (photonView.IsMine == false)
@@ -29,8 +33,6 @@ public class Gun : MonoBehaviourPun
     // Update is called once per frame
     void Update()
     {
-        
-
         if (photonView.IsMine == false || numberOfBullet == 0)
             return;
 
@@ -38,9 +40,20 @@ public class Gun : MonoBehaviourPun
         {
             FindEnemy();
             Debug.Log(playerWeapondata.GunName);
+
+            shotEffect();
+            Debug.Log("shotEffect :  " + effObject);
+
             StartCoroutine("Shoot_" + playerWeapondata.GunName);
         }
 
+    }
+
+
+    void shotEffect()
+    {
+        GameObject instObj = Instantiate(effObject, effPos.position, Quaternion.identity);
+        Destroy(instObj, 3f);
     }
     
     void FindEnemy()

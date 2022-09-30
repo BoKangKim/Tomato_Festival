@@ -27,7 +27,8 @@ public class Items : MonoBehaviourPun
     {
         items = new List<string>();
         player = GetComponent<PlayerBattle>();
-        MyShield = gameObject.transform.Find("ShiledEffect").gameObject;
+        //MyShield = gameObject.transform.Find("ShiledEffect").gameObject;
+        MyShield = gameObject.transform.Find("ShiledEffect1").gameObject;
         myImg = GameObject.Find("ItemUIImg").GetComponent<Image>();
         
     }
