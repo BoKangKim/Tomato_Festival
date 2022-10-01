@@ -5,7 +5,7 @@ using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 
-public class Player : MonoBehaviourPun
+public class PlayerBattle : MonoBehaviourPun
 {
     float playermaxHP;
     float playercurHP;
@@ -18,6 +18,7 @@ public class Player : MonoBehaviourPun
     CamEffect camEffect = null;
     SpriteRenderer spriteRenderer = null;
     GameOver over = null;
+    Vector3 StartPos = Vector3.zero;
 
     // 현재 아이템 정보
     Items myItems = null;
@@ -27,13 +28,9 @@ public class Player : MonoBehaviourPun
 
     private void Awake()
     {
-        Debug.Log(photonView.ViewID + " Awake");
-        Debug.Log(PhotonNetwork.IsMasterClient + " Is Master");
-        Debug.Log(photonView.Owner + " Owner");
         spriteRenderer = GetComponent<SpriteRenderer>();
         myItems = GetComponent<Items>();
         over = FindObjectOfType<GameOver>();
-
         if (photonView.IsMine == false)
         {
             Destroy(gameObject.GetComponent<Rigidbody2D>());
@@ -46,6 +43,7 @@ public class Player : MonoBehaviourPun
         camEffect = FindObjectOfType<CamEffect>();
         playermaxHP = 100f;
         playercurHP = 100f;
+        StartPos = gameObject.transform.position;
     }
 
     private void OnDestroy()
@@ -61,6 +59,12 @@ public class Player : MonoBehaviourPun
             spriteRenderer.flipX = true;
         }
     }
+
+    private void OnDisable()
+    {
+        gameObject.transform.position = StartPos;
+    }
+
     // 키 입력을 위해 돌린 업데이트 함수 
     // FixedUpdate에서 같이 받으면 늦게 입력 처리가 되어서 입력이 늦어짐
     private void Update()
@@ -184,6 +188,17 @@ public class Player : MonoBehaviourPun
 
         camEffect.StartCamEffectCoroutine();
         playercurHP -= attackDamage;
+    }
+
+    void PlayerSetActiveFalse()
+    {
+        photonView.RPC("RPC_PlayerSetActiveFalse",RpcTarget.All);
+    }
+
+    [PunRPC]
+    void RPC_PlayerSetActiveFalse()
+    {
+        gameObject.SetActive(false);
     }
 
     void DestroyPlayer() 

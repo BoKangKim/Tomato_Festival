@@ -12,8 +12,8 @@ public class Items : MonoBehaviourPun
 
     Image myImg;
     List<string> items;
-    Player player = null;
-    Player myEnemy = null;
+    PlayerBattle player = null;
+    PlayerBattle myEnemy = null;
     Rigidbody2D myRigidbody;
     float shieldTime = 2f;
     public GameObject GrenadePrefab = null;
@@ -26,7 +26,7 @@ public class Items : MonoBehaviourPun
     private void Awake()
     {
         items = new List<string>();
-        player = GetComponent<Player>();
+        player = GetComponent<PlayerBattle>();
         MyShield = gameObject.transform.Find("ShiledEffect").gameObject;
         myImg = FindObjectOfType<Image>();
         
@@ -204,7 +204,7 @@ public class Items : MonoBehaviourPun
 
         if (myEnemy == null)
         {
-            Player[] players = FindObjectsOfType<Player>();
+            PlayerBattle[] players = FindObjectsOfType<PlayerBattle>();
             for (int i = 0; i < players.Length; i++)
             {
                 if (players[i].photonView.IsMine == false)
@@ -220,6 +220,7 @@ public class Items : MonoBehaviourPun
 
         if (Vector3.Distance(grenade.transform.position, myEnemy.transform.position) <= 5f)
         {
+            myEnemy.SendMessage("TransferDamage", 40f, SendMessageOptions.DontRequireReceiver);
             myEnemy.SendMessage("StartKnockBackCoroutine", grenade.transform.position, SendMessageOptions.DontRequireReceiver);
         }
 

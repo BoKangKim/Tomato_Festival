@@ -15,6 +15,6 @@ EditorBuildSettings:
     path: Assets/Scenes/Loading.unity
     guid: db6b310a62bf32c4fb62ae4253e369ab
   - enabled: 1
-    path: Assets/Scenes/Main.unity
-    guid: 2cda990e2423bbf4892e6590ba056729
+    path: Assets/Scenes/BKMAIN.unity
+    guid: 298ed6c6c609cc948a438edafa44d0a5
   m_configObjects: {}

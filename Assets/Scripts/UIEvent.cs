@@ -1,23 +1,29 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 using Photon.Pun;
 using Photon.Realtime;
 
-public class UIEvent : MonoBehaviour
+public class UIEvent : MonoBehaviourPunCallbacks
 {
-    public void BtnHomeEvent()
+    public void BtnHome()
     {
-        PhotonNetwork.LoadLevel("Start");
+        PhotonNetwork.LeaveRoom();
     }
 
-    public void BtnRestartEvent()
+    public void BtnRestart()
     {
         PhotonNetwork.LoadLevel("Loading");
     }
 
-    public void BtnQuitEvent()
+    public void BtnQuit()
     {
         Application.Quit();
+    }
+
+    public override void OnLeftRoom()
+    {
+        PhotonNetwork.LoadLevel("Start");
     }
 }

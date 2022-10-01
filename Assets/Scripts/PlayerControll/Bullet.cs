@@ -16,7 +16,7 @@ public class Bullet : MonoBehaviourPun
     public float AttackRange { set { attackRange = value; } }
     public float AttackSpeed { set { attackSpeed = value; } }
     public float AttackDamage { set { attackDamage = value; } }
-    public Player myEnemy { get; set; } = null;
+    public PlayerBattle myEnemy { get; set; } = null;
 
     private void Start()
     {
