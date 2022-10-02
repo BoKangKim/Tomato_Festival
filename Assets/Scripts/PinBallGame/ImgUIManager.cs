@@ -11,6 +11,7 @@ public class ImgUIManager : MonoBehaviourPun
 
 	[SerializeField] Sprite[] items = new Sprite[7];
 	Dictionary<string, Sprite> itemslist;
+
 	private void Awake()
 	{
 		//canvas = FindObjectOfType<Canvas>();

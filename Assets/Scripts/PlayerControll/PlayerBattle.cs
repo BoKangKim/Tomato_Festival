@@ -53,6 +53,7 @@ public class PlayerBattle : MonoBehaviourPun
     {
         playermaxHP = 100f;
         playercurHP = 100f;
+        playerHP.value = playercurHP / playermaxHP;
         gameObject.transform.position = StartPos;
     }
 

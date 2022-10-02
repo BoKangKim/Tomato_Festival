@@ -6,6 +6,7 @@ using TMPro;
 using Photon.Pun;
 
 public delegate void AddList(string data);
+public delegate void BlockEvent(string itemname, Vector3 Pos);
 
 public class Block : MonoBehaviourPun
 {
@@ -22,6 +23,7 @@ public class Block : MonoBehaviourPun
     
     //List<string> ItemInfo;
     public AddList add;
+    BlockEvent blockEvent;
     public int currentHP = 0;
     //public int Playcount = 3;
     int blockCount = 0;
@@ -35,6 +37,7 @@ public class Block : MonoBehaviourPun
         BlockBC = GetComponent<BoxCollider2D>();
         blockSpawner = FindObjectOfType<BlockSpawner>();
         imgUIManager = FindObjectOfType<ImgUIManager>();
+        blockEvent = imgUIManager.RenderItem;
         PinBallGame_ItemCheck pinBallGame_ItemCheck = FindObjectOfType<PinBallGame_ItemCheck>();
         add = pinBallGame_ItemCheck.AddItemCheckList;
         
@@ -104,7 +107,8 @@ public class Block : MonoBehaviourPun
             //Debug.Log("currentHP <= 0 : ");
             //Debug.Log("currentHP2 : " + currentHP);
             add(blockData.GetblockItemName);
-            imgUIManager.RenderItem(blockData.GetblockItemName, this.transform.position);
+            blockEvent(blockData.GetblockItemName, this.transform.position);
+            
             this.transform.SetParent(GameObject.Find("BlockRemove").transform);
 
             if (photonView.IsMine)
