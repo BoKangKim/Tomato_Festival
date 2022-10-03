@@ -184,6 +184,7 @@ public class PlayerBattle : MonoBehaviourPun
             return;
         }
         photonView.RPC("RPC_TransferDamage", RpcTarget.Others, attackDamage);
+
     }
 
     public void StartKnockBackCoroutine(Vector3 bulletVec)
@@ -223,13 +224,11 @@ public class PlayerBattle : MonoBehaviourPun
         if (IsShieldTime == true)
             return;
 
-        //GameObject instObj = Instantiate(effObject, effPos.position, Quaternion.identity);
-        //Destroy(instObj, 3f);
-
-        //Debug.Log("effect : " + instObj);
-
         camEffect.StartCamEffectCoroutine();
+
         playercurHP -= attackDamage;
+
+
     }
 
     void PlayerDamageEffect()

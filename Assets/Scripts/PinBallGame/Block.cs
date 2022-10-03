@@ -26,6 +26,9 @@ public class Block : MonoBehaviourPun
     //bool isGameChange = false;
     bool enter;
 
+    [Header("[이펙트]")]
+    [SerializeField] GameObject blockeff = null;
+
     private void Awake()
     {
         //  BlockSpawner spawner = new BlockSpawner();
@@ -97,10 +100,12 @@ public class Block : MonoBehaviourPun
         }
         else if (currentHP <= 0)
         {
-
+            BlockEffect();
+            //Debug.Log("BlockEffect : 나오니? " + blockeff);
             //Debug.Log("currentHP <= 0 : ");
             //Debug.Log("currentHP2 : " + currentHP);
             add(blockData.GetblockItemName);
+            Debug.Log("add : " + blockData.GetblockItemName);
             this.transform.SetParent(GameObject.Find("BlockRemove").transform);
 
             if (photonView.IsMine)
@@ -113,7 +118,11 @@ public class Block : MonoBehaviourPun
 
     }
 
-
+    void BlockEffect()
+    {
+        GameObject instObj = Instantiate(blockeff, this.transform.position, Quaternion.identity);
+        Destroy(instObj, 3f);
+    }
     public void OnCollisionEnter2D(Collision2D collision)
     {
         Debug.Log("## OnCollisionEnter - " + collision.gameObject.name);

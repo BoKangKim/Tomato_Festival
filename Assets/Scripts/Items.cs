@@ -196,8 +196,8 @@ public class Items : MonoBehaviourPun
 
         GameObject grenade = PhotonNetwork.Instantiate("Grenade", transform.position + (fireDir * transform.lossyScale.y), Quaternion.identity);
 
-        GameObject instObj = Instantiate(effObject, grenade.transform.position, Quaternion.identity);
-        Destroy(instObj, 1f);
+        //GameObject instObj = Instantiate(effObject, grenade.transform.position, Quaternion.identity);
+        //Destroy(instObj, 1f);
 
 
         myRigidbody = grenade.GetComponent<Rigidbody2D>();

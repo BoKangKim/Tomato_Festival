@@ -156,10 +156,10 @@ public class StartUIManager : MonoBehaviourPunCallbacks
         }
         else
         {
-            Debug.Log("방 들어가");
+            //Debug.Log("방 들어가");
             //JoinRoom
             PhotonNetwork.JoinRandomRoom();
-            Debug.Log("못들어가");
+            //Debug.Log("못들어가");
             matching.text = "Disconnected";
         }
     }
