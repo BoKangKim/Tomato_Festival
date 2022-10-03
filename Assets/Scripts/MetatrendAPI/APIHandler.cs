@@ -48,7 +48,12 @@ public class APIHandler : MonoBehaviour
     // UI 표시를 위한 클래스
     StartUIManager uiManager = null;
 
+    //상대방 정보
+    string otherPlayerName = null;
+    string otherPlayerSessionId = null;
+
     //Betting 정보
+    string betting_id = null;
 
     string getBaseURL()
     {
@@ -58,7 +63,6 @@ public class APIHandler : MonoBehaviour
     private void Awake()
     {
         DontDestroyOnLoad(this);
-        uiManager = FindObjectOfType<StartUIManager>();
         SetURL();
     }
 
@@ -76,6 +80,39 @@ public class APIHandler : MonoBehaviour
         }
     }
 
+    public void ClearOtherPlayerInfo()
+    {
+        otherPlayerName = null;
+        otherPlayerSessionId = null;
+        //resBettingPlaceBet = null;
+    }
+
+    public void SetOtherPlayerInfo(string profile, string sessionID)
+    {
+        this.otherPlayerName = profile;
+        this.otherPlayerSessionId = sessionID;
+    }
+
+    public Res_GetUserProfile GetMyProfile()
+    {
+        return playerProfile;
+    }
+
+    public Res_GetSessionID GetMySessionID()
+    {
+        return sessionId;
+    }
+
+    public void SetUIManager(StartUIManager uIManager)
+    {
+        this.uiManager = uIManager;
+    }
+
+    public string GetOhterProfile()
+    {
+        return otherPlayerName;
+    }
+
     public void GetUserProfile()
     {
         StartCoroutine(ResGetUserProfile());
@@ -84,6 +121,16 @@ public class APIHandler : MonoBehaviour
     public void GetZeraBalaneAndBetSettings()
     {
         StartCoroutine(ResGetBettingSettings());
+    }
+
+    public void ReqBetting()
+    {
+        StartCoroutine(ReqBettingZera());
+    }
+
+    public void BettingDisconnect()
+    {
+        StartCoroutine(ReqDisconect());
     }
 
     IEnumerator ResGetUserProfile()
@@ -169,24 +216,61 @@ public class APIHandler : MonoBehaviour
         });
     }
 
+    IEnumerator ReqBettingZera()
+    {
+        ReqBettingPlaceBet reqBettingPlaceBet = new ReqBettingPlaceBet();
+        reqBettingPlaceBet.players_session_id = new string[] { sessionId.sessionId, otherPlayerSessionId};
+        Debug.Log(sessionId.sessionId + " 내 Session ID");
+        Debug.Log(otherPlayerSessionId + " Other Session ID");
+        reqBettingPlaceBet.bet_id = betSettings.data.bets[0]._id;
+        yield return RequestCoinPlaceBet(reqBettingPlaceBet, (response) =>
+        {
+            if(response != null)
+            {
+                betting_id = response.data.betting_id;
+                Debug.Log(betting_id + "진짜 이번엔 되라");
+            }
+        });
+    }
+
+    IEnumerator ReqDisconect()
+    {
+        ReqBettingDisconnect reqBettingDisconect = new ReqBettingDisconnect();
+        reqBettingDisconect.betting_id = this.betting_id;
+        yield return RequestBettingDisconnect(reqBettingDisconect,(response) =>
+        {
+            if (response != null)
+            {
+                Debug.Log("## CoinDisconnect : " + response.message);
+                UserInfo info = FindObjectOfType<UserInfo>();
+                info.photonView.RPC("CancleMatch",Photon.Pun.RpcTarget.All);
+                ClearOtherPlayerInfo();
+            }
+        });
+    }
+
     // 유저 프로필 가져오기
     delegate void CallBackUserProfile(Res_GetUserProfile response);
     IEnumerator RequestUserProfile(CallBackUserProfile callback)
     {
-        UnityWebRequest www = UnityWebRequest.Get("http://localhost:8546/api/getuserprofile");
-        yield return www.SendWebRequest();
-        Res_GetUserProfile resPlayerProfile = JsonUtility.FromJson<Res_GetUserProfile>(www.downloadHandler.text);
-        callback(resPlayerProfile);
+        using (UnityWebRequest www = UnityWebRequest.Get("http://localhost:8546/api/getuserprofile"))
+        {
+            yield return www.SendWebRequest();
+            Res_GetUserProfile resPlayerProfile = JsonUtility.FromJson<Res_GetUserProfile>(www.downloadHandler.text);
+            callback(resPlayerProfile);
+        }
     }
 
     // 세션아이디 가져오기
     delegate void CallBackSessionID(Res_GetSessionID response);
     IEnumerator RequestSessionID(CallBackSessionID callback)
     {
-        UnityWebRequest www = UnityWebRequest.Get("http://localhost:8546/api/getsessionid ");
-        yield return www.SendWebRequest();
-        Res_GetSessionID resSessionID = JsonUtility.FromJson<Res_GetSessionID>(www.downloadHandler.text);
-        callback(resSessionID);
+        using (UnityWebRequest www = UnityWebRequest.Get("http://localhost:8546/api/getsessionid "))
+        {
+            yield return www.SendWebRequest();
+            Res_GetSessionID resSessionID = JsonUtility.FromJson<Res_GetSessionID>(www.downloadHandler.text);
+            callback(resSessionID);
+        }
     }
 
 
@@ -195,33 +279,73 @@ public class APIHandler : MonoBehaviour
     IEnumerator RequestZeraBalance(string sessionID, CallBackZeraBalance callback)
     {
         string url = getBaseURL() + ("/v1/betting/" + "zera" + "/balance/" + sessionID);
-        UnityWebRequest www = UnityWebRequest.Get(url);
-        www.SetRequestHeader("api-key",API_KEY);
-        yield return www.SendWebRequest();
-        Res_BalanceInfo res = JsonUtility.FromJson<Res_BalanceInfo>(www.downloadHandler.text);
-        Debug.Log(www.downloadHandler.text);
-        callback(res);
+        using (UnityWebRequest www = UnityWebRequest.Get(url))
+        {
+            www.SetRequestHeader("api-key", API_KEY);
+            yield return www.SendWebRequest();
+            Res_BalanceInfo res = JsonUtility.FromJson<Res_BalanceInfo>(www.downloadHandler.text);
+            Debug.Log(www.downloadHandler.text);
+            callback(res);
+        }
     }
 
     delegate void CallBackBettingSettings(Res_Settings response);
     IEnumerator RequestBettingSettings(CallBackBettingSettings callback)
     {
         string url = getBaseURL() + "/v1/betting/settings";
-        UnityWebRequest www = UnityWebRequest.Get(url);
-        www.SetRequestHeader("api-key", API_KEY);
-        yield return www.SendWebRequest();
-        Res_Settings res = JsonUtility.FromJson<Res_Settings>(www.downloadHandler.text);
-        callback(res);
+        using (UnityWebRequest www = UnityWebRequest.Get(url))
+        {
+            www.SetRequestHeader("api-key", API_KEY);
+            yield return www.SendWebRequest();
+            Res_Settings res = JsonUtility.FromJson<Res_Settings>(www.downloadHandler.text);
+            callback(res);
+        }
     }
 
+
+    // 세션 아이디 
+    // 유저 네임
     delegate void CallBackPlaceBet(ResBettingPlaceBet response);
     IEnumerator RequestCoinPlaceBet(ReqBettingPlaceBet req, CallBackPlaceBet callback)
     {
+        
         string url = getBaseURL() +"/v1/betting/" + "zera" + "/place-bet";
-
         string reqJsonData = JsonUtility.ToJson(req);
+        using (UnityWebRequest www = UnityWebRequest.Post(url, reqJsonData))
+        {
+            byte[] buff = System.Text.Encoding.UTF8.GetBytes(reqJsonData);
+            www.uploadHandler = new UploadHandlerRaw(buff);
+            www.SetRequestHeader("api-key", API_KEY);
+            www.SetRequestHeader("Content-Type", "application/json");
 
-        yield return null;
+            yield return www.SendWebRequest();
+
+            Debug.Log(JsonUtility.ToJson(JsonUtility.FromJson<ResBettingPlaceBet>(www.downloadHandler.text)));
+            ResBettingPlaceBet res = JsonUtility.FromJson<ResBettingPlaceBet>(www.downloadHandler.text);
+            callback(res);
+        }
+            
+    }
+
+    //로딩씬 넘어가기 전에 나가면 돈돌려줄거
+    delegate void CallBackDisconnect(ResBettingDisconnect response);
+    IEnumerator RequestBettingDisconnect(ReqBettingDisconnect req, CallBackDisconnect callback)
+    {
+        string url = getBaseURL() + "/v1/betting/" + "zera" + "/disconnect";
+        string reqJsonData = JsonUtility.ToJson(req);
+        using (UnityWebRequest www = UnityWebRequest.Post(url, reqJsonData))
+        {
+            byte[] buff = System.Text.Encoding.UTF8.GetBytes(reqJsonData);
+            www.uploadHandler = new UploadHandlerRaw(buff);
+            www.SetRequestHeader("api-key", API_KEY);
+            www.SetRequestHeader("Content-Type", "application/json");
+
+            yield return www.SendWebRequest();
+
+            ResBettingDisconnect res = JsonUtility.FromJson<ResBettingDisconnect>(www.downloadHandler.text);
+            callback(res);
+        }
+        
     }
 
 }

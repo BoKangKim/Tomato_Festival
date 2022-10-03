@@ -54,6 +54,7 @@ public class StartUIManager : MonoBehaviourPunCallbacks
     void Start()
     {
         //Connect network.
+        APIHandler.Inst.SetUIManager(this);
         PhotonNetwork.ConnectUsingSettings();
         gameLogo.SetActive(true);
 
@@ -61,6 +62,8 @@ public class StartUIManager : MonoBehaviourPunCallbacks
 
         StartCoroutine(SetUI());
     }
+
+    // 왜 코루틴??>?????????
     IEnumerator SetUI()
     {
         yield return new WaitForSeconds(0.1f);

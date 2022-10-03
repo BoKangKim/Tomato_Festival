@@ -2,6 +2,7 @@
 //
 // 유저 정보 응답 데이터	//
 //
+
 [System.Serializable]
 public class Res_GetUserProfile
 {
@@ -11,8 +12,10 @@ public class Res_GetUserProfile
 	public int StatusCode;
 	public string Message;
 
-	// 유저 정보
-	[System.Serializable]
+    
+
+    // 유저 정보
+    [System.Serializable]
 	public class UserProfile
 	{
 		public string referral_by;
@@ -164,11 +167,13 @@ public class ReqBettingPlaceBet
 public class ResBettingPlaceBet
 {
 	public string message;
+
+	[System.Serializable]
 	public class Data
-	{
-		public string betting_id;
-	}
-	public Data data;
+    {
+        public string betting_id;
+    }
+    public Data data;
 }
 
 
@@ -218,4 +223,9 @@ public class ResBettingDisconnect
 	{
 	}
 	public Data data;
+
+	public override string ToString()
+	{
+		return $"message:{message}\n data {data.ToString()}";
+	}
 }
