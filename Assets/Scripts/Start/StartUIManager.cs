@@ -81,7 +81,9 @@ public class StartUIManager : MonoBehaviourPunCallbacks
         startButton.interactable = false;
         settingButton.interactable = false;
         exitButton.interactable = false;
+        PhotonNetwork.LoadLevel("Infomation");
     }
+
     public void OnClickSettingButton()
     {
         startButton.interactable = false;

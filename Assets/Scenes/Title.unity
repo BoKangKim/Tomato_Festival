@@ -348,7 +348,7 @@ GameObject:
   - component: {fileID: 826904456}
   - component: {fileID: 826904455}
   m_Layer: 0
-  m_Name: TomatoLine
+  m_Name: TomatoLine1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -369,6 +369,7 @@ MonoBehaviour:
   tomatos:
   - {fileID: 1265813256679051863, guid: b7b88fbe20a8c4c408bdf1f98960932b, type: 3}
   - {fileID: 6144298572560753992, guid: c4dc69b979ad8c84c8f9f2ab9009cc45, type: 3}
+  rotatSpeed: 150
 --- !u!4 &826904456
 Transform:
   m_ObjectHideFlags: 0

@@ -18,7 +18,9 @@ public class PlayerBullet : MonoBehaviourPun, IPunObservable
     Vector3 remotePos;
     Quaternion remoteRot;
 
-
+    [Header("[이펙트]")]
+    [SerializeField] GameObject effObject = null;
+    [SerializeField] Transform effPos = null;
 
 
     private void Start()
@@ -29,7 +31,7 @@ public class PlayerBullet : MonoBehaviourPun, IPunObservable
         enter = false;
         playerBallShotter = GetComponent<PlayerBallShotter>();
 
-
+        PlayerBallEffect();
     }
 
     public void PlayerTurn(bool PlayerTurn)
@@ -57,6 +59,7 @@ public class PlayerBullet : MonoBehaviourPun, IPunObservable
         if (photonView.IsMine)
             rb.velocity = (reflectVector * speed);
 
+        
         //rb.AddForce((Vector2)reflectVector.normalized);
 
         //transform.position += speed * Time.deltaTime * reflectVector;
@@ -67,6 +70,8 @@ public class PlayerBullet : MonoBehaviourPun, IPunObservable
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (enter) { return; }
+
+
 
         // Dot 다시한번 확인해봐야함 - 개인적인생각 vector값끼리 서로 못곱하기때문에 Dot의 값으로 어쩌구함 
         //  반사벡터가 다시 튕길때는 입사각이기때문에 반사벡터에 넣어준다.
@@ -82,6 +87,7 @@ public class PlayerBullet : MonoBehaviourPun, IPunObservable
             }
 
         }
+
     }
 
     private void OnCollisionExit2D(Collision2D collision)
@@ -103,4 +109,15 @@ public class PlayerBullet : MonoBehaviourPun, IPunObservable
             remoteRot = (Quaternion)stream.ReceiveNext();
         }
     }
+
+    void PlayerBallEffect()
+    {
+        GameObject instObj = Instantiate(effObject, effPos.position, Quaternion.identity);
+        Destroy(instObj, 3f);
+    }
+
+
+
 }
+
+

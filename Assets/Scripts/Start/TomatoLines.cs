@@ -12,6 +12,7 @@ public class TomatoLines : MonoBehaviour
 
     private void Awake()
     {
+        DontDestroyOnLoad(gameObject);
         list = new List<GameObject>();
         AddList();
 
@@ -23,7 +24,7 @@ public class TomatoLines : MonoBehaviour
         {
             index++;
 
-            if(index == 2)
+            if (index == 2)
             {
                 index = 0;
             }

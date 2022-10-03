@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 4d3159cba9305da4099f20c9d7dffbb0
+guid: 77bc2071a5b8f734686beb2ea48fd4eb
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -128,7 +128,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Block1_0
+      name: BlockLine1_0
       rect:
         serializedVersion: 2
         x: 0
@@ -142,8 +142,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 037a5e1d29102f34587e85a4edec0563
-      internalID: -1552715091
+      spriteID: 322d2ffe82fa29f408dc6279af888989
+      internalID: -1240334787
       vertices: []
       indices: 
       edges: []
@@ -159,7 +159,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Block1_0: -1552715091
+      BlockLine1_0: -1240334787
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

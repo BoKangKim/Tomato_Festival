@@ -25,7 +25,7 @@ public class GameLogo : MonoBehaviour
         startLogoPos = new Vector3(-18.5f, 8.75f, 0f);
         startLogoScale = new Vector3(1.5f, 1.5f, 1f);
 
-        gameLogoPos = new Vector3(33.5f, 18.1f, 0f);
+        gameLogoPos = new Vector3(32.5f, 14f, 0f);
         gameLogoScale = new Vector3(0.3f, 0.3f, 0.3f);
     }
 

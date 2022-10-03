@@ -25,7 +25,7 @@ public class Items : MonoBehaviourPun
 
 
 
-    GameObject GrenadEffect = null;
+    public GameObject GrenadEffect = null;
 
     private void Awake()
     {
@@ -198,7 +198,7 @@ public class Items : MonoBehaviourPun
 
         //GameObject instObj = Instantiate(effObject, grenade.transform.position, Quaternion.identity);
         //Destroy(instObj, 1f);
-
+        GrenadeEffect();
 
         myRigidbody = grenade.GetComponent<Rigidbody2D>();
         myRigidbody.AddForce(fireDir * 500f, ForceMode2D.Force);
@@ -208,6 +208,12 @@ public class Items : MonoBehaviourPun
         GrenadeExplosion(grenade);
         PhotonNetwork.Destroy(grenade.gameObject);
     }
+    void GrenadeEffect()
+    {
+        GameObject instObj = Instantiate(GrenadEffect, this.transform.position, Quaternion.identity);
+        Destroy(instObj, 3f);
+    }
+
 
     private void GrenadeExplosion(GameObject grenade)
     {
