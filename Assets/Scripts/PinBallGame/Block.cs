@@ -5,7 +5,7 @@ using UnityEngine;
 using TMPro;
 using Photon.Pun;
 
-public delegate void AddList(string data);
+public delegate void AddList(string data, bool ismine);
 public delegate void BlockEvent(string itemname, Vector3 Pos);
 
 public class Block : MonoBehaviourPun
@@ -91,7 +91,7 @@ public class Block : MonoBehaviourPun
     }
 
     [PunRPC]
-    public void blockDamages(int Damage)
+    public void blockDamages(int Damage, bool isMine)
     {
         //if (currentHP > 0)
         currentHP -= Damage;
@@ -106,7 +106,16 @@ public class Block : MonoBehaviourPun
 
             //Debug.Log("currentHP <= 0 : ");
             //Debug.Log("currentHP2 : " + currentHP);
-            add(blockData.GetblockItemName);
+            if (isMine) //참이면 마스터
+            {
+                add(blockData.GetblockItemName, isMine);
+            }
+            else if(isMine == false) //other
+            {
+                add(blockData.GetblockItemName, isMine);
+            }
+            
+            
             blockEvent(blockData.GetblockItemName, this.transform.position);
             
             this.transform.SetParent(GameObject.Find("BlockRemove").transform);
@@ -148,7 +157,7 @@ public class Block : MonoBehaviourPun
 
         if (enter) { return; }
 
-        photonView.RPC("blockDamages", RpcTarget.All, blockData.GetblockgetDamages);
+        photonView.RPC("blockDamages", RpcTarget.All, blockData.GetblockgetDamages, photonView.IsMine);
         //Debug.Log("blockDamages : " );
         //Debug.Log("currentHP1 : " + currentHP);
 

@@ -10,6 +10,7 @@ public class Gun : MonoBehaviourPun
     Vector3 fireDir = Vector3.zero; 
     PlayerBattle player = null;
     PlayerBattle myEnemy = null;
+    PinBallGame_ItemCheck _itemCheck;
     public float numberOfBullet { get; set; } = 100;
     bool canshoot = true;
 
@@ -25,6 +26,10 @@ public class Gun : MonoBehaviourPun
     private void OnEnable()
     {
         canshoot = true;
+    }
+    private void Start()
+    {
+        _itemCheck = FindObjectOfType<PinBallGame_ItemCheck>();
     }
     // Update is called once per frame
     void Update()
@@ -84,6 +89,7 @@ public class Gun : MonoBehaviourPun
 
         GameObject objectInst = PhotonNetwork.Instantiate("Bullet", transform.position, Quaternion.identity);
         Bullet bulletInst = objectInst.GetComponent<Bullet>();
+        _itemCheck.UpdateBulletNum();
         if (bulletInst != null)
         {
             bulletInst.myEnemy = this.myEnemy;

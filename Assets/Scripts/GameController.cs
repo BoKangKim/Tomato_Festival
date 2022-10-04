@@ -9,6 +9,8 @@ public class GameController : MonoBehaviourPun
 {
     [SerializeField] GameObject pinballGame = null;
     [SerializeField] GameObject battleGame = null;
+    [SerializeField] SplitData splitData = null;
+    PinBallGame_ItemCheck _itemCheck;
     List<PlayerBattle> players = null;
     public bool isFindPlayers { get; set; } = false;
     float trueY = 0f;
@@ -22,6 +24,7 @@ public class GameController : MonoBehaviourPun
     {
         players = new List<PlayerBattle>();
         pinballGame.SetActive(false);
+        _itemCheck = FindObjectOfType<PinBallGame_ItemCheck>();
     }
     
     void Start()
@@ -32,6 +35,8 @@ public class GameController : MonoBehaviourPun
     
     public void BattleOver()
     {
+        _itemCheck.ResetItem();
+        splitData.ResetLists();
         StartCoroutine(BattleOverTransform());
     }
     public void AddPlayers(PlayerBattle player)
@@ -55,10 +60,12 @@ public class GameController : MonoBehaviourPun
         pinballGame.transform.position = activeTruePos;
         pinballGame.SetActive(true);
         ScrollSpeed = 5f;
+
     }
 
     public void PinballOver()
     {
+        splitData.OnDataList();
         StartCoroutine(PinballOverTransform());
     }
 

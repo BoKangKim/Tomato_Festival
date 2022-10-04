@@ -173,7 +173,7 @@ public class PlayerBattle : MonoBehaviourPun
 
         playercurHP -= attackDamage;
         playerHP.value = playercurHP / playermaxHP;
-        if (playercurHP < 0)
+        if (playercurHP <= 0)
         {
             over.SetWinCount();
             photonView.RPC("BattleEnd", RpcTarget.Others);
