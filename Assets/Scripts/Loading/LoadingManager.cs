@@ -21,7 +21,7 @@ public class LoadingManager : MonoBehaviourPunCallbacks
     [SerializeField] GameObject VSPanel = null;
     [SerializeField] TextMeshProUGUI Player1Info = null;
     [SerializeField] TextMeshProUGUI Player2Info = null;
-
+   
     // Start is called before the first frame update
     void Start()
     {
@@ -39,6 +39,8 @@ public class LoadingManager : MonoBehaviourPunCallbacks
         {
             loadingEffect.SendMessage("Pouring", SendMessageOptions.DontRequireReceiver);
         }
+
+        StartCoroutine(CheckPlayerCountTwo());
     }
 
     public void SetVSPanel(string player1Name, string player2Name)
@@ -108,6 +110,41 @@ public class LoadingManager : MonoBehaviourPunCallbacks
             info.photonView.RPC("BettingDisconnect", RpcTarget.MasterClient);
         }
     }
+
+    public void OnClickAcceptButton()
+    {
+        UserInfo info = FindObjectOfType<UserInfo>();
+
+        if(info != null)
+        {
+            info.AcceptLoadGame();
+        }
+    }
+
+    IEnumerator CheckPlayerCountTwo()
+    {
+        yield return new WaitUntil(() => PhotonNetwork.CurrentRoom.PlayerCount == 2);
+        StartCoroutine(CheckPlayerCount());
+    }
+
+    IEnumerator CheckPlayerCount()
+    {
+        yield return new WaitUntil(() => PhotonNetwork.CurrentRoom != null && PhotonNetwork.CurrentRoom.PlayerCount != 2);
+
+        if (PhotonNetwork.IsMasterClient)
+        {
+            APIHandler.Inst.BettingDisconnect();
+            PhotonNetwork.LeaveRoom();
+        }
+        else
+        {
+            yield return new WaitUntil(() => PhotonNetwork.IsMasterClient == true);
+            APIHandler.Inst.BettingDisconnect();
+            PhotonNetwork.LeaveRoom();
+        }
+
+    }
+
 
     public override void OnLeftRoom()
     {

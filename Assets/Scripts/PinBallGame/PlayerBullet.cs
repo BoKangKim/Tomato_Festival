@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
+using Photon.Realtime;
 
-public class PlayerBullet : MonoBehaviour
+public class PlayerBullet : MonoBehaviourPun, IPunObservable
 {
     public float speed;
     // ¿©·¯¹ø Ãæµ¹À» ¸·±âÀ§ÇØ
@@ -12,25 +14,21 @@ public class PlayerBullet : MonoBehaviour
     // ¹Ý»ç º¤ÅÍ
     Vector3 reflectVector;
     bool playerTurn = false;
+    PlayerBallShotter playerBallShotter;
+    Vector3 remotePos;
+    Quaternion remoteRot;
 
-   
+
+
+
     private void Start()
     {
+
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         enter = false;
+        playerBallShotter = GetComponent<PlayerBallShotter>();
 
-        //if (playerBallShotter.PlayerTurn = true)
-        //{
-        //    Debug.Log("»¡°£¸À");
-        //    spriteRenderer.color = Color.red;
-
-        //}
-        //else
-        //{
-        //    Debug.Log("³ë¶õ¸À");
-        //    spriteRenderer.color = Color.yellow;
-        //}
 
     }
 
@@ -48,11 +46,16 @@ public class PlayerBullet : MonoBehaviour
 
     void Update()
     {
-
+        if (false == photonView.IsMine)
+        {
+            transform.position = Vector3.Lerp(transform.position, remotePos, 10 * Time.deltaTime);
+            transform.rotation = Quaternion.Lerp(transform.rotation, remoteRot, 10 * Time.deltaTime);
+            return;
+        }
 
         //rb.position += speed * Time.deltaTime * (Vector2)reflectVector.normalized;
-
-        rb.velocity = (reflectVector * speed);
+        if (photonView.IsMine)
+            rb.velocity = (reflectVector * speed);
 
         //rb.AddForce((Vector2)reflectVector.normalized);
 
@@ -73,12 +76,10 @@ public class PlayerBullet : MonoBehaviour
 
         if (collision.gameObject.tag == "StopWall")
         {
-
-            
-
-            Destroy(gameObject);
-
-           
+            if (photonView.IsMine)
+            {
+                PhotonNetwork.Destroy(gameObject);
+            }
 
         }
     }
@@ -89,5 +90,17 @@ public class PlayerBullet : MonoBehaviour
     }
 
 
-
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(transform.position);
+            stream.SendNext(transform.rotation);
+        }
+        else
+        {
+            remotePos = (Vector3)stream.ReceiveNext();
+            remoteRot = (Quaternion)stream.ReceiveNext();
+        }
+    }
 }

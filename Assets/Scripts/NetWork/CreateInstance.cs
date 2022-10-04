@@ -24,12 +24,10 @@ public class CreateInstance : MonoBehaviourPunCallbacks
             pool.SetActive(false);
             if (PhotonNetwork.IsMasterClient)
             {
-                Debug.Log("CreateInstance");
                 Player1 = PhotonNetwork.Instantiate("PlayerBattle", new Vector3(-9f, -6f, 0f), Quaternion.identity);
             }
             else
             {
-                Debug.Log("CreateInstance");
                 Player2 = PhotonNetwork.Instantiate("PlayerBattle", new Vector3(9f, -6f, 0f), Quaternion.identity);
             }
 
@@ -37,17 +35,25 @@ public class CreateInstance : MonoBehaviourPunCallbacks
         }
     }
 
-     IEnumerator CheckPlayerCount()
+    IEnumerator CheckPlayerCount()
     {
         yield return new WaitUntil(() => PhotonNetwork.CurrentRoom.PlayerCount != 2);
+
         pool.gameObject.SetActive(false);
         if (Player1 != null)
             PhotonNetwork.Destroy(Player1.gameObject);
         if (Player2 != null)
             PhotonNetwork.Destroy(Player2.gameObject);
 
-        yield return new WaitForSeconds(0.5f);
-        PhotonNetwork.LoadLevel("Loading");
+        if(PhotonNetwork.IsMasterClient == true)
+        {
+            APIHandler.Inst.DeclareWinner(APIHandler.Inst.GetMyProfile().userProfile._id,false);
+        }
+        else
+        {
+            yield return new WaitUntil(() => PhotonNetwork.IsMasterClient == true);
+            APIHandler.Inst.DeclareWinner(APIHandler.Inst.GetMyProfile().userProfile._id,false);
+        }
     }
-
+   
 }

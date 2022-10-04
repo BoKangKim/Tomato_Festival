@@ -44,6 +44,14 @@ public class PlayerBattle : MonoBehaviourPun
         playermaxHP = 100f;
         playercurHP = 100f;
         StartPos = gameObject.transform.position;
+        
+    }
+
+    private void OnEnable()
+    {
+        playermaxHP = 100f;
+        playercurHP = 100f;
+        gameObject.transform.position = StartPos;
     }
 
     private void OnDestroy()
@@ -54,10 +62,12 @@ public class PlayerBattle : MonoBehaviourPun
 
     private void Start()
     {
-        if(transform.position.x > 0f)
+        if (transform.position.x > 0f)
         {
             spriteRenderer.flipX = true;
         }
+        GameController gc = FindObjectOfType<GameController>();
+        gc.AddPlayers(this);
     }
 
     private void OnDisable()
@@ -65,6 +75,17 @@ public class PlayerBattle : MonoBehaviourPun
         gameObject.transform.position = StartPos;
     }
 
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if(collision.gameObject.tag == "DeadZone")
+        {
+            if (photonView.IsMine)
+            {
+                photonView.RPC("DeadZone",RpcTarget.Others);
+                over.SetLoseCount();
+            }
+        }
+    }
     // 키 입력을 위해 돌린 업데이트 함수 
     // FixedUpdate에서 같이 받으면 늦게 입력 처리가 되어서 입력이 늦어짐
     private void Update()
@@ -98,9 +119,9 @@ public class PlayerBattle : MonoBehaviourPun
         {
             Jump();
         }
-        
 
-        
+
+
         float xAxis = Input.GetAxis("Horizontal");
 
         // transform.Translate로 움직이니 벽 통과 현상
@@ -114,7 +135,7 @@ public class PlayerBattle : MonoBehaviourPun
         {
             spriteRenderer.flipX = false;
         }
-        else if(xAxis < 0f)
+        else if (xAxis < 0f)
         {
             spriteRenderer.flipX = true;
         }
@@ -123,7 +144,7 @@ public class PlayerBattle : MonoBehaviourPun
 
     // 총알이 충돌 했을 때 불림
     // 넉백을 처리하는 코루틴 실행 
-    
+
     private void Jump()
     {
         myRigidbody.AddForce(Vector2.up * 1800f, ForceMode2D.Force);
@@ -140,15 +161,18 @@ public class PlayerBattle : MonoBehaviourPun
     {
         this.isJumpKeyInput = isJump;
     }
-    
+
     // 일단 합치기 전이라 게임이 완전 끝났을 때 로직임
     void TransferDamage(float attackDamage)
     {
+        if (IsShieldTime == true)
+            return;
+
         playercurHP -= attackDamage;
-        if(playercurHP < 0)
+        if (playercurHP < 0)
         {
             over.SetWinCount();
-            photonView.RPC("BattleEnd",RpcTarget.Others);
+            photonView.RPC("BattleEnd", RpcTarget.Others);
             return;
         }
         photonView.RPC("RPC_TransferDamage", RpcTarget.Others, attackDamage);
@@ -159,6 +183,11 @@ public class PlayerBattle : MonoBehaviourPun
         photonView.RPC("RPC_StartKnockBackCoroutine", RpcTarget.Others, bulletVec);
     }
 
+    [PunRPC]
+    void DeadZone()
+    {
+        over.SetWinCount();
+    }
     // 일단 합치기 전이라 게임이 완전 끝났을 때 로직임
     [PunRPC]
     void BattleEnd()
@@ -173,7 +202,7 @@ public class PlayerBattle : MonoBehaviourPun
             return;
 
         knockBackDir = (transform.position - bulletVec).normalized; // 적이 총알에 맞은 방향으로 넉백을 당하기 위해 구한 방향벡터
-        if(knockBackDir.y < (transform.position - Vector3.right).normalized.y)
+        if (knockBackDir.y < (transform.position - Vector3.right).normalized.y)
         {
             knockBackDir.y = transform.position.normalized.y;
         }
@@ -192,7 +221,12 @@ public class PlayerBattle : MonoBehaviourPun
 
     void PlayerSetActiveFalse()
     {
-        photonView.RPC("RPC_PlayerSetActiveFalse",RpcTarget.All);
+        photonView.RPC("RPC_PlayerSetActiveFalse", RpcTarget.All);
+    }
+
+    void PlayerSetActiveTrue()
+    {
+        photonView.RPC("RPC_PlayerSetActiveTrue", RpcTarget.All);
     }
 
     [PunRPC]
@@ -201,15 +235,27 @@ public class PlayerBattle : MonoBehaviourPun
         gameObject.SetActive(false);
     }
 
-    void DestroyPlayer() 
+    [PunRPC]
+    void RPC_PlayerSetActiveTrue()
     {
-        photonView.RPC("RPC_DestroyPlayer",RpcTarget.Others);
+        gameObject.SetActive(true);
+    }
+
+    void DestroyPlayer()
+    {
+        photonView.RPC("RPC_DestroyPlayer", RpcTarget.Others);
+        
     }
 
     [PunRPC]
     void RPC_DestroyPlayer()
     {
         PhotonNetwork.Destroy(this.gameObject);
+    }
+    [PunRPC]
+    void RPC_ReStart()
+    {
+        gameObject.SetActive(true);
     }
 
     // 넉백 코루틴
@@ -219,7 +265,7 @@ public class PlayerBattle : MonoBehaviourPun
 
         // 시간이 지날수록 점점 덜 밀리게 하기 위해 속도를 계속 빼주어서
         // 거리가 줄어들 수 있도록 함
-        if(myRigidbody != null)
+        if (myRigidbody != null)
         {
             while (knockBackSpeed >= 1f)
             {
@@ -229,7 +275,7 @@ public class PlayerBattle : MonoBehaviourPun
                 yield return null;
             }
         }
-        
+
     }
 
 }

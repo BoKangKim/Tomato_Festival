@@ -42,8 +42,8 @@ public class Bullet : MonoBehaviourPun
         if (myEnemy.gameObject.transform.lossyScale.x / 2 + gameObject.transform.lossyScale.x / 2 >=
             Vector3.Distance(myEnemy.gameObject.transform.position, gameObject.transform.position))
         {
-            myEnemy.SendMessage("TransferDamage", attackDamage, SendMessageOptions.DontRequireReceiver);
             myEnemy.SendMessage("StartKnockBackCoroutine", transform.position, SendMessageOptions.DontRequireReceiver);
+            myEnemy.SendMessage("TransferDamage", attackDamage, SendMessageOptions.DontRequireReceiver);
             PhotonNetwork.Destroy(this.gameObject);
         }
         

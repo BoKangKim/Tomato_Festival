@@ -193,9 +193,11 @@ public class ReqBettingDeclareWinner
 }
 
 // Response Declare Winner
+[System.Serializable]
 public class ResBettingDeclareWinner
 {
 	public string message;
+	[System.Serializable]
 	public class Data
 	{
 		public int amount_won;

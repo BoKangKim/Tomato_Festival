@@ -5,6 +5,14 @@ using TMPro;
 
 public class PinBall_ItemMgr : MonoBehaviour
 {
+    [SerializeField] TextMeshProUGUI Item_Bullet = null;
+    [SerializeField] TextMeshProUGUI Item_Grenade = null;
+    [SerializeField] TextMeshProUGUI Item_Shield = null;
+    [SerializeField] TextMeshProUGUI Item_Handgun = null;
+    [SerializeField] TextMeshProUGUI Item_Repeater = null;
+    [SerializeField] TextMeshProUGUI Item_Shotgun = null;
+    [SerializeField] TextMeshProUGUI Item_SniperRifle = null;
+    [SerializeField] TextMeshProUGUI Item_Coin = null;
 
     Scriptable_PinBallBlock blockData;
     [SerializeField] Scriptable_PinBallGetItem[] pinballGetItem;
@@ -49,12 +57,51 @@ public class PinBall_ItemMgr : MonoBehaviour
     }
 
 
-    
+    void Start()
+    {
+        Item_Bullet.text = "X" + getbullet;
+        Item_Grenade.text = "X" + getgrenade;
+        Item_Shield.text= "X" + getshield;
+        Item_Handgun.text = "X" + gethandgun;
+        Item_Repeater.text = "X" + getrepeater;
+        Item_Shotgun.text = "X" + getShotgun;
+        Item_SniperRifle.text = "X" + getSniperRifle;
+        Item_Coin.text = "X" + getCoin;
+    }
 
 
     private void PlusItemNum()
     {
+ 
+        getbullet += pinballGetItem[0].GetItemNum;
+        Item_Bullet.text = "X" + getbullet;
+
+        getgrenade += pinballGetItem[1].GetItemNum;
+        Item_Grenade.text = "X" + getgrenade;
+
+        getshield += pinballGetItem[2].GetItemNum;
+        Item_Shield.text = "X" + getshield;
+
+        gethandgun += pinballGetItem[3].GetItemNum;
+        Item_Handgun.text = "X" + gethandgun;
+
+        getrepeater += pinballGetItem[4].GetItemNum;
+        Item_Repeater.text = "X" + getrepeater;
+
+        getShotgun += pinballGetItem[5].GetItemNum;
+        Item_Shotgun.text = "X" + getShotgun;
+
+        getSniperRifle += pinballGetItem[6].GetItemNum;
+        Item_SniperRifle.text = "X" + getSniperRifle;
+
+        getCoin += pinballGetItem[7].GetItemNum;
+        Item_Coin.text = "X" + getCoin;
 
     }
 
+
+    void Update()
+    {
+
+    }
 }

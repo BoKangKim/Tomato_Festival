@@ -62,6 +62,20 @@ MonoBehaviour:
   - BettingDisconnect
   - CancleMatch
   - Betting
+  - SetBettingID
+  - blockDamages
+  - BlockTransFormChange
+  - DeadZone
+  - RPC_PlayerSetActiveTrue
+  - RPC_ReStart
+  - Setarrow
+  - SetBlockData
+  - SetColor
+  - SetTurn
+  - AcceptLoadGame
+  - AsyncAcceptCount
+  - Winner
+  - SetEndGame
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

@@ -6,11 +6,16 @@ using Photon.Pun;
 using Photon.Realtime;
 public class RectFloor : MonoBehaviourPun
 {
+    BoxCollider2D floorCollider = null;
 
+    private void Awake()
+    {
+        floorCollider = GetComponent<BoxCollider2D>();
+    }
     // 플레이어가 땅에 닿았는 지 판단하기 위한 함수
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.tag == "PlayerBattle")
+        if (collision.gameObject.tag == "Player")
         {
             // 벽 옆면에 닿았을 때 점프가 되는 것을 막기 위해 판단하는 if문
             // 플레이어는 점프를 해서 장애물 위에 올라감
@@ -18,7 +23,9 @@ public class RectFloor : MonoBehaviourPun
             // 오브젝트의 중앙 y 값 + Y축 스케일 /2 를 하면 윗면의 한 점이 나옴
             // 똑같이 플레이어도 적용하면 맨 아래에 있는 점이 나옴
             // 두 개의 점의 위치로 판단
-            if (transform.position.y + transform.lossyScale.y / 2 <= collision.transform.position.y - 0.5f)
+
+            CircleCollider2D playerCollider = collision.gameObject.GetComponent<CircleCollider2D>();
+            if (transform.position.y + floorCollider.size.y / 2 <= collision.transform.position.y - playerCollider.radius)
             {
                 collision.gameObject.SendMessage("SetininJump", true, SendMessageOptions.DontRequireReceiver);
                 // FixedUpdate가 Update보다 늦게 처리를 하여서 점프를 한 후 점프키를 다시 눌렀을 때

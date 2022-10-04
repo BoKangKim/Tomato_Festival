@@ -28,7 +28,7 @@ public class Items : MonoBehaviourPun
         items = new List<string>();
         player = GetComponent<PlayerBattle>();
         MyShield = gameObject.transform.Find("ShiledEffect").gameObject;
-        myImg = FindObjectOfType<Image>();
+        myImg = GameObject.Find("ItemUIImg").GetComponent<Image>();
         
     }
 
@@ -173,6 +173,7 @@ public class Items : MonoBehaviourPun
         yield return new WaitForSeconds(shieldTime);
         MyShield.SetActive(false);
         player.IsShieldTime = false;
+       
     }
 
     void TransferFireDir()

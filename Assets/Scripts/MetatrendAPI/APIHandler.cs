@@ -55,6 +55,20 @@ public class APIHandler : MonoBehaviour
     //Betting 정보
     string betting_id = null;
 
+    // WinAmount
+    int amount_won = 0;
+    int loseCoin = 0;
+
+    public void InitSetValues()
+    {
+        uiManager = null;
+        otherPlayerName = null;
+        otherPlayerSessionId = null;
+        betting_id = null;
+        amount_won = 0;
+        loseCoin = 0;
+    }
+
     string getBaseURL()
     {
         return FullAppsURL;
@@ -103,6 +117,16 @@ public class APIHandler : MonoBehaviour
         return sessionId;
     }
 
+    public string GetBettingID()
+    {
+        return betting_id;
+    }
+
+    public void SetBettingID(string betting_id)
+    {
+        this.betting_id = betting_id;
+    }
+
     public void SetUIManager(StartUIManager uIManager)
     {
         this.uiManager = uIManager;
@@ -131,6 +155,11 @@ public class APIHandler : MonoBehaviour
     public void BettingDisconnect()
     {
         StartCoroutine(ReqDisconect());
+    }
+
+    public void DeclareWinner(string winner_player_id,bool nomalShutdown)
+    {
+        StartCoroutine(ReqDeclareWinner(winner_player_id, nomalShutdown));
     }
 
     IEnumerator ResGetUserProfile()
@@ -227,8 +256,7 @@ public class APIHandler : MonoBehaviour
         {
             if(response != null)
             {
-                betting_id = response.data.betting_id;
-                Debug.Log(betting_id + "진짜 이번엔 되라");
+                FindObjectOfType<UserInfo>().photonView.RPC("SetBettingID",Photon.Pun.RpcTarget.All,response.data.betting_id);
             }
         });
     }
@@ -243,10 +271,49 @@ public class APIHandler : MonoBehaviour
             {
                 Debug.Log("## CoinDisconnect : " + response.message);
                 UserInfo info = FindObjectOfType<UserInfo>();
-                info.photonView.RPC("CancleMatch",Photon.Pun.RpcTarget.All);
+                if(info != null)
+                {
+                    info.photonView.RPC("CancleMatch", Photon.Pun.RpcTarget.All);
+                }
+                
                 ClearOtherPlayerInfo();
             }
+            else
+            {
+                Debug.LogError("Can't CoinDisconnect Check JsonData");
+            }
         });
+    }
+
+    IEnumerator ReqDeclareWinner(string winner_Player_id,bool nomalShutdown)
+    {
+        ReqBettingDeclareWinner reqBettingDeclareWinner = new ReqBettingDeclareWinner();
+        reqBettingDeclareWinner.betting_id = this.betting_id;
+        reqBettingDeclareWinner.winner_player_id = winner_Player_id;
+        yield return RequestDeclareWinner(reqBettingDeclareWinner, (response) => 
+        { 
+            if(response != null)
+            {
+                Debug.Log("## DeclareWinner Message : " + response.message);
+                this.amount_won = response.data.amount_won;
+                this.loseCoin = amount_won - betSettings.data.bets[0].amount;
+
+                GameOver go = FindObjectOfType<GameOver>();
+                if(nomalShutdown == true)
+                {
+                    go.photonView.RPC("SetEndGame",Photon.Pun.RpcTarget.All,amount_won.ToString(),loseCoin.ToString());
+                }
+                else
+                {
+                    go.LeftOnePlayerWin(amount_won.ToString());
+                }
+            }
+            else
+            {
+                Debug.LogError("Can't DeclareWinner Check JsonData");
+            }
+        });
+
     }
 
     // 유저 프로필 가져오기
@@ -323,6 +390,9 @@ public class APIHandler : MonoBehaviour
             Debug.Log(JsonUtility.ToJson(JsonUtility.FromJson<ResBettingPlaceBet>(www.downloadHandler.text)));
             ResBettingPlaceBet res = JsonUtility.FromJson<ResBettingPlaceBet>(www.downloadHandler.text);
             callback(res);
+            www.downloadHandler.Dispose();
+            www.uploadHandler.Dispose();
+            www.Dispose();
         }
             
     }
@@ -333,6 +403,7 @@ public class APIHandler : MonoBehaviour
     {
         string url = getBaseURL() + "/v1/betting/" + "zera" + "/disconnect";
         string reqJsonData = JsonUtility.ToJson(req);
+
         using (UnityWebRequest www = UnityWebRequest.Post(url, reqJsonData))
         {
             byte[] buff = System.Text.Encoding.UTF8.GetBytes(reqJsonData);
@@ -344,8 +415,31 @@ public class APIHandler : MonoBehaviour
 
             ResBettingDisconnect res = JsonUtility.FromJson<ResBettingDisconnect>(www.downloadHandler.text);
             callback(res);
+            www.downloadHandler.Dispose();
+            www.uploadHandler.Dispose();
+            www.Dispose();
         }
         
     }
+
+    delegate void CallBackDeclareWinner(ResBettingDeclareWinner response);
+    IEnumerator RequestDeclareWinner(ReqBettingDeclareWinner req, CallBackDeclareWinner callback)
+    {
+        string url = getBaseURL() + "/v1/betting/" + "zera" + "/declare-winner";
+        string reqJsonData = JsonUtility.ToJson(req);
+
+        using (UnityWebRequest www = UnityWebRequest.Post(url,reqJsonData))
+        {
+            byte[] buff = System.Text.Encoding.UTF8.GetBytes(reqJsonData);
+            www.uploadHandler = new UploadHandlerRaw(buff);
+            www.SetRequestHeader("api-key", API_KEY);
+            www.SetRequestHeader("Content-Type", "application/json");
+
+            yield return www.SendWebRequest();
+
+            ResBettingDeclareWinner res = JsonUtility.FromJson<ResBettingDeclareWinner>(www.downloadHandler.text);
+            callback(res);
+        }
+}
 
 }
