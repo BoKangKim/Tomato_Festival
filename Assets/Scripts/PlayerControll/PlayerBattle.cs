@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 using Photon.Pun;
 using Photon.Realtime;
@@ -15,6 +16,7 @@ public class PlayerBattle : MonoBehaviourPun
     public bool isJumpKeyInput { get; set; } = false; // W�� �Է��Ͽ�����(����Ű�� ������ ��)
     bool initJump = true; // ���� ��Ƽ� ������ �� �� �ִ� ��Ȳ����
     Rigidbody2D myRigidbody;
+    Slider playerHP;
     CamEffect camEffect = null;
     SpriteRenderer spriteRenderer = null;
     GameOver over = null;
@@ -39,7 +41,7 @@ public class PlayerBattle : MonoBehaviourPun
         {
             myRigidbody = GetComponent<Rigidbody2D>();
         }
-
+        playerHP = GetComponentInChildren<Slider>();
         camEffect = FindObjectOfType<CamEffect>();
         playermaxHP = 100f;
         playercurHP = 100f;
@@ -51,6 +53,7 @@ public class PlayerBattle : MonoBehaviourPun
     {
         playermaxHP = 100f;
         playercurHP = 100f;
+        playerHP.value = playercurHP / playermaxHP;
         gameObject.transform.position = StartPos;
     }
 
@@ -172,8 +175,8 @@ public class PlayerBattle : MonoBehaviourPun
         //PhotonNetwork.Destroy(DamageEffect);
 
         playercurHP -= attackDamage;
-
-        if (playercurHP < 0)
+        playerHP.value = playercurHP / playermaxHP;
+        if (playercurHP <= 0)
         {
             over.SetWinCount();
             photonView.RPC("BattleEnd", RpcTarget.Others);
@@ -225,8 +228,7 @@ public class PlayerBattle : MonoBehaviourPun
         camEffect.StartCamEffectCoroutine();
 
         playercurHP -= attackDamage;
-
-
+        playerHP.value = playercurHP / playermaxHP;
     }
 
 
@@ -263,6 +265,7 @@ public class PlayerBattle : MonoBehaviourPun
     {
         PhotonNetwork.Destroy(this.gameObject);
     }
+
     [PunRPC]
     void RPC_ReStart()
     {

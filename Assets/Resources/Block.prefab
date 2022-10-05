@@ -129,6 +129,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blockHP: {fileID: 4548067448241861887}
   playCount: {fileID: 0}
+  getItem: {fileID: 0}
+  items:
+  - {fileID: 1824044463, guid: f67d3d7e01f3a8647b369537d984cc99, type: 3}
+  - {fileID: 21300000, guid: c1d3c2ad0237e924c95391c7151618d8, type: 3}
+  - {fileID: 21300000, guid: 59d01594ee3c4ee438033f99b9ccaaed, type: 3}
+  - {fileID: 21300000, guid: 674990ae5e8cf794e8d0a03ff6dfcfd4, type: 3}
+  - {fileID: 21300000, guid: 0d7cf685bdb004444ae604f8f65d63cb, type: 3}
+  - {fileID: 21300000, guid: 13d78a9ae4a7c5546a29aa7819f4385e, type: 3}
+  - {fileID: 21300000, guid: 5b8e284204181ae46a5b4ce8cdfe07ef, type: 3}
   blockData: {fileID: 0}
   BlockRender: {fileID: 0}
   currentHP: 0

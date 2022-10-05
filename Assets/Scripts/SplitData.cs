@@ -14,14 +14,15 @@ public class SplitData : MonoBehaviour
     List<string> PinballDataList = new List<string>();
     [SerializeField]PinBallGame_ItemCheck _itemCheck;
 
-    private void Awake()
-    {
-        Debug.Log("Splitdata Awake");
-    }
+    
 
-    private void OnEnable()
+    public void OnDataList()
     {
         PinballDataList = _itemCheck.GetMyItemDataList();
+        for (int i = 0; i < PinballDataList.Count; i++)
+        {
+            Debug.Log("스플릿데이터 아이템 " + PinballDataList[i]);
+        }
     }
 
     public List<string> GetAndSplitData(string name) 

@@ -29,14 +29,12 @@ public class CreateInstance : MonoBehaviourPunCallbacks
             {
                 Player2 = PhotonNetwork.Instantiate("PlayerBattle", new Vector3(9f, -6f, 0f), Quaternion.identity);
             }
-
             pool.gameObject.SetActive(true);
         }
     }
 
     IEnumerator CheckPlayerCount()
     {
-
         yield return new WaitUntil(() => PhotonNetwork.CurrentRoom.PlayerCount != 2);
 
         pool.gameObject.SetActive(false);

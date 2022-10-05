@@ -11,7 +11,7 @@ public class Items : MonoBehaviourPun
     [SerializeField] Sprite[] itemImgs;
 
     Image myImg;
-    List<string> items;
+    List<string> items = null;
     PlayerBattle player = null;
     PlayerBattle myEnemy = null;
     Rigidbody2D myRigidbody;
@@ -22,6 +22,7 @@ public class Items : MonoBehaviourPun
     Vector3 fireDir = Vector3.zero;
     int preListCount = 0;
     GameObject grenade = null;
+    PinBallGame_ItemCheck _itemCheck;
 
 
 
@@ -33,10 +34,11 @@ public class Items : MonoBehaviourPun
         player = GetComponent<PlayerBattle>();
         //MyShield = gameObject.transform.Find("ShiledEffect").gameObject;
         MyShield = gameObject.transform.Find("ShiledEffect1").gameObject;
-        myImg = GameObject.Find("ItemUIImg").GetComponent<Image>();
-        
+        if(photonView.IsMine)
+            myImg = GameObject.Find("ItemUIImg").GetComponent<Image>();
+        _itemCheck = FindObjectOfType<PinBallGame_ItemCheck>();
     }
-
+    
     private void OnEnable()
     {
         SplitData splitData = FindObjectOfType<SplitData>();
@@ -60,9 +62,15 @@ public class Items : MonoBehaviourPun
         if (Input.GetMouseButtonDown(1))
         {
             if (items[MyItemIndex].Equals("Grenade"))
+            {
+                _itemCheck.UpdateGrenadeNum();
                 StartItemCoroutine();
+            }
             else if (items[MyItemIndex].Equals("Shield"))
+            {
+                _itemCheck.UpdateShieldNum();
                 photonView.RPC("RPC_StartItemCorountine", RpcTarget.All);
+            }
 
             items.RemoveAt(MyItemIndex);
             photonView.RPC("RPC_RemoveItemList", RpcTarget.Others);
@@ -243,13 +251,17 @@ public class Items : MonoBehaviourPun
         }
 
     }
-
+    
     void ChangeUIImg()
     {
+        if (myImg == null)
+            return;
+
         if (items.Count == 0)
         {
             if(myImg.gameObject.activeSelf == true)
             {
+                Debug.Log("�̻��ϴٰ� ����");
                 myImg.sprite = null;
                 myImg.gameObject.SetActive(false);
             }
@@ -270,6 +282,7 @@ public class Items : MonoBehaviourPun
         }
         
     }
+    
 
     #endregion
 }

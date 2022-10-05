@@ -1,15 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 using TMPro;
 using Photon.Pun;
 
-public delegate void AddList(string data);
+public delegate void AddList(string data, bool ismine);
+public delegate void BlockEvent(string itemname, Vector3 Pos);
 
 public class Block : MonoBehaviourPun
 {
     [SerializeField] TextMeshProUGUI blockHP;
     [SerializeField] TextMeshProUGUI playCount;
+    ImgUIManager imgUIManager;
     GameObject PinballObject;
     public Scriptable_PinBallBlock blockData;
     BlockSpawner blockSpawner;
@@ -17,9 +20,10 @@ public class Block : MonoBehaviourPun
 
     public SpriteRenderer BlockRender;
     BoxCollider2D BlockBC = null;
-
+    
     //List<string> ItemInfo;
     public AddList add;
+    BlockEvent blockEvent;
     public int currentHP = 0;
     //public int Playcount = 3;
     int blockCount = 0;
@@ -34,10 +38,12 @@ public class Block : MonoBehaviourPun
         BlockRender = GetComponent<SpriteRenderer>();
         BlockBC = GetComponent<BoxCollider2D>();
         blockSpawner = FindObjectOfType<BlockSpawner>();
+        imgUIManager = FindObjectOfType<ImgUIManager>();
+        blockEvent = imgUIManager.RenderItem;
         PinBallGame_ItemCheck pinBallGame_ItemCheck = FindObjectOfType<PinBallGame_ItemCheck>();
         add = pinBallGame_ItemCheck.AddItemCheckList;
-
         
+
         //ItemInfo = new List<string>();
     }
 
@@ -58,10 +64,10 @@ public class Block : MonoBehaviourPun
             PinballObject = GameObject.FindWithTag("PinballGame");
             gameObject.transform.SetParent(PinballObject.transform);
         }
-
+        
         //playCount.text = "Play Count : " + Playcount;
     }
-
+    
     public void RPC_BlockDatas(int scriptableIdx)
     {
         currentHP = blockData.GetblockMaxHp;
@@ -87,7 +93,7 @@ public class Block : MonoBehaviourPun
     }
 
     [PunRPC]
-    public void blockDamages(int Damage)
+    public void blockDamages(int Damage, bool isMine)
     {
         //if (currentHP > 0)
         currentHP -= Damage;
@@ -103,8 +109,18 @@ public class Block : MonoBehaviourPun
             //Debug.Log("BlockEffect : ������? " + blockeff);
             //Debug.Log("currentHP <= 0 : ");
             //Debug.Log("currentHP2 : " + currentHP);
-            add(blockData.GetblockItemName);
-            Debug.Log("add : " + blockData.GetblockItemName);
+            if (isMine) //���̸� ������
+            {
+                add(blockData.GetblockItemName, isMine);
+            }
+            else if(isMine == false) //other
+            {
+                add(blockData.GetblockItemName, isMine);
+            }
+            
+            
+            blockEvent(blockData.GetblockItemName, this.transform.position);
+            
             this.transform.SetParent(GameObject.Find("BlockRemove").transform);
 
             if (photonView.IsMine)
@@ -148,7 +164,7 @@ public class Block : MonoBehaviourPun
 
         if (enter) { return; }
 
-        photonView.RPC("blockDamages", RpcTarget.All, blockData.GetblockgetDamages);
+        photonView.RPC("blockDamages", RpcTarget.All, blockData.GetblockgetDamages, photonView.IsMine);
         //Debug.Log("blockDamages : " );
         //Debug.Log("currentHP1 : " + currentHP);
 
