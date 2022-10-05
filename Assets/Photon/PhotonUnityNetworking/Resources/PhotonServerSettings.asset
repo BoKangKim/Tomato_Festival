@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: PhotonServerSettings
   m_EditorClassIdentifier: 
   AppSettings:
-    AppIdRealtime: 4f95d2c7-69cd-48bb-b609-1e239bed8c50
+    AppIdRealtime: 5de395e0-1f80-4643-8b5d-05e51f3bfc2f
     AppIdFusion: 
     AppIdChat: 
     AppIdVoice: 
@@ -55,17 +55,29 @@ MonoBehaviour:
   - BattleEnd
   - RPC_DestroyPlayer
   - GameTurn
+  - RPC_PlayerSetActiveFalse
+  - SendUserInfos
+  - DestroyThisObj
+  - SetUserInfos
+  - BettingDisconnect
+  - CancleMatch
+  - Betting
+  - SetBettingID
   - blockDamages
   - BlockTransFormChange
+  - DeadZone
+  - RPC_PlayerSetActiveTrue
+  - RPC_ReStart
   - Setarrow
   - SetBlockData
   - SetColor
   - SetTurn
-  - RPC_PlayerSetActiveFalse
-  - RPC_PlayerSetActiveTrue
-  - RPC_ReStart
-  - DeadZone
-  - Shield
+  - AcceptLoadGame
+  - AsyncAcceptCount
+  - Winner
+  - SetEndGame
+  - PlayerDamageEffect
+  - gunEffect
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

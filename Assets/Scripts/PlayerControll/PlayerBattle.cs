@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 using Photon.Pun;
 using Photon.Realtime;
@@ -9,18 +10,19 @@ public class PlayerBattle : MonoBehaviourPun
 {
     float playermaxHP;
     float playercurHP;
-    float moveSpeed = 20f; // ÇÃ·¹ÀÌ¾î ¼Óµµ
-    Vector3 mousePos = Vector3.zero; // ¸¶¿ì½º Æ÷Áö¼Ç
-    Vector2 knockBackDir = Vector2.zero; // ÃÑ¾Ë¿¡ ¸Â°í ³Ë¹é µÇ´Â ¹æÇâ º¤ÅÍ
-    public bool isJumpKeyInput { get; set; } = false; // W¸¦ ÀÔ·ÂÇÏ¿´´ÂÁö(Á¡ÇÁÅ°¸¦ ´­·¶´Â Áö)
-    bool initJump = true; // ¶¥¿¡ ´ê¾Æ¼­ Á¡ÇÁ¸¦ ÇÒ ¼ö ÀÖ´Â »óÈ²ÀÎÁö
+    float moveSpeed = 20f; // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½Óµï¿½
+    Vector3 mousePos = Vector3.zero; // ï¿½ï¿½ï¿½ì½º ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    Vector2 knockBackDir = Vector2.zero; // ï¿½Ñ¾Ë¿ï¿½ ï¿½Â°ï¿½ ï¿½Ë¹ï¿½ ï¿½Ç´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    public bool isJumpKeyInput { get; set; } = false; // Wï¿½ï¿½ ï¿½Ô·ï¿½ï¿½Ï¿ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½Å°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½)
+    bool initJump = true; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½È²ï¿½ï¿½ï¿½ï¿½
     Rigidbody2D myRigidbody;
+    Slider playerHP;
     CamEffect camEffect = null;
     SpriteRenderer spriteRenderer = null;
     GameOver over = null;
     Vector3 StartPos = Vector3.zero;
 
-    // ÇöÀç ¾ÆÀÌÅÛ Á¤º¸
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     Items myItems = null;
     public int MyItemIndex { get; set; } = 0;
     public bool IsShieldTime { get; set; } = false;
@@ -39,7 +41,7 @@ public class PlayerBattle : MonoBehaviourPun
         {
             myRigidbody = GetComponent<Rigidbody2D>();
         }
-
+        playerHP = GetComponentInChildren<Slider>();
         camEffect = FindObjectOfType<CamEffect>();
         playermaxHP = 100f;
         playercurHP = 100f;
@@ -51,6 +53,7 @@ public class PlayerBattle : MonoBehaviourPun
     {
         playermaxHP = 100f;
         playercurHP = 100f;
+        playerHP.value = playercurHP / playermaxHP;
         gameObject.transform.position = StartPos;
     }
 
@@ -86,35 +89,35 @@ public class PlayerBattle : MonoBehaviourPun
             }
         }
     }
-    // Å° ÀÔ·ÂÀ» À§ÇØ µ¹¸° ¾÷µ¥ÀÌÆ® ÇÔ¼ö 
-    // FixedUpdate¿¡¼­ °°ÀÌ ¹ÞÀ¸¸é ´Ê°Ô ÀÔ·Â Ã³¸®°¡ µÇ¾î¼­ ÀÔ·ÂÀÌ ´Ê¾îÁü
+    // Å° ï¿½Ô·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½Ô¼ï¿½ 
+    // FixedUpdateï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê°ï¿½ ï¿½Ô·ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½ ï¿½Ç¾î¼­ ï¿½Ô·ï¿½ï¿½ï¿½ ï¿½Ê¾ï¿½ï¿½ï¿½
     private void Update()
     {
-        // ³×Æ®¿öÅ© Ã³¸®
+        // ï¿½ï¿½Æ®ï¿½ï¿½Å© Ã³ï¿½ï¿½
         if (photonView.IsMine == false)
             return;
 
-        // Å°ÀÔ·ÂÀ» ¹Þ¾Æ¼­ Á¡ÇÁ¸¦ ÇØ¾ßÇÏ´Âµ¥ AddForce´Â FixedUpdate ¿¡¼­ Ã³¸®¸¦ ÇØ¾ßÁö
-        // ´Ù¸¥ ÄÄÇ»ÅÍ¿¡¼­µµ µ¿ÀÏÇÑ ¼Óµµ, °Å¸®·Î ¿òÁ÷ÀÓ
-        // Å° ÀÔ·ÂÀÌ µÇ¾ú´Ù´Â °ÍÀ» ¾Ë¸®±â À§ÇØ bool °ªÀ» ³Ö¾î¼­ true ÀÌ¸é ´­¸°°Å falseÀÌ¸é ¾È´­¸° °ÍÀ» ÆÇ´ÜÇÑ ÈÄ
-        // FixedUpdate¿¡¼­ Á¡ÇÁ¸¦ ÇÔ
+        // Å°ï¿½Ô·ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ø¾ï¿½ï¿½Ï´Âµï¿½ AddForceï¿½ï¿½ FixedUpdate ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½ ï¿½Ø¾ï¿½ï¿½ï¿½
+        // ï¿½Ù¸ï¿½ ï¿½ï¿½Ç»ï¿½Í¿ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Óµï¿½, ï¿½Å¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        // Å° ï¿½Ô·ï¿½ï¿½ï¿½ ï¿½Ç¾ï¿½ï¿½Ù´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ë¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ bool ï¿½ï¿½ï¿½ï¿½ ï¿½Ö¾î¼­ true ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ falseï¿½Ì¸ï¿½ ï¿½È´ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ç´ï¿½ï¿½ï¿½ ï¿½ï¿½
+        // FixedUpdateï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
         if (Input.GetKeyDown(KeyCode.W))
         {
             isJumpKeyInput = true;
         }
     }
 
-    // ¸®Áöµå¹Ùµð ¹°¸®ÀûÀÎ Ã³¸®¸¦ ÇÏ±âÀ§ÇÑ FixedUpdate
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ùµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½ ï¿½Ï±ï¿½ï¿½ï¿½ï¿½ï¿½ FixedUpdate
     void FixedUpdate()
     {
         //if (myRigidbody == null)
         //    return;
-        // ³×Æ®¿öÅ© Ã³¸®
+        // ï¿½ï¿½Æ®ï¿½ï¿½Å© Ã³ï¿½ï¿½
         if (photonView.IsMine == false)
             return;
 
-        #region ÇÃ·¹ÀÌ¾î ¿òÁ÷ÀÓ
-        // Á¡ÇÁÅ°°¡ ´­·È´ÂÁö, ¶¥¿¡ ´ê¾Æ¼­ Á¡ÇÁ¸¦ ÇÒ ¼ö ÀÖ´Â »óÅÂÀÎÁö ÆÇ´ÜÇÑ ÈÄ Á¡ÇÁ
+        #region ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        // ï¿½ï¿½ï¿½ï¿½Å°ï¿½ï¿½ ï¿½ï¿½ï¿½È´ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ç´ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (isJumpKeyInput == true && initJump == true)
         {
             Jump();
@@ -124,11 +127,11 @@ public class PlayerBattle : MonoBehaviourPun
 
         float xAxis = Input.GetAxis("Horizontal");
 
-        // transform.Translate·Î ¿òÁ÷ÀÌ´Ï º® Åë°ú Çö»ó
-        // Ä³¸¯ÅÍ Èçµé¸² Çö»óÀÌ ¹ß»ý -> transformÀ¸·Î ÀÌµ¿ÇÏ¸é ÀÌµ¿º¸´Ù´Â ¼ø°£ÀÌµ¿¿¡ °¡±õ±â ¶§¹®¿¡ ¹ß»ýÇÏ´Â Çö»ó
-        // ÇØ°áÇÏ±â À§ÇØ rigidbodyÀÇ positionÀ¸·Î ÀÌµ¿ -> Ãæµ¹ ¸ÕÀú ÆÇ´Ü ÈÄ ÀÌµ¿ -> Åë°ú, Èçµé¸² Çö»ó ¿ÏÈ­
-        // rigidbody°¡ ´Þ·ÁÀÖÀ» ¶§´Â transformÀ¸·Î ¿òÁ÷ÀÌ¸é rigidbodyÀÇ À§Ä¡µµ °è»êÀ» ´Ù½Ã ÇØ¾ß ÇÏ±â ¶§¹®¿¡ ÄÚ½ºÆ®°¡ ¸¹ÀÌ µç´Ù°í ÇÔ
-        // rigidbody°¡ ÀÖÀ» ¶§´Â rigidbody.MovePostion ¶Ç´Â rigidbody.positionÀ¸·Î Ã³¸®ÇÏ´Â °ÍÀÌ ÁÁÀ½
+        // transform.Translateï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ì´ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+        // Ä³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½é¸² ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ -> transformï¿½ï¿½ï¿½ï¿½ ï¿½Ìµï¿½ï¿½Ï¸ï¿½ ï¿½Ìµï¿½ï¿½ï¿½ï¿½Ù´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ìµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½
+        // ï¿½Ø°ï¿½ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ rigidbodyï¿½ï¿½ positionï¿½ï¿½ï¿½ï¿½ ï¿½Ìµï¿½ -> ï¿½æµ¹ ï¿½ï¿½ï¿½ï¿½ ï¿½Ç´ï¿½ ï¿½ï¿½ ï¿½Ìµï¿½ -> ï¿½ï¿½ï¿½, ï¿½ï¿½é¸² ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È­
+        // rigidbodyï¿½ï¿½ ï¿½Þ·ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ transformï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ì¸ï¿½ rigidbodyï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ù½ï¿½ ï¿½Ø¾ï¿½ ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ú½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ù°ï¿½ ï¿½ï¿½
+        // rigidbodyï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ rigidbody.MovePostion ï¿½Ç´ï¿½ rigidbody.positionï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         myRigidbody.position += (xAxis * Vector2.right * moveSpeed * Time.deltaTime);
 
         if (xAxis > 0f)
@@ -142,8 +145,8 @@ public class PlayerBattle : MonoBehaviourPun
         #endregion
     }
 
-    // ÃÑ¾ËÀÌ Ãæµ¹ ÇßÀ» ¶§ ºÒ¸²
-    // ³Ë¹éÀ» Ã³¸®ÇÏ´Â ÄÚ·çÆ¾ ½ÇÇà 
+    // ï¿½Ñ¾ï¿½ï¿½ï¿½ ï¿½æµ¹ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ò¸ï¿½
+    // ï¿½Ë¹ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ú·ï¿½Æ¾ ï¿½ï¿½ï¿½ï¿½ 
 
     private void Jump()
     {
@@ -162,21 +165,27 @@ public class PlayerBattle : MonoBehaviourPun
         this.isJumpKeyInput = isJump;
     }
 
-    // ÀÏ´Ü ÇÕÄ¡±â ÀüÀÌ¶ó °ÔÀÓÀÌ ¿ÏÀü ³¡³µÀ» ¶§ ·ÎÁ÷ÀÓ
+    // ï¿½Ï´ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¶ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     void TransferDamage(float attackDamage)
     {
         if (IsShieldTime == true)
             return;
 
+        PhotonNetwork.Instantiate("DamageEffect", transform.position, Quaternion.identity);
+        //PhotonNetwork.Destroy(DamageEffect);
+
         playercurHP -= attackDamage;
-        if (playercurHP < 0)
+        playerHP.value = playercurHP / playermaxHP;
+        if (playercurHP <= 0)
         {
             over.SetWinCount();
             photonView.RPC("BattleEnd", RpcTarget.Others);
             return;
         }
         photonView.RPC("RPC_TransferDamage", RpcTarget.Others, attackDamage);
+
     }
+
 
     public void StartKnockBackCoroutine(Vector3 bulletVec)
     {
@@ -188,7 +197,8 @@ public class PlayerBattle : MonoBehaviourPun
     {
         over.SetWinCount();
     }
-    // ÀÏ´Ü ÇÕÄ¡±â ÀüÀÌ¶ó °ÔÀÓÀÌ ¿ÏÀü ³¡³µÀ» ¶§ ·ÎÁ÷ÀÓ
+
+    // ï¿½Ï´ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¶ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     [PunRPC]
     void BattleEnd()
     {
@@ -201,7 +211,7 @@ public class PlayerBattle : MonoBehaviourPun
         if (IsShieldTime == true)
             return;
 
-        knockBackDir = (transform.position - bulletVec).normalized; // ÀûÀÌ ÃÑ¾Ë¿¡ ¸ÂÀº ¹æÇâÀ¸·Î ³Ë¹éÀ» ´çÇÏ±â À§ÇØ ±¸ÇÑ ¹æÇâº¤ÅÍ
+        knockBackDir = (transform.position - bulletVec).normalized; // ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ¾Ë¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ë¹ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½âº¤ï¿½ï¿½
         if (knockBackDir.y < (transform.position - Vector3.right).normalized.y)
         {
             knockBackDir.y = transform.position.normalized.y;
@@ -216,8 +226,11 @@ public class PlayerBattle : MonoBehaviourPun
             return;
 
         camEffect.StartCamEffectCoroutine();
+
         playercurHP -= attackDamage;
+        playerHP.value = playercurHP / playermaxHP;
     }
+
 
     void PlayerSetActiveFalse()
     {
@@ -252,19 +265,20 @@ public class PlayerBattle : MonoBehaviourPun
     {
         PhotonNetwork.Destroy(this.gameObject);
     }
+
     [PunRPC]
     void RPC_ReStart()
     {
         gameObject.SetActive(true);
     }
 
-    // ³Ë¹é ÄÚ·çÆ¾
+    // ï¿½Ë¹ï¿½ ï¿½Ú·ï¿½Æ¾
     IEnumerator KnockBack()
     {
         float knockBackSpeed = 32f;
 
-        // ½Ã°£ÀÌ Áö³¯¼ö·Ï Á¡Á¡ ´ú ¹Ð¸®°Ô ÇÏ±â À§ÇØ ¼Óµµ¸¦ °è¼Ó »©ÁÖ¾î¼­
-        // °Å¸®°¡ ÁÙ¾îµé ¼ö ÀÖµµ·Ï ÇÔ
+        // ï¿½Ã°ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ð¸ï¿½ï¿½ï¿½ ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Óµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ö¾î¼­
+        // ï¿½Å¸ï¿½ï¿½ï¿½ ï¿½Ù¾ï¿½ï¿½ ï¿½ï¿½ ï¿½Öµï¿½ï¿½ï¿½ ï¿½ï¿½
         if (myRigidbody != null)
         {
             while (knockBackSpeed >= 1f)

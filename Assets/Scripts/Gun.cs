@@ -10,8 +10,10 @@ public class Gun : MonoBehaviourPun
     Vector3 fireDir = Vector3.zero; 
     PlayerBattle player = null;
     PlayerBattle myEnemy = null;
+    PinBallGame_ItemCheck _itemCheck;
     public float numberOfBullet { get; set; } = 100;
     bool canshoot = true;
+    [SerializeField] Transform effPos = null;
 
     public void SetGunData(ScriptableWeaponData data)
     {
@@ -26,11 +28,13 @@ public class Gun : MonoBehaviourPun
     {
         canshoot = true;
     }
+    private void Start()
+    {
+        _itemCheck = FindObjectOfType<PinBallGame_ItemCheck>();
+    }
     // Update is called once per frame
     void Update()
     {
-        
-
         if (photonView.IsMine == false || numberOfBullet == 0)
             return;
 
@@ -38,11 +42,21 @@ public class Gun : MonoBehaviourPun
         {
             FindEnemy();
             Debug.Log(playerWeapondata.GunName);
+
+            GameObject effObject = PhotonNetwork.Instantiate("GunEffect", effPos.position, Quaternion.identity);
+            StartCoroutine(EffectEnd(effObject));
+
             StartCoroutine("Shoot_" + playerWeapondata.GunName);
         }
 
     }
-    
+
+    IEnumerator EffectEnd(GameObject effect)
+    {
+        yield return new WaitUntil(() => effect.GetComponent<ParticleSystem>().isPlaying == false);
+        PhotonNetwork.Destroy(effect.gameObject);
+    }
+
     void FindEnemy()
     {
         if (myEnemy == null)
@@ -84,6 +98,7 @@ public class Gun : MonoBehaviourPun
 
         GameObject objectInst = PhotonNetwork.Instantiate("Bullet", transform.position, Quaternion.identity);
         Bullet bulletInst = objectInst.GetComponent<Bullet>();
+        _itemCheck.UpdateBulletNum();
         if (bulletInst != null)
         {
             bulletInst.myEnemy = this.myEnemy;

@@ -10,6 +10,7 @@ TagManager:
   - Ball
   - PinballGame
   - DeadZone
+  - FxTemporaire
   layers:
   - Default
   - TransparentFX
@@ -18,7 +19,7 @@ TagManager:
   - Water
   - UI
   - ball
-  - 
+  - Loadingtomato
   - 
   - 
   - 
@@ -53,6 +54,12 @@ TagManager:
   - name: MiddleGround
     uniqueID: 420440537
     locked: 0
-  - name: FrontGround
+  - name: ForeGround
     uniqueID: 3056382491
+    locked: 0
+  - name: UI
+    uniqueID: 917171127
+    locked: 0
+  - name: Effect
+    uniqueID: 2876592379
     locked: 0

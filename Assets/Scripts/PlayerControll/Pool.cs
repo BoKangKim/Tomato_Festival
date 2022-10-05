@@ -84,7 +84,7 @@ public class Pool : MonoBehaviour, IPunPrefabPool
         bool listCached = ListCache.TryGetValue(prefabId, out list);
         if (!listCached)
         {
-            Debug.LogError("Not Found "+ gameObject.name + "in ListCache");
+            Debug.LogError("Not Found "+ gameObject.name + " in ListCache");
             return;
         }
 

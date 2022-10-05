@@ -34,7 +34,11 @@ public class Bullet : MonoBehaviourPun
 
         transform.Translate(moveDir * Time.deltaTime * attackSpeed);
         if (Vector3.Distance(startPos, transform.position) >= attackRange)
+        {
+
             PhotonNetwork.Destroy(this.gameObject);
+        }
+            
 
         if (myEnemy == null)
             return;

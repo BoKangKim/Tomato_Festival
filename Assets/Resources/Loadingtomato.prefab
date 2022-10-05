@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5190507127051568886}
   - component: {fileID: 4079769991665630404}
   - component: {fileID: 6389957048569502562}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Loadingtomato
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -27,7 +27,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1506456312727058403}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 30, y: 17, z: 0}
+  m_LocalPosition: {x: 26, y: 12, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

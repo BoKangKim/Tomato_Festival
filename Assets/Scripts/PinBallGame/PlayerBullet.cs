@@ -7,18 +7,16 @@ using Photon.Realtime;
 public class PlayerBullet : MonoBehaviourPun, IPunObservable
 {
     public float speed;
-    // ¿©·¯¹ø Ãæµ¹À» ¸·±âÀ§ÇØ
+    // ì—¬ëŸ¬ë²ˆ ì¶©ëŒì„ ë§‰ê¸°ìœ„í•´
     bool enter;
     private Rigidbody2D rb;
     private SpriteRenderer spriteRenderer;
-    // ¹İ»ç º¤ÅÍ
+    // ë°˜ì‚¬ ë²¡í„°
     Vector3 reflectVector;
     bool playerTurn = false;
     PlayerBallShotter playerBallShotter;
     Vector3 remotePos;
     Quaternion remoteRot;
-
-
 
 
     private void Start()
@@ -29,7 +27,6 @@ public class PlayerBullet : MonoBehaviourPun, IPunObservable
         enter = false;
         playerBallShotter = GetComponent<PlayerBallShotter>();
 
-
     }
 
     public void PlayerTurn(bool PlayerTurn)
@@ -38,7 +35,7 @@ public class PlayerBullet : MonoBehaviourPun, IPunObservable
     }
 
 
-    // ½´ÅÍ¿¡¼­ ºÒ¸´À» »ı¼ºÇÒ¶§ ¹æÇâ°ªÀ» ÃÖ½ÅÈ­ ÇØÁÜ
+    // ìŠˆí„°ì—ì„œ ë¶ˆë¦¿ì„ ìƒì„±í• ë•Œ ë°©í–¥ê°’ì„ ìµœì‹ í™” í•´ì¤Œ
     public void SetMoveDir(Vector3 v)
     {
         reflectVector = v;
@@ -57,6 +54,7 @@ public class PlayerBullet : MonoBehaviourPun, IPunObservable
         if (photonView.IsMine)
             rb.velocity = (reflectVector * speed);
 
+
         //rb.AddForce((Vector2)reflectVector.normalized);
 
         //transform.position += speed * Time.deltaTime * reflectVector;
@@ -68,8 +66,10 @@ public class PlayerBullet : MonoBehaviourPun, IPunObservable
     {
         if (enter) { return; }
 
-        // Dot ´Ù½ÃÇÑ¹ø È®ÀÎÇØºÁ¾ßÇÔ - °³ÀÎÀûÀÎ»ı°¢ vector°ª³¢¸® ¼­·Î ¸ø°öÇÏ±â¶§¹®¿¡ DotÀÇ °ªÀ¸·Î ¾îÂ¼±¸ÇÔ 
-        //  ¹İ»çº¤ÅÍ°¡ ´Ù½Ã Æ¨±æ¶§´Â ÀÔ»ç°¢ÀÌ±â¶§¹®¿¡ ¹İ»çº¤ÅÍ¿¡ ³Ö¾îÁØ´Ù.
+
+
+        // Dot ë‹¤ì‹œí•œë²ˆ í™•ì¸í•´ë´ì•¼í•¨ - ê°œì¸ì ì¸ìƒê° vectorê°’ë¼ë¦¬ ì„œë¡œ ëª»ê³±í•˜ê¸°ë•Œë¬¸ì— Dotì˜ ê°’ìœ¼ë¡œ ì–´ì©Œêµ¬í•¨ 
+        //  ë°˜ì‚¬ë²¡í„°ê°€ ë‹¤ì‹œ íŠ•ê¸¸ë•ŒëŠ” ì…ì‚¬ê°ì´ê¸°ë•Œë¬¸ì— ë°˜ì‚¬ë²¡í„°ì— ë„£ì–´ì¤€ë‹¤.
         // R = P+2N(-P*N)
         reflectVector = reflectVector + 2 * (Vector3)collision.contacts[0].normal * (-Vector3.Dot(reflectVector, collision.contacts[0].normal));
         enter = true;
@@ -82,6 +82,7 @@ public class PlayerBullet : MonoBehaviourPun, IPunObservable
             }
 
         }
+
     }
 
     private void OnCollisionExit2D(Collision2D collision)
@@ -103,4 +104,7 @@ public class PlayerBullet : MonoBehaviourPun, IPunObservable
             remoteRot = (Quaternion)stream.ReceiveNext();
         }
     }
+
 }
+
+

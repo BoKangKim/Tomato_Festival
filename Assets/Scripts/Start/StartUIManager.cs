@@ -21,15 +21,29 @@ public class StartUIManager : MonoBehaviourPunCallbacks
     [SerializeField] Button settingButton = null;
     [SerializeField] Button exitButton = null;
 
-    [Header("Access")]
-    [SerializeField] GameObject accessScroll = null;
-    Vector3 accessscrollPos;
-    [SerializeField] TMP_InputField myNickName = null;
-    [SerializeField] Button matchButton = null;
-    [SerializeField] Button backButton = null;
+    [Header("UserProfile")]
+    [SerializeField] GameObject StartPanel;
+    [SerializeField] TextMeshProUGUI UserName;
+    [SerializeField] TextMeshProUGUI Email_ID;
+    [SerializeField] TextMeshProUGUI ErrorMsg;
+    [SerializeField] GameObject ErrorPanel;
+    [SerializeField] TextMeshProUGUI matching;
 
-    [SerializeField] TextMeshProUGUI matching = null;
+    [Header("BetInfo")]
+    [SerializeField] GameObject BalancePanel;
+    [SerializeField] TextMeshProUGUI ZerBalanceText;
+    [SerializeField] TextMeshProUGUI BetText;
+    [SerializeField] GameObject CannotStartPanel;
 
+    [Header("Information")]
+    [SerializeField] GameObject InfoScroll = null;
+    Vector3 InfoPos;
+    bool isPosibleStart = false;
+
+    // Audio
+    AudioControll ac = null;
+
+    #region Network
     void Awake()
     {
         // Set Screen Size 16 : 9 fullscreen false
@@ -41,20 +55,26 @@ public class StartUIManager : MonoBehaviourPunCallbacks
         PhotonNetwork.AutomaticallySyncScene = true;
         // Don't get a photonmessage when access the room.
         PhotonNetwork.IsMessageQueueRunning = false;
+
+        InfoPos = InfoScroll.transform.position;
+        ac = FindObjectOfType<AudioControll>();
+        ac.ChangeBackGroundMusic();
     }
     
     void Start()
     {
         //Connect network.
+        APIHandler.Inst.SetUIManager(this);
         PhotonNetwork.ConnectUsingSettings();
         
         gameLogo.SetActive(true);
-        buttonScroll.SetActive(false);
-        accessScroll.SetActive(false);
+
         buttonscrollPos = buttonScroll.transform.position;
-        accessscrollPos = accessScroll.transform.position;
+
         StartCoroutine(SetUI());
     }
+
+    // ï¿½ï¿½ ï¿½Ú·ï¿½Æ¾??>?????????
     IEnumerator SetUI()
     {
         yield return new WaitForSeconds(0.15f);
@@ -70,35 +90,111 @@ public class StartUIManager : MonoBehaviourPunCallbacks
         matching.text = "Sorry, The game can't be played because all rooms are currently full.";
         PhotonNetwork.ConnectUsingSettings();
     }
+    #endregion
+
+    // StartPanel Setting
+    public void SetStartPanel(string UserName, string Email_ID, bool StartPanel) 
+    {
+        this.UserName.text = UserName;
+        this.Email_ID.text = Email_ID;
+        this.StartPanel.SetActive(StartPanel);
+    }
+
+    public void SetErrorPanel(string msg)
+    {
+        this.ErrorMsg.text = msg;
+        this.ErrorPanel.SetActive(true);
+    }
+
+    public void SetBalancePanel(string zeraBalance,string bet, bool isPosibleStart)
+    {
+        this.ZerBalanceText.text = zeraBalance;
+        this.BetText.text = "BET : " + bet;
+        this.BalancePanel.SetActive(true);
+        this.StartPanel.SetActive(false);
+        this.isPosibleStart = isPosibleStart;
+    }
+
+    public void OnClickAcceptButton()
+    {
+        APIHandler.Inst.GetZeraBalaneAndBetSettings();
+    }
+
+    public void OnClickMatchButton()
+    {
+        if(isPosibleStart == false)
+        {
+            BalancePanel.SetActive(false);
+            CannotStartPanel.SetActive(true);
+        }
+        else if(isPosibleStart == true)
+        {
+            gameLogo.SendMessage("GameLogoMove", SendMessageOptions.DontRequireReceiver);
+            matching.text = "Accessing...";
+
+            if (PhotonNetwork.CountOfPlayersInRooms % 2 == 0) //No room to enter(CountOfPlayersInRooms is even)
+            {
+                if (PhotonNetwork.CountOfRooms > 10) // CountOfPlayers > 20
+                {
+                    matching.text = "Sorry, The game can't be played because all rooms are currently full.";
+                }
+                else
+                {
+                    PhotonNetwork.JoinOrCreateRoom($"room{PhotonNetwork.CountOfRooms + 1}", new RoomOptions { MaxPlayers = 2 }, TypedLobby.Default);
+                }
+            }
+            else
+            {
+                //JoinRoom
+                PhotonNetwork.JoinRandomRoom();
+            }
+        }
+    }
+
+    public void OnClickCloseBtn()
+    {
+        if(StartPanel.activeSelf == true)
+            StartPanel.SetActive(false);
+        else if (ErrorPanel.activeSelf == true)
+            ErrorPanel.SetActive(false);
+        else if (BalancePanel.activeSelf == true)
+            BalancePanel.SetActive(false);
+        else if (CannotStartPanel.activeSelf == true)
+            CannotStartPanel.SetActive(false);
+
+        buttonScroll.SetActive(true);
+    }
 
     #region //setting ButtonScroll
     public void OnClickStartButton()
     {
-        StartCoroutine(StartButton());
+        APIHandler.Inst.GetUserProfile();
+        buttonScroll.SetActive(false);
     }
+
     public void OnClickInfoButton()
     {
         startButton.interactable = false;
         settingButton.interactable = false;
         exitButton.interactable = false;
+        StartCoroutine(Info());
     }
+    
     public void OnClickSettingButton()
     {
-        startButton.interactable = false;
-        infoButton.interactable = false;
-        exitButton.interactable = false;
+        //startButton.interactable = false;
+        //infoButton.interactable = false;
+        //exitButton.interactable = false;
     }
     public void OnClickExitButton()
     {
-        //UnityEditor.EditorApplication.isPlaying = false;
         Application.Quit();
-        //Application.OpenURL("http://google.com");
     }
+    #endregion
 
-    IEnumerator StartButton()
+    IEnumerator Info()
     {
-        accessScroll.SetActive(true);
-        matchButton.interactable = false;
+        InfoScroll.SetActive(true);
 
         float time = 0f;
 
@@ -106,91 +202,36 @@ public class StartUIManager : MonoBehaviourPunCallbacks
         {
             time += Time.deltaTime;
 
-            buttonScroll.transform.Translate(Vector3.left * 8f);
-            accessScroll.transform.Translate(Vector3.left * 6f);
+            InfoScroll.transform.Translate(Vector3.left * 0.5f);
 
+            gameLogo.SendMessage("GameLogoMove", SendMessageOptions.DontRequireReceiver);
             yield return null;
         }
+
         buttonScroll.SetActive(false);
 
         yield return null;
     }
-    #endregion
 
-    
-    public void OnEndEdit(string name)
+    public void OnClickBackbutton()
     {
-        if (name.Length < 3 || name.Length > 8)
-        {
-            myNickName.selectionColor = Color.gray;
-            myNickName.text = "Please re-enter a nickname (3 ~ 8)";
-            return;
-        }
-        matchButton.interactable = true;
-        PhotonNetwork.NickName = name;
-    }
-    public void OnClickMatchButton()
-    {
-        if (string.IsNullOrEmpty(PhotonNetwork.NickName) == true) return;
-        
-        accessScroll.SetActive(false);
+        InfoScroll.transform.position = InfoPos;
+        InfoScroll.SetActive(false);
+        buttonScroll.SetActive(true);
+        gameLogo.SendMessage("GameLogoStartPos", SendMessageOptions.DontRequireReceiver);
 
-        gameLogo.SendMessage("GameLogoMove", SendMessageOptions.DontRequireReceiver);
-        matching.text = "Accessing...";
-        StartCoroutine("GoRoom");
+        startButton.interactable = true;
+        exitButton.interactable = true;
+        settingButton.interactable = true;
     }
-    IEnumerator GoRoom()
-    {
-        if (PhotonNetwork.IsConnectedAndReady == false)
-        {
-            Debug.Log("¿¬°áÀÌ ¾ÈµÇ¾î ÀÖ¾ú³×");
-            PhotonNetwork.Reconnect();
-        }
-        
-        yield return new WaitUntil(()=> PhotonNetwork.IsConnectedAndReady == true);
-        Debug.Log("¿¬°áµÇ¾î ÀÖÀ½");
-        if (PhotonNetwork.CountOfPlayersInRooms % 2 == 0 && (PhotonNetwork.CountOfRooms == PhotonNetwork.CountOfPlayersInRooms / 2)) //No room to enter(CountOfPlayersInRooms is even)
-        {
-            Debug.Log("¹æ ¸¸µé¾î");
-            PhotonNetwork.JoinOrCreateRoom($"room{PhotonNetwork.CountOfRooms + 1}", new RoomOptions { MaxPlayers = 2 }, TypedLobby.Default);
-        }
-        else
-        {
-            Debug.Log("¹æ µé¾î°¡");
-            //JoinRoom
-            PhotonNetwork.JoinRandomRoom();
-            Debug.Log("¸øµé¾î°¡");
-            matching.text = "Disconnected";
-        }
-    }
-
 
     public override void OnJoinedRoom()
     {
-        Debug.Log("¹æ µé¾î°£´Ù~!~!");
+        Debug.Log("ï¿½ï¿½ ï¿½ï¿½î°£ï¿½ï¿½~!~!");
         PhotonNetwork.LoadLevel("Loading");
     }
     public override void OnJoinRoomFailed(short returnCode, string message)
     {
-        Debug.Log("¹æ ¸ø µé¾î°£´Ù~!~! ²ËÃ¡´Ù");
-        if (returnCode == 32765)
-        {
-            //Debug.Log("¹æ ¸ø µé¾î°£´Ù~!~! ²ËÃ¡´Ù");
-            PhotonNetwork.JoinOrCreateRoom($"room{PhotonNetwork.CountOfRooms + 20}", new RoomOptions { MaxPlayers = 2 }, TypedLobby.Default);
-        }
-        else
-        {
-            Debug.Log("¹æ ¸ø µé¾î°£´Ù~!~! ¸ð¸¥´Ù");
-            matching.text = $"Connection Failed : <{returnCode}> {message}";
-            accessScroll.SetActive(true);
-        }
-    }
-    public void OnClickBackButton()
-    {
-        accessScroll.transform.position = accessscrollPos;
-        accessScroll.SetActive(false);
-
-        buttonScroll.SetActive(true);
-        buttonScroll.transform.position = buttonscrollPos;
+        matching.text = $"Connection Failed : <{returnCode}> {message}";
     }
 }

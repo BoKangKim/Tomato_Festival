@@ -18,13 +18,16 @@ public class PlayerBallShotter : MonoBehaviourPun, IPunObservable
     GameController gamecontroller = null;
     PlayerBallShotter OtherPlayer = null;
     [SerializeField] SpriteRenderer arrow;
+    [SerializeField] TextMeshProUGUI playcount = null;
     public int PlayerCount = 3;
     GameObject PinballObject = null;
     bool isGameOver = false;
 
+    
     private void Awake()
     {
         gamecontroller = FindObjectOfType<GameController>();
+        
     }
 
     
@@ -72,6 +75,10 @@ public class PlayerBallShotter : MonoBehaviourPun, IPunObservable
 
     void Update()
     {
+        if (photonView.IsMine)
+        {
+            playcount.text = "Play Count : " + PlayerCount.ToString();
+        }
 
         if (OtherPlayer == null)
         {
@@ -137,7 +144,7 @@ public class PlayerBallShotter : MonoBehaviourPun, IPunObservable
                     }
                 }
             }
-
+            
 
             if (len.y > 1.5f)
             {
