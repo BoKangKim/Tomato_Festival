@@ -7,21 +7,29 @@ using Photon.Realtime;
 public class Gun : MonoBehaviourPun
 {
     ScriptableWeaponData playerWeapondata = null;
-    Vector3 fireDir = Vector3.zero; 
+    Vector3 fireDir = Vector3.zero;
     PlayerBattle player = null;
     PlayerBattle myEnemy = null;
     PinBallGame_ItemCheck _itemCheck;
-    public float numberOfBullet { get; set; } = 100;
-    bool canshoot = true;
-    [SerializeField] Transform effPos = null;
 
-    public void SetGunData(ScriptableWeaponData data)
+    float attRange = 2.5f;
+    float distace;
+
+    public float numberOfBullet { get; set; }
+    bool canshoot = true;
+
+    private void Awake()
+    {
+        _itemCheck = FindObjectOfType<PinBallGame_ItemCheck>();
+    }
+    public void SetGunData(ScriptableWeaponData data) //gundata 활성화될때마다 splitdata에서 데이터 받아서 호출.
     {
         if (photonView.IsMine == false)
             return;
 
         playerWeapondata = data;
-        numberOfBullet += data.NumberOfBullet;
+        //numberOfBullet += data.NumberOfBullet;
+
     }
 
     private void OnEnable()
@@ -30,36 +38,47 @@ public class Gun : MonoBehaviourPun
     }
     private void Start()
     {
-        _itemCheck = FindObjectOfType<PinBallGame_ItemCheck>();
+        numberOfBullet = 0;
+        _itemCheck.UpdateBulletNum(numberOfBullet);
     }
     // Update is called once per frame
     void Update()
     {
-        if (photonView.IsMine == false || numberOfBullet == 0)
+
+        if (photonView.IsMine == false)
             return;
 
         if (Input.GetMouseButtonDown(0) && canshoot == true) //shoot ���� ����
         {
+
+
             FindEnemy();
-            Debug.Log(playerWeapondata.GunName);
 
-            GameObject effObject = PhotonNetwork.Instantiate("GunEffect", effPos.position, Quaternion.identity);
-            StartCoroutine(EffectEnd(effObject));
 
-            StartCoroutine("Shoot_" + playerWeapondata.GunName);
+            if (numberOfBullet <= 0)
+            {
+                PhotonNetwork.Instantiate("HitPow", transform.position, Quaternion.identity);
+                if (distace < attRange)
+                {
+                    Debug.Log("근접공격");
+                    myEnemy.SendMessage("StartKnockBackCoroutine", transform.position, SendMessageOptions.DontRequireReceiver);
+                    myEnemy.SendMessage("TransferDamage", 10f, SendMessageOptions.DontRequireReceiver);
+
+
+
+                }
+            }
+            else
+            {
+                StartCoroutine("Shoot_" + playerWeapondata.GunName);
+            }
         }
 
     }
 
-    IEnumerator EffectEnd(GameObject effect)
-    {
-        yield return new WaitUntil(() => effect.GetComponent<ParticleSystem>().isPlaying == false);
-        PhotonNetwork.Destroy(effect.gameObject);
-    }
-
     void FindEnemy()
     {
-        if (myEnemy == null)
+        if (myEnemy == null || player == null)
         {
             PlayerBattle[] players = FindObjectsOfType<PlayerBattle>();
             for (int i = 0; i < players.Length; i++)
@@ -67,29 +86,38 @@ public class Gun : MonoBehaviourPun
                 if (players[i].photonView.IsMine == false)
                 {
                     myEnemy = players[i];
-                    break;
+                }
+                if (players[i].photonView.IsMine == true)
+                {
+                    player = players[i];
                 }
             }
 
             if (myEnemy == null)
                 Debug.LogError("myEnemy is null Check Gun.cs");
         }
+
+        if (myEnemy != null && player != null)
+        {
+            distace = Vector3.Distance(player.GetComponentInChildren<Gun>().transform.position, myEnemy.GetComponentInChildren<Gun>().transform.position);
+
+        }
     }
 
-    void InitializingBullet(bool isShotGun,int count)
+    void InitializingBullet(bool isShotGun, int count)
     {
         canshoot = false;
         numberOfBullet -= 1f;
 
         TransferFireDir();
 
-        if(isShotGun == true && count == -1) 
+        if (isShotGun == true && count == -1)
         {
-            float radian = Mathf.Atan2(fireDir.y,fireDir.x);
+            float radian = Mathf.Atan2(fireDir.y, fireDir.x);
             radian += (3.14f / 12f);
             fireDir = new Vector3(Mathf.Cos(radian), Mathf.Sin(radian), 0f);
         }
-        else if(isShotGun == true && count == 1)
+        else if (isShotGun == true && count == 1)
         {
             float radian = Mathf.Atan2(fireDir.y, fireDir.x);
             radian -= (3.14f / 12f);
@@ -98,7 +126,7 @@ public class Gun : MonoBehaviourPun
 
         GameObject objectInst = PhotonNetwork.Instantiate("Bullet", transform.position, Quaternion.identity);
         Bullet bulletInst = objectInst.GetComponent<Bullet>();
-        _itemCheck.UpdateBulletNum();
+        _itemCheck.UpdateBulletNum(numberOfBullet);
         if (bulletInst != null)
         {
             bulletInst.myEnemy = this.myEnemy;
@@ -111,7 +139,7 @@ public class Gun : MonoBehaviourPun
         {
             Debug.LogError("Not Found Bullet Check Gun.cs");
         }
-        
+
     }
 
     // Handgun
@@ -125,16 +153,16 @@ public class Gun : MonoBehaviourPun
     // Repeater
     IEnumerator Shoot_Repeater()
     {
-        for(int i = 0; i < 3; i++)
+        for (int i = 0; i < 3; i++)
         {
             InitializingBullet(false, 0);
             yield return new WaitForSeconds(playerWeapondata.AttackInterval);
         }
-        
+
         yield return new WaitForSeconds(1f);
         canshoot = true;
     }
-    
+
     // Shotgun
     IEnumerator Shoot_Shotgun()
     {
@@ -145,7 +173,7 @@ public class Gun : MonoBehaviourPun
         yield return new WaitForSeconds(playerWeapondata.AttackInterval);
         canshoot = true;
     }
-    
+
     // SniperRifle
     IEnumerator Shoot_SniperRifle()
     {

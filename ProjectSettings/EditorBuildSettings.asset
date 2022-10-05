@@ -14,9 +14,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Loading.unity
     guid: db6b310a62bf32c4fb62ae4253e369ab
-  - enabled: 0
-    path: Assets/Scenes/BKMAIN.unity
-    guid: 298ed6c6c609cc948a438edafa44d0a5
   - enabled: 1
     path: Assets/Scenes/Main_Scroll.unity
     guid: d5e7ded6c96b2524793957072495a52c

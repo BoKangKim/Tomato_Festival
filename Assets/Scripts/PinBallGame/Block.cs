@@ -30,8 +30,6 @@ public class Block : MonoBehaviourPun
     //bool isGameChange = false;
     bool enter;
 
-    [SerializeField] GameObject blockeff = null;
-
     private void Awake()
     {
         //  BlockSpawner spawner = new BlockSpawner();
@@ -42,8 +40,6 @@ public class Block : MonoBehaviourPun
         blockEvent = imgUIManager.RenderItem;
         PinBallGame_ItemCheck pinBallGame_ItemCheck = FindObjectOfType<PinBallGame_ItemCheck>();
         add = pinBallGame_ItemCheck.AddItemCheckList;
-        
-
         //ItemInfo = new List<string>();
     }
 
@@ -135,7 +131,7 @@ public class Block : MonoBehaviourPun
 
     void BlockEffect()
     {
-        GameObject instObj = Instantiate(blockeff, this.transform.position, Quaternion.identity);
+        GameObject instObj = PhotonNetwork.Instantiate("BlockEffect", this.transform.position, Quaternion.identity);
     }
 
     public void OnCollisionEnter2D(Collision2D collision)
