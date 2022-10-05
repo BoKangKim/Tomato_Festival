@@ -45,7 +45,7 @@ public class PlayerBattle : MonoBehaviourPun
         camEffect = FindObjectOfType<CamEffect>();
         playermaxHP = 100f;
         playercurHP = 100f;
-        StartPos = gameObject.transform.position;
+        StartPos = gameObject.transform.position + new Vector3(0f,2f,0f);
         
     }
 

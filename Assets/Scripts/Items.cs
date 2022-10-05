@@ -49,6 +49,8 @@ public class Items : MonoBehaviourPun
             items.AddRange(splitData.GetAndSplitData("Item"));
             ItemListSetting();
         }
+
+        ChangeUIImg();
     }
 
     private void Update()

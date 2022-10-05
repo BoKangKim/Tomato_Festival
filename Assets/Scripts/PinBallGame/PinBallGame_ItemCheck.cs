@@ -11,7 +11,7 @@ public class PinBallGame_ItemCheck : MonoBehaviourPun
 {
     List<string> ItemCheck = new List<string>();
 
-    [SerializeField] Sprite[] guns = new Sprite[4];
+    //[SerializeField] Sprite[] guns = new Sprite[4];
     Dictionary<string, Sprite> gunslist;
 
     [SerializeField] TextMeshProUGUI Item_Bullet = null;
@@ -25,35 +25,37 @@ public class PinBallGame_ItemCheck : MonoBehaviourPun
     void Start()
     {
         gunslist = new Dictionary<string, Sprite>();
-        gunslist.Add("Handgun", guns[0]);
-        gunslist.Add("Repeater", guns[1]);
-        gunslist.Add("Shotgun", guns[2]);
-        gunslist.Add("SniperRifle", guns[3]);
+        gunslist.Add("Handgun", Resources.Load<Sprite>("Handgun"));
+        gunslist.Add("Repeater", Resources.Load<Sprite>("Repeater"));
+        gunslist.Add("Shotgun", Resources.Load<Sprite>("Shotgun"));
+        gunslist.Add("SniperRifle", Resources.Load<Sprite>("SniperRifle"));
         gunImg.sprite = gunslist["Handgun"];
 
-        BulletNum = 10;
+
+        BulletNum = 15;
         GrenadeNum = 0;
         ShieldNum = 0;
 
         Item_Bullet.text = $"x {BulletNum}";
         Item_Grenade.text = $"x {GrenadeNum}";
         Item_Shield.text = $"x {ShieldNum}";
+
     }
     public void ResetItem()
     {
         gunImg.sprite = gunslist["Handgun"];
-
-        BulletNum = 10;
+        /*
+        BulletNum = 0;
         GrenadeNum = 0;
         ShieldNum = 0;
 
         Item_Bullet.text = $"x {BulletNum}";
         Item_Grenade.text = $"x {GrenadeNum}";
         Item_Shield.text = $"x {ShieldNum}";
+        */
     }
     public void AddItemCheckList(string destroyBlockData, bool ismine)
     {
-
         if (PhotonNetwork.IsMasterClient == true && ismine == true)
         {
             AddMyList(destroyBlockData);
@@ -63,8 +65,6 @@ public class PinBallGame_ItemCheck : MonoBehaviourPun
             AddMyList(destroyBlockData);
         }
     }
-    public void AddItemCheckList(string destroyBlockData, bool ismine)
-    {
 
     void AddMyList(string destroyBlockData)
     {
@@ -91,16 +91,19 @@ public class PinBallGame_ItemCheck : MonoBehaviourPun
         }
     }
 
-    public void UpdateBulletNum()
+    public void UpdateBulletNum(float numberOfBullet)
     {
-        Item_Bullet.text = $"x {--BulletNum}";
+        BulletNum = (int)numberOfBullet;
+        Item_Bullet.text = $"x {BulletNum}";
     }
     public void UpdateGrenadeNum()
     {
+        if (GrenadeNum <= 0) return;
         Item_Grenade.text = $"x {--GrenadeNum}";
     }
     public void UpdateShieldNum()
     {
+        if (ShieldNum <= 0) return;
         Item_Shield.text = $"x {--ShieldNum}";
     }
 

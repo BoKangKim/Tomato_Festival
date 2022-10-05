@@ -18,7 +18,7 @@ public class Bullet : MonoBehaviourPun
     public float AttackDamage { set { attackDamage = value; } }
     public PlayerBattle myEnemy { get; set; } = null;
 
-    private void Start()
+    private void OnEnable()
     {
         startPos = transform.position;
     }
