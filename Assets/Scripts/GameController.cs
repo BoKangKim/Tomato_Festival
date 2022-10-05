@@ -10,6 +10,8 @@ public class GameController : MonoBehaviourPun
     [SerializeField] GameObject pinballGame = null;
     [SerializeField] GameObject battleGame = null;
     List<PlayerBattle> players = null;
+    AudioControll ac = null;
+
     public bool isFindPlayers { get; set; } = false;
     float trueY = 0f;
     float falseY = 0f;
@@ -22,8 +24,10 @@ public class GameController : MonoBehaviourPun
     {
         players = new List<PlayerBattle>();
         pinballGame.SetActive(false);
+        ac = FindObjectOfType<AudioControll>();
+        ac.ChangeBattleMusic();
     }
-    
+
     void Start()
     {
         battleGame.transform.position = activeTruePos;
@@ -59,6 +63,8 @@ public class GameController : MonoBehaviourPun
         pinballGame.SetActive(true);
         battleGame.transform.position = activeFalsePos;
         battleGame.SetActive(false);
+        ac.ChangePinballMusic();
+
         //ScrollSpeed = 5f;
     }
 
@@ -90,6 +96,8 @@ public class GameController : MonoBehaviourPun
             players[i].photonView.RPC("RPC_ReStart", RpcTarget.Others);
             
         }
+
+        ac.ChangeBattleMusic();
         //ScrollSpeed = 5f;
     }
 

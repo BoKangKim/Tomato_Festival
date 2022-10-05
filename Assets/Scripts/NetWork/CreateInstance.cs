@@ -13,7 +13,6 @@ public class CreateInstance : MonoBehaviourPunCallbacks
 
     private void Awake()
     {
-        gameOver = FindObjectOfType<GameOver>();
         StartCoroutine(CheckPlayerCount());
     }
     void Start()

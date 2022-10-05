@@ -6,6 +6,8 @@ using TMPro;
 using Photon.Pun;
 public class GameOver : MonoBehaviourPun
 {
+    [SerializeField] GameObject BattleGame;
+    [SerializeField] GameObject PinballGame;
     [SerializeField] GameObject WinPanel;
     [SerializeField] GameObject LosePanel;
     [SerializeField] Pool pool;
@@ -23,13 +25,7 @@ public class GameOver : MonoBehaviourPun
         gameControll = FindObjectOfType<GameController>();
         
     }
-    public bool GameOvercheck { get; private set; } = false;
 
-    private void Awake()
-    {
-        gameControll = FindObjectOfType<GameController>();
-        
-    }
 
 
     private void OnDisable()
@@ -56,13 +52,6 @@ public class GameOver : MonoBehaviourPun
     {
         APIHandler.Inst.DeclareWinner(winner_player_id,true);
     }
-
-    [PunRPC]
-    public void Winner(string winner_player_id)
-    {
-        APIHandler.Inst.DeclareWinner(winner_player_id,true);
-    }
-
     public void SetLoseCount()
     {
         if (players == null)
@@ -129,7 +118,10 @@ public class GameOver : MonoBehaviourPun
 
     public void LeftOnePlayerWin(string WinAmount)
     {
-        if(WinPanel.activeSelf == false)
+        BattleGame.SetActive(false);
+        PinballGame.SetActive(false);
+
+        if (WinPanel.activeSelf == false)
         {
             this.WinnerAmount.text = "WIN AMOUNT : " + WinAmount;
             WinPanel.SetActive(true);

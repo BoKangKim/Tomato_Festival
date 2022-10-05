@@ -7,20 +7,16 @@ using Photon.Realtime;
 public class PlayerBullet : MonoBehaviourPun, IPunObservable
 {
     public float speed;
-    // ������ �浹�� ��������
+    // 여러번 충돌을 막기위해
     bool enter;
     private Rigidbody2D rb;
     private SpriteRenderer spriteRenderer;
-    // �ݻ� ����
+    // 반사 벡터
     Vector3 reflectVector;
     bool playerTurn = false;
     PlayerBallShotter playerBallShotter;
     Vector3 remotePos;
     Quaternion remoteRot;
-
-    [Header("[����Ʈ]")]
-    [SerializeField] GameObject effObject = null;
-    [SerializeField] Transform effPos = null;
 
 
     private void Start()
@@ -31,7 +27,6 @@ public class PlayerBullet : MonoBehaviourPun, IPunObservable
         enter = false;
         playerBallShotter = GetComponent<PlayerBallShotter>();
 
-        PlayerBallEffect();
     }
 
     public void PlayerTurn(bool PlayerTurn)
@@ -40,7 +35,7 @@ public class PlayerBullet : MonoBehaviourPun, IPunObservable
     }
 
 
-    // ���Ϳ��� �Ҹ��� �����Ҷ� ���Ⱚ�� �ֽ�ȭ ����
+    // 슈터에서 불릿을 생성할때 방향값을 최신화 해줌
     public void SetMoveDir(Vector3 v)
     {
         reflectVector = v;
@@ -59,7 +54,7 @@ public class PlayerBullet : MonoBehaviourPun, IPunObservable
         if (photonView.IsMine)
             rb.velocity = (reflectVector * speed);
 
-        
+
         //rb.AddForce((Vector2)reflectVector.normalized);
 
         //transform.position += speed * Time.deltaTime * reflectVector;
@@ -73,8 +68,8 @@ public class PlayerBullet : MonoBehaviourPun, IPunObservable
 
 
 
-        // Dot �ٽ��ѹ� Ȯ���غ����� - �������λ��� vector������ ���� �����ϱ⶧���� Dot�� ������ ��¼���� 
-        //  �ݻ纤�Ͱ� �ٽ� ƨ�涧�� �Ի簢�̱⶧���� �ݻ纤�Ϳ� �־��ش�.
+        // Dot 다시한번 확인해봐야함 - 개인적인생각 vector값끼리 서로 못곱하기때문에 Dot의 값으로 어쩌구함 
+        //  반사벡터가 다시 튕길때는 입사각이기때문에 반사벡터에 넣어준다.
         // R = P+2N(-P*N)
         reflectVector = reflectVector + 2 * (Vector3)collision.contacts[0].normal * (-Vector3.Dot(reflectVector, collision.contacts[0].normal));
         enter = true;
@@ -108,38 +103,8 @@ public class PlayerBullet : MonoBehaviourPun, IPunObservable
             remotePos = (Vector3)stream.ReceiveNext();
             remoteRot = (Quaternion)stream.ReceiveNext();
         }
-
     }
-
-    void PlayerBallEffect()
-    {
-        GameObject instObj = Instantiate(effObject, effPos.position, Quaternion.identity);
-        Destroy(instObj, 3f);
-    }
-
-
 
 }
-        else
-        {
-            remotePos = (Vector3)stream.ReceiveNext();
-            remoteRot = (Quaternion)stream.ReceiveNext();
-        }
-    }
-<<<<<<< HEAD
-=======
-
-    void PlayerBallEffect()
-    {
-        GameObject instObj = Instantiate(effObject, effPos.position, Quaternion.identity);
-        Destroy(instObj, 3f);
-    }
-
-
-
->>>>>>> origin/HyeWon
-}
-
-
 
 

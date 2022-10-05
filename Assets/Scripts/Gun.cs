@@ -12,9 +12,6 @@ public class Gun : MonoBehaviourPun
     PlayerBattle myEnemy = null;
     public float numberOfBullet { get; set; } = 100;
     bool canshoot = true;
-
-    [Header("[이펙트]")]
-    [SerializeField] GameObject effObject = null;
     [SerializeField] Transform effPos = null;
 
     public void SetGunData(ScriptableWeaponData data)
@@ -41,21 +38,20 @@ public class Gun : MonoBehaviourPun
             FindEnemy();
             Debug.Log(playerWeapondata.GunName);
 
-            shotEffect();
-            Debug.Log("shotEffect :  " + effObject);
+            GameObject effObject = PhotonNetwork.Instantiate("GunEffect", effPos.position, Quaternion.identity);
+            StartCoroutine(EffectEnd(effObject));
 
             StartCoroutine("Shoot_" + playerWeapondata.GunName);
         }
 
     }
 
-
-    void shotEffect()
+    IEnumerator EffectEnd(GameObject effect)
     {
-        GameObject instObj = Instantiate(effObject, effPos.position, Quaternion.identity);
-        Destroy(instObj, 3f);
+        yield return new WaitUntil(() => effect.GetComponent<ParticleSystem>().isPlaying == false);
+        PhotonNetwork.Destroy(effect.gameObject);
     }
-    
+
     void FindEnemy()
     {
         if (myEnemy == null)

@@ -26,7 +26,6 @@ public class Block : MonoBehaviourPun
     //bool isGameChange = false;
     bool enter;
 
-    [Header("[����Ʈ]")]
     [SerializeField] GameObject blockeff = null;
 
     private void Awake()
@@ -121,8 +120,8 @@ public class Block : MonoBehaviourPun
     void BlockEffect()
     {
         GameObject instObj = Instantiate(blockeff, this.transform.position, Quaternion.identity);
-        Destroy(instObj, 3f);
     }
+
     public void OnCollisionEnter2D(Collision2D collision)
     {
         Debug.Log("## OnCollisionEnter - " + collision.gameObject.name);

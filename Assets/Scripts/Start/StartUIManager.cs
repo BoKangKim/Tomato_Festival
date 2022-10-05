@@ -35,7 +35,13 @@ public class StartUIManager : MonoBehaviourPunCallbacks
     [SerializeField] TextMeshProUGUI BetText;
     [SerializeField] GameObject CannotStartPanel;
 
+    [Header("Information")]
+    [SerializeField] GameObject InfoScroll = null;
+    Vector3 InfoPos;
     bool isPosibleStart = false;
+
+    // Audio
+    AudioControll ac = null;
 
     #region Network
     void Awake()
@@ -49,6 +55,10 @@ public class StartUIManager : MonoBehaviourPunCallbacks
         PhotonNetwork.AutomaticallySyncScene = true;
         // Don't get a photonmessage when access the room.
         PhotonNetwork.IsMessageQueueRunning = false;
+
+        InfoPos = InfoScroll.transform.position;
+        ac = FindObjectOfType<AudioControll>();
+        ac.ChangeBackGroundMusic();
     }
     
     void Start()
@@ -151,19 +161,25 @@ public class StartUIManager : MonoBehaviourPunCallbacks
             BalancePanel.SetActive(false);
         else if (CannotStartPanel.activeSelf == true)
             CannotStartPanel.SetActive(false);
+
+        buttonScroll.SetActive(true);
     }
 
     #region //setting ButtonScroll
     public void OnClickStartButton()
     {
         APIHandler.Inst.GetUserProfile();
+        buttonScroll.SetActive(false);
     }
+
     public void OnClickInfoButton()
     {
-        //startButton.interactable = false;
-        //settingButton.interactable = false;
-        //exitButton.interactable = false;
+        startButton.interactable = false;
+        settingButton.interactable = false;
+        exitButton.interactable = false;
+        StartCoroutine(Info());
     }
+    
     public void OnClickSettingButton()
     {
         //startButton.interactable = false;
@@ -176,7 +192,38 @@ public class StartUIManager : MonoBehaviourPunCallbacks
     }
     #endregion
 
-    
+    IEnumerator Info()
+    {
+        InfoScroll.SetActive(true);
+
+        float time = 0f;
+
+        while (time <= 0.2f)
+        {
+            time += Time.deltaTime;
+
+            InfoScroll.transform.Translate(Vector3.left * 0.5f);
+
+            gameLogo.SendMessage("GameLogoMove", SendMessageOptions.DontRequireReceiver);
+            yield return null;
+        }
+
+        buttonScroll.SetActive(false);
+
+        yield return null;
+    }
+
+    public void OnClickBackbutton()
+    {
+        InfoScroll.transform.position = InfoPos;
+        InfoScroll.SetActive(false);
+        buttonScroll.SetActive(true);
+        gameLogo.SendMessage("GameLogoStartPos", SendMessageOptions.DontRequireReceiver);
+
+        startButton.interactable = true;
+        exitButton.interactable = true;
+        settingButton.interactable = true;
+    }
 
     public override void OnJoinedRoom()
     {
@@ -186,10 +233,5 @@ public class StartUIManager : MonoBehaviourPunCallbacks
     public override void OnJoinRoomFailed(short returnCode, string message)
     {
         matching.text = $"Connection Failed : <{returnCode}> {message}";
-    }
-    public void OnClickBackButton()
-    {
-        buttonScroll.SetActive(true);
-        buttonScroll.transform.position = buttonscrollPos;
     }
 }

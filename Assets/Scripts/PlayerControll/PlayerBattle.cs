@@ -25,11 +25,6 @@ public class PlayerBattle : MonoBehaviourPun
     public int MyItemIndex { get; set; } = 0;
     public bool IsShieldTime { get; set; } = false;
 
-    [Header("[����Ʈ]")]
-    [SerializeField] GameObject effObject = null;
-    [SerializeField] Transform effPos = null;
-
-
 
     private void Awake()
     {
@@ -173,10 +168,11 @@ public class PlayerBattle : MonoBehaviourPun
         if (IsShieldTime == true)
             return;
 
-        PlayerDamageEffect();
-        //Debug.Log("PlayerDamageEffect : " + effObject);
+        PhotonNetwork.Instantiate("DamageEffect", transform.position, Quaternion.identity);
+        //PhotonNetwork.Destroy(DamageEffect);
 
         playercurHP -= attackDamage;
+
         if (playercurHP < 0)
         {
             over.SetWinCount();
@@ -186,6 +182,7 @@ public class PlayerBattle : MonoBehaviourPun
         photonView.RPC("RPC_TransferDamage", RpcTarget.Others, attackDamage);
 
     }
+
 
     public void StartKnockBackCoroutine(Vector3 bulletVec)
     {
@@ -197,6 +194,7 @@ public class PlayerBattle : MonoBehaviourPun
     {
         over.SetWinCount();
     }
+
     // �ϴ� ��ġ�� ���̶� ������ ���� ������ �� ������
     [PunRPC]
     void BattleEnd()
@@ -231,11 +229,6 @@ public class PlayerBattle : MonoBehaviourPun
 
     }
 
-    void PlayerDamageEffect()
-    {
-        GameObject instObj = Instantiate(effObject, effPos.position, Quaternion.identity);
-        Destroy(instObj, 3f);
-    }
 
     void PlayerSetActiveFalse()
     {

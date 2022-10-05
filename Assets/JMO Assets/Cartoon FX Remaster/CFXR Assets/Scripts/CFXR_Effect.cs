@@ -1,20 +1,6 @@
-﻿//--------------------------------------------------------------------------------------------------------------------------------
-// Cartoon FX
-// (c) 2012-2020 Jean Moreno
-//--------------------------------------------------------------------------------------------------------------------------------
-
-
-//--------------------------------------------------------------------------------------------------------------------------------
-
-// Use the defines below to globally disable features:
-
-//#define DISABLE_CAMERA_SHAKE
-//#define DISABLE_LIGHTS
-//#define DISABLE_CLEAR_BEHAVIOR
-
-//--------------------------------------------------------------------------------------------------------------------------------
-
+﻿
 using UnityEngine;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -23,6 +9,7 @@ namespace CartoonFX
 {
 	[RequireComponent(typeof(ParticleSystem))]
 	[DisallowMultipleComponent]
+	
 	public partial class CFXR_Effect : MonoBehaviour
 	{
 		// Change this value to easily tune the camera shake strength for all effects
@@ -33,9 +20,9 @@ namespace CartoonFX
 		static void InitGlobalOptions()
 		{
 			AnimatedLight.editorPreview = EditorPrefs.GetBool("CFXR Light EditorPreview", true);
-	#if !DISABLE_CAMERA_SHAKE
+#if !DISABLE_CAMERA_SHAKE
 			CameraShake.editorPreview = EditorPrefs.GetBool("CFXR CameraShake EditorPreview", true);
-	#endif
+#endif
 		}
 #endif
 
@@ -150,7 +137,7 @@ namespace CartoonFX
 				}
 			}
 
-			#region Animated Light Property Drawer
+#region Animated Light Property Drawer
 #if UNITY_EDITOR
 			[CustomPropertyDrawer(typeof(AnimatedLight))]
 			public class AnimatedLightDrawer : PropertyDrawer
@@ -431,7 +418,7 @@ namespace CartoonFX
 				}
 			}
 #endif
-			#endregion
+#endregion
 
 		}
 
@@ -486,13 +473,13 @@ namespace CartoonFX
 #if !DISABLE_CAMERA_SHAKE || !DISABLE_CLEAR_BEHAVIOR
 		void Awake()
 		{
-	#if !DISABLE_CAMERA_SHAKE
+#if !DISABLE_CAMERA_SHAKE
 			if (cameraShake != null && cameraShake.enabled)
 			{
 				cameraShake.fetchCameras();
 			}
-	#endif
-	#if !DISABLE_CLEAR_BEHAVIOR
+#endif
+#if !DISABLE_CLEAR_BEHAVIOR
 			startFrameOffset = GlobalStartFrameOffset++;
 #endif
 			// Detect if world position needs to be passed to the shader
@@ -625,11 +612,12 @@ namespace CartoonFX
 		}
 #endif
 
+#region Unity Editor
 #if UNITY_EDITOR
-		// Editor preview
-		// Detect when the Particle System is previewing and trigger this animation too
+        // Editor preview
+        // Detect when the Particle System is previewing and trigger this animation too
 
-		[System.NonSerialized] ParticleSystem _parentParticle;
+        [System.NonSerialized] ParticleSystem _parentParticle;
 		ParticleSystem parentParticle
 		{
 			get
@@ -731,7 +719,7 @@ namespace CartoonFX
 				}
 #endif
 #if !DISABLE_LIGHTS || !DISABLE_CAMERA_SHAKES
-				Animate(particleTimeUnwrapped);
+                Animate(particleTimeUnwrapped);
 
 				if (!parentParticle.isEmitting)
 				{
@@ -755,8 +743,11 @@ namespace CartoonFX
 #endif
 	}
 
+#endregion
+
+#region Unity Editor
 #if UNITY_EDITOR
-	[CustomEditor(typeof(CFXR_Effect))]
+    [CustomEditor(typeof(CFXR_Effect))]
 	[CanEditMultipleObjects]
 	public class CFXR_Effect_Editor : Editor
 	{
@@ -874,5 +865,5 @@ namespace CartoonFX
 		}
 	}
 #endif
+#endregion
 }
-;

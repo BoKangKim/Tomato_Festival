@@ -1,5 +1,7 @@
 using UnityEngine;
 using System.Collections;
+using Photon.Pun;
+using Photon.Realtime;
 
 // Cartoon FX  - (c) 2015 Jean Moreno
 
@@ -8,7 +10,7 @@ using System.Collections;
 // (only deactivates the object if the OnlyDeactivate flag is set, automatically used with CFX Spawn System)
 
 [RequireComponent(typeof(ParticleSystem))]
-public class CFX_AutoDestructShuriken : MonoBehaviour
+public class CFX_AutoDestructShuriken : MonoBehaviourPun
 {
 	// If true, deactivate the object instead of destroying it
 	public bool OnlyDeactivate;
@@ -35,8 +37,11 @@ public class CFX_AutoDestructShuriken : MonoBehaviour
 						this.gameObject.SetActive(false);
 					#endif
 				}
-				else
-					GameObject.Destroy(this.gameObject);
+                else
+                {
+					if(photonView.IsMine == true)
+						PhotonNetwork.Destroy(this.gameObject);
+				}
 				break;
 			}
 		}

@@ -39,9 +39,9 @@ public class PinBallGame_ItemCheck : MonoBehaviour
         ItemCheck.Add("Shield");
         ItemCheck.Add("Grenade");
         ItemCheck.Add("Shield");
-        ItemCheck.Add("Repeater");
-        ItemCheck.Add("Shotgun");
         ItemCheck.Add("SniperRifle");
+        ItemCheck.Add("Shotgun");
+        ItemCheck.Add("Repeater");
         return ItemCheck;
     }
 
