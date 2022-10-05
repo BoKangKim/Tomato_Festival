@@ -56,6 +56,7 @@ public class StartUIManager : MonoBehaviourPunCallbacks
         //Connect network.
         APIHandler.Inst.SetUIManager(this);
         PhotonNetwork.ConnectUsingSettings();
+        
         gameLogo.SetActive(true);
 
         buttonscrollPos = buttonScroll.transform.position;
@@ -63,13 +64,12 @@ public class StartUIManager : MonoBehaviourPunCallbacks
         StartCoroutine(SetUI());
     }
 
-    // ¿Ö ÄÚ·çÆ¾??>?????????
+    // ï¿½ï¿½ ï¿½Ú·ï¿½Æ¾??>?????????
     IEnumerator SetUI()
     {
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSeconds(0.15f);
         buttonScroll.SetActive(true);
     }
-
     public override void OnConnectedToMaster()  // Call when the master server is connected
     {
         startButton.interactable = true;
@@ -77,6 +77,7 @@ public class StartUIManager : MonoBehaviourPunCallbacks
     public override void OnDisconnected(DisconnectCause cause)  // Call when the master server is not connected
     {
         startButton.interactable = false;
+        matching.text = "Sorry, The game can't be played because all rooms are currently full.";
         PhotonNetwork.ConnectUsingSettings();
     }
     #endregion
@@ -179,6 +180,7 @@ public class StartUIManager : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
+        Debug.Log("ï¿½ï¿½ ï¿½ï¿½î°£ï¿½ï¿½~!~!");
         PhotonNetwork.LoadLevel("Loading");
     }
     public override void OnJoinRoomFailed(short returnCode, string message)

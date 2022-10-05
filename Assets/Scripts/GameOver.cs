@@ -23,6 +23,13 @@ public class GameOver : MonoBehaviourPun
         gameControll = FindObjectOfType<GameController>();
         
     }
+    public bool GameOvercheck { get; private set; } = false;
+
+    private void Awake()
+    {
+        gameControll = FindObjectOfType<GameController>();
+        
+    }
 
 
     private void OnDisable()
@@ -30,7 +37,7 @@ public class GameOver : MonoBehaviourPun
         winCount = 0;
         loseCount = 0;
     }
-    
+        
     public void SetWinCount()
     {
         winCount = winCount + 1;
@@ -42,6 +49,12 @@ public class GameOver : MonoBehaviourPun
         {
             gameControll.BattleOver();
         }
+    }
+
+    [PunRPC]
+    public void Winner(string winner_player_id)
+    {
+        APIHandler.Inst.DeclareWinner(winner_player_id,true);
     }
 
     [PunRPC]

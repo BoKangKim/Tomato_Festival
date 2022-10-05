@@ -7,6 +7,10 @@ TagManager:
   - Bullet
   - StopWall
   - Block
+  - Ball
+  - PinballGame
+  - DeadZone
+  - FxTemporaire
   layers:
   - Default
   - TransparentFX
@@ -15,7 +19,7 @@ TagManager:
   - Water
   - UI
   - ball
-  - 
+  - Loadingtomato
   - 
   - 
   - 
@@ -52,4 +56,7 @@ TagManager:
     locked: 0
   - name: FrontGround
     uniqueID: 3056382491
+    locked: 0
+  - name: Effect
+    uniqueID: 2309159339
     locked: 0

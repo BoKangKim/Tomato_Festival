@@ -23,11 +23,16 @@ public class Items : MonoBehaviourPun
     int preListCount = 0;
     GameObject grenade = null;
 
+
+
+    public GameObject GrenadEffect = null;
+
     private void Awake()
     {
         items = new List<string>();
         player = GetComponent<PlayerBattle>();
-        MyShield = gameObject.transform.Find("ShiledEffect").gameObject;
+        //MyShield = gameObject.transform.Find("ShiledEffect").gameObject;
+        MyShield = gameObject.transform.Find("ShiledEffect1").gameObject;
         myImg = GameObject.Find("ItemUIImg").GetComponent<Image>();
         
     }
@@ -106,6 +111,8 @@ public class Items : MonoBehaviourPun
         }
     }
 
+
+
     #region Async Data
 
     public void ItemListSetting()
@@ -180,7 +187,7 @@ public class Items : MonoBehaviourPun
     {
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mousePos.z = 0f;
-        fireDir = (mousePos - transform.position).normalized; //¹ß»ç¹æÇâ
+        fireDir = (mousePos - transform.position).normalized; //ï¿½ß»ï¿½ï¿½ï¿½ï¿½
     }
 
     IEnumerator Grenade()
@@ -188,6 +195,10 @@ public class Items : MonoBehaviourPun
         TransferFireDir();
 
         GameObject grenade = PhotonNetwork.Instantiate("Grenade", transform.position + (fireDir * transform.lossyScale.y), Quaternion.identity);
+
+        //GameObject instObj = Instantiate(effObject, grenade.transform.position, Quaternion.identity);
+        //Destroy(instObj, 1f);
+        GrenadeEffect();
 
         myRigidbody = grenade.GetComponent<Rigidbody2D>();
         myRigidbody.AddForce(fireDir * 500f, ForceMode2D.Force);
@@ -197,6 +208,12 @@ public class Items : MonoBehaviourPun
         GrenadeExplosion(grenade);
         PhotonNetwork.Destroy(grenade.gameObject);
     }
+    void GrenadeEffect()
+    {
+        GameObject instObj = Instantiate(GrenadEffect, this.transform.position, Quaternion.identity);
+        Destroy(instObj, 3f);
+    }
+
 
     private void GrenadeExplosion(GameObject grenade)
     {

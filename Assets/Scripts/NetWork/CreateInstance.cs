@@ -13,9 +13,9 @@ public class CreateInstance : MonoBehaviourPunCallbacks
 
     private void Awake()
     {
+        gameOver = FindObjectOfType<GameOver>();
         StartCoroutine(CheckPlayerCount());
     }
-
     void Start()
     {
         if(PhotonNetwork.IsConnected == true)
@@ -37,6 +37,7 @@ public class CreateInstance : MonoBehaviourPunCallbacks
 
     IEnumerator CheckPlayerCount()
     {
+
         yield return new WaitUntil(() => PhotonNetwork.CurrentRoom.PlayerCount != 2);
 
         pool.gameObject.SetActive(false);

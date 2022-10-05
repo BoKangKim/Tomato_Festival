@@ -47,7 +47,7 @@ public class LoadingEffect : ObjectPool<LoadingTomato>
     // Update is called once per frame
     void Start()
     {
-        StartCoroutine(LoadingTomatoes());
+        StartCoroutine("LoadingTomatoes");
     }
     IEnumerator LoadingTomatoes()
     {
@@ -65,9 +65,9 @@ public class LoadingEffect : ObjectPool<LoadingTomato>
     }
     public void Pouring()
     {
-        StopCoroutine(LoadingTomatoes());
+        StopCoroutine("LoadingTomatoes");
 
-        StartCoroutine(PouringTomato());
+        StartCoroutine("PouringTomato");
 
     }
 

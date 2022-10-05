@@ -26,6 +26,9 @@ public class Block : MonoBehaviourPun
     //bool isGameChange = false;
     bool enter;
 
+    [Header("[ï¿½ï¿½ï¿½ï¿½Æ®]")]
+    [SerializeField] GameObject blockeff = null;
+
     private void Awake()
     {
         //  BlockSpawner spawner = new BlockSpawner();
@@ -97,10 +100,12 @@ public class Block : MonoBehaviourPun
         }
         else if (currentHP <= 0)
         {
-
+            BlockEffect();
+            //Debug.Log("BlockEffect : ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½? " + blockeff);
             //Debug.Log("currentHP <= 0 : ");
             //Debug.Log("currentHP2 : " + currentHP);
             add(blockData.GetblockItemName);
+            Debug.Log("add : " + blockData.GetblockItemName);
             this.transform.SetParent(GameObject.Find("BlockRemove").transform);
 
             if (photonView.IsMine)
@@ -113,11 +118,15 @@ public class Block : MonoBehaviourPun
 
     }
 
-
+    void BlockEffect()
+    {
+        GameObject instObj = Instantiate(blockeff, this.transform.position, Quaternion.identity);
+        Destroy(instObj, 3f);
+    }
     public void OnCollisionEnter2D(Collision2D collision)
     {
         Debug.Log("## OnCollisionEnter - " + collision.gameObject.name);
-        #region ¿À·ùÄÚµå
+        #region ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½
         //if (photonView.IsMine == true)
         //{
         //    //Damages = blockData.GetblockgetDamages;
@@ -132,7 +141,7 @@ public class Block : MonoBehaviourPun
         //if (currentHP > 0)
         ////if (currentHP > 0 && photonView.IsMine == true)
         //{
-        //Debug.Log("## ¾û?¾î¾î¾û?¾û?¾î¾î¾û?¾û¾û¾û?");
+        //Debug.Log("## ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?");
         PlayerBullet pb = collision.gameObject.GetComponent<PlayerBullet>();
 
         if (pb.photonView.IsMine == false)

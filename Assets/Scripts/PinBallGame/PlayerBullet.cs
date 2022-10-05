@@ -7,18 +7,20 @@ using Photon.Realtime;
 public class PlayerBullet : MonoBehaviourPun, IPunObservable
 {
     public float speed;
-    // ¿©·¯¹ø Ãæµ¹À» ¸·±âÀ§ÇØ
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½æµ¹ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     bool enter;
     private Rigidbody2D rb;
     private SpriteRenderer spriteRenderer;
-    // ¹Ý»ç º¤ÅÍ
+    // ï¿½Ý»ï¿½ ï¿½ï¿½ï¿½ï¿½
     Vector3 reflectVector;
     bool playerTurn = false;
     PlayerBallShotter playerBallShotter;
     Vector3 remotePos;
     Quaternion remoteRot;
 
-
+    [Header("[ï¿½ï¿½ï¿½ï¿½Æ®]")]
+    [SerializeField] GameObject effObject = null;
+    [SerializeField] Transform effPos = null;
 
 
     private void Start()
@@ -29,7 +31,7 @@ public class PlayerBullet : MonoBehaviourPun, IPunObservable
         enter = false;
         playerBallShotter = GetComponent<PlayerBallShotter>();
 
-
+        PlayerBallEffect();
     }
 
     public void PlayerTurn(bool PlayerTurn)
@@ -38,7 +40,7 @@ public class PlayerBullet : MonoBehaviourPun, IPunObservable
     }
 
 
-    // ½´ÅÍ¿¡¼­ ºÒ¸´À» »ý¼ºÇÒ¶§ ¹æÇâ°ªÀ» ÃÖ½ÅÈ­ ÇØÁÜ
+    // ï¿½ï¿½ï¿½Í¿ï¿½ï¿½ï¿½ ï¿½Ò¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ò¶ï¿½ ï¿½ï¿½ï¿½â°ªï¿½ï¿½ ï¿½Ö½ï¿½È­ ï¿½ï¿½ï¿½ï¿½
     public void SetMoveDir(Vector3 v)
     {
         reflectVector = v;
@@ -57,6 +59,7 @@ public class PlayerBullet : MonoBehaviourPun, IPunObservable
         if (photonView.IsMine)
             rb.velocity = (reflectVector * speed);
 
+        
         //rb.AddForce((Vector2)reflectVector.normalized);
 
         //transform.position += speed * Time.deltaTime * reflectVector;
@@ -68,8 +71,10 @@ public class PlayerBullet : MonoBehaviourPun, IPunObservable
     {
         if (enter) { return; }
 
-        // Dot ´Ù½ÃÇÑ¹ø È®ÀÎÇØºÁ¾ßÇÔ - °³ÀÎÀûÀÎ»ý°¢ vector°ª³¢¸® ¼­·Î ¸ø°öÇÏ±â¶§¹®¿¡ DotÀÇ °ªÀ¸·Î ¾îÂ¼±¸ÇÔ 
-        //  ¹Ý»çº¤ÅÍ°¡ ´Ù½Ã Æ¨±æ¶§´Â ÀÔ»ç°¢ÀÌ±â¶§¹®¿¡ ¹Ý»çº¤ÅÍ¿¡ ³Ö¾îÁØ´Ù.
+
+
+        // Dot ï¿½Ù½ï¿½ï¿½Ñ¹ï¿½ È®ï¿½ï¿½ï¿½Øºï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ vectorï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï±â¶§ï¿½ï¿½ï¿½ï¿½ Dotï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Â¼ï¿½ï¿½ï¿½ï¿½ 
+        //  ï¿½Ý»çº¤ï¿½Í°ï¿½ ï¿½Ù½ï¿½ Æ¨ï¿½æ¶§ï¿½ï¿½ ï¿½Ô»ç°¢ï¿½Ì±â¶§ï¿½ï¿½ï¿½ï¿½ ï¿½Ý»çº¤ï¿½Í¿ï¿½ ï¿½Ö¾ï¿½ï¿½Ø´ï¿½.
         // R = P+2N(-P*N)
         reflectVector = reflectVector + 2 * (Vector3)collision.contacts[0].normal * (-Vector3.Dot(reflectVector, collision.contacts[0].normal));
         enter = true;
@@ -82,6 +87,7 @@ public class PlayerBullet : MonoBehaviourPun, IPunObservable
             }
 
         }
+
     }
 
     private void OnCollisionExit2D(Collision2D collision)
@@ -102,5 +108,38 @@ public class PlayerBullet : MonoBehaviourPun, IPunObservable
             remotePos = (Vector3)stream.ReceiveNext();
             remoteRot = (Quaternion)stream.ReceiveNext();
         }
+
     }
+
+    void PlayerBallEffect()
+    {
+        GameObject instObj = Instantiate(effObject, effPos.position, Quaternion.identity);
+        Destroy(instObj, 3f);
+    }
+
+
+
 }
+        else
+        {
+            remotePos = (Vector3)stream.ReceiveNext();
+            remoteRot = (Quaternion)stream.ReceiveNext();
+        }
+    }
+<<<<<<< HEAD
+=======
+
+    void PlayerBallEffect()
+    {
+        GameObject instObj = Instantiate(effObject, effPos.position, Quaternion.identity);
+        Destroy(instObj, 3f);
+    }
+
+
+
+>>>>>>> origin/HyeWon
+}
+
+
+
+
